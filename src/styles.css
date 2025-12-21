@@ -1,3 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+/* Remove bottom border from all MDC table header cells */
+.mat-mdc-header-cell, 
+.mat-mdc-cell {
+  border-bottom: none !important;   /* Remove default border */
+  box-shadow: none !important;      /* Remove any shadow if present */
+}
+
+/* Optional: Remove hover effect */
+.mat-mdc-row:hover {
+  background-color: #f9fafb !important; /* Keep subtle hover if needed */
+}
+
+/* Remove outline from mat-form-fields inside table */
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  border: none !important;
+}

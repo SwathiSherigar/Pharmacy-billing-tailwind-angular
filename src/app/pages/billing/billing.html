@@ -1,0 +1,148 @@
+<div class="min-h-screen bg-gray-100 p-4 flex flex-col gap-4">
+
+    <!-- Header -->
+    <div class="text-2xl font-bold text-gray-800 mb-2">Akash Pharma</div>
+
+    <!-- PATIENT & DOCTOR DETAILS -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        <!-- Patient Card -->
+        <div class="bg-white p-5 rounded-xl shadow-md flex flex-col gap-4">
+            <div class="flex items-center gap-2 text-xl font-semibold text-blue-600">
+                <mat-icon>person</mat-icon>
+                Patient Details
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput placeholder="Patient Name" [(ngModel)]="patient.name">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput type="number" placeholder="Age" [(ngModel)]="patient.age">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput placeholder="Phone" [(ngModel)]="patient.phone">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput placeholder="Address" [(ngModel)]="patient.address">
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Doctor Card -->
+        <div class="bg-white p-5 rounded-xl shadow-md flex flex-col gap-4">
+            <div class="flex items-center gap-2 text-xl font-semibold text-green-600">
+                <mat-icon>medical_services</mat-icon>
+                Doctor Details
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput placeholder="Doctor Name" [(ngModel)]="doctor.name">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput placeholder="Phone" [(ngModel)]="doctor.phone">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput placeholder="Address" [(ngModel)]="doctor.address">
+                </mat-form-field>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ITEMS TABLE -->
+    <div class="bg-white p-5 rounded-xl shadow-md flex-1 overflow-auto">
+        <div class="flex items-center justify-between mb-2">
+            <div class="text-lg font-semibold">Items</div>
+            <button mat-mini-fab color="primary" (click)="addRow()" matTooltip="Add Row (F4)">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+
+        <table mat-table [dataSource]="items" class="w-full table-auto">
+
+            <!-- Item Name -->
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Item</th>
+                <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <input matInput [(ngModel)]="i.name" (keydown)="onItemKeydown($event, rowIndex)">
+                    </mat-form-field>
+
+                </td>
+            </ng-container>
+
+            <!-- Batch -->
+            <ng-container matColumnDef="batch">
+                <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Batch</th>
+                <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <input matInput [(ngModel)]="i.batch" (keydown)="onItemKeydown($event, rowIndex)">
+                    </mat-form-field>
+                </td>
+            </ng-container>
+
+            <!-- Qty -->
+            <ng-container matColumnDef="qty">
+                <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Qty</th>
+                <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <input matInput type="number" [(ngModel)]="i.qty" (input)="calculate(i)"
+                            (keydown)="onItemKeydown($event, rowIndex)">
+                    </mat-form-field>
+                </td>
+            </ng-container>
+
+            <!-- Rate -->
+            <ng-container matColumnDef="rate">
+                <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Rate</th>
+                <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                    <mat-form-field appearance="outline" class="w-full">
+                        <input matInput type="number" [(ngModel)]="i.rate" (input)="calculate(i)"
+                            (keydown)="onItemKeydown($event, rowIndex)">
+                    </mat-form-field>
+                </td>
+            </ng-container>
+
+            <!-- MRP -->
+            <ng-container matColumnDef="mrp">
+                <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">MRP</th>
+                <td mat-cell *matCellDef="let i" class="p-1">{{ i.mrp }}</td>
+            </ng-container>
+            <ng-container matColumnDef="delete">
+                <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left"></th>
+                <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                    <button mat-icon-button color="warn" (click)="deleteRow(rowIndex)" matTooltip="Delete Row">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="bg-white p-5 rounded-xl shadow-md flex justify-between items-center">
+        <div class="text-xl font-bold">Total: ₹{{ total }}</div>
+        <div class="flex gap-2">
+            <button mat-raised-button color="primary" (click)="saveBill()">
+                <mat-icon>save</mat-icon> Save (F9)
+            </button>
+            <button mat-raised-button color="accent" (click)="printBill()">
+                <mat-icon>print</mat-icon> Print (F10)
+            </button>
+        </div>
+    </div>
+
+</div>
