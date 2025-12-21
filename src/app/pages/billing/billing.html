@@ -14,15 +14,25 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <mat-form-field appearance="outline" class="w-full">
-                    <input matInput placeholder="Patient Name" [(ngModel)]="patient.name">
+                    <input matInput [matAutocomplete]="patientAuto" placeholder="Patient Name"
+                        [(ngModel)]="patient.name" (ngModelChange)="filterPatients()" required>
+                    <mat-autocomplete #patientAuto="matAutocomplete"
+                        (optionSelected)="selectPatient($event.option.value)">
+                        <mat-option *ngFor="let p of filteredPatients" [value]="p.name">
+                            {{ p.name }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput type="number" placeholder="Age" [(ngModel)]="patient.age" required>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="w-full">
-                    <input matInput type="number" placeholder="Age" [(ngModel)]="patient.age">
-                </mat-form-field>
+                    <input matInput placeholder="Phone" [(ngModel)]="patient.phone" maxlength="10" minlength="10"
+                        pattern="[0-9]*" (keypress)="allowOnlyNumbers($event)" required>
 
-                <mat-form-field appearance="outline" class="w-full">
-                    <input matInput placeholder="Phone" [(ngModel)]="patient.phone">
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="w-full">
@@ -39,15 +49,25 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <mat-form-field appearance="outline" class="w-full">
-                    <input matInput placeholder="Doctor Name" [(ngModel)]="doctor.name">
+                    <input matInput [matAutocomplete]="doctorAuto" placeholder="Doctor Name" [(ngModel)]="doctor.name"
+                        (ngModelChange)="filterDoctors()" required>
+                    <mat-autocomplete #doctorAuto="matAutocomplete"
+                        (optionSelected)="selectDoctor($event.option.value)">
+                        <mat-option *ngFor="let d of filteredDoctors" [value]="d.name">
+                            {{ d.name }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo" required>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="w-full">
-                    <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo">
-                </mat-form-field>
+                    <input matInput placeholder="Phone" [(ngModel)]="doctor.phone" maxlength="10" minlength="10"
+                        pattern="[0-9]*" (keypress)="allowOnlyNumbers($event)" required>
 
-                <mat-form-field appearance="outline" class="w-full">
-                    <input matInput placeholder="Phone" [(ngModel)]="doctor.phone">
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="w-full">
@@ -74,8 +94,16 @@
                 <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Item</th>
                 <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
                     <mat-form-field appearance="outline" class="w-full">
-                        <input matInput [(ngModel)]="i.name" (keydown)="onItemKeydown($event, rowIndex)">
+                        <input matInput [matAutocomplete]="itemAuto" placeholder="Item Name" [(ngModel)]="i.name"
+                            (ngModelChange)="filterItems(rowIndex)" required>
+                        <mat-autocomplete #itemAuto="matAutocomplete"
+                            (optionSelected)="selectItem($event.option.value, rowIndex)">
+                            <mat-option *ngFor="let p of filteredItems[rowIndex]" [value]="p.name">
+                                {{ p.name }}
+                            </mat-option>
+                        </mat-autocomplete>
                     </mat-form-field>
+
 
                 </td>
             </ng-container>
@@ -85,7 +113,7 @@
                 <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Batch</th>
                 <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
                     <mat-form-field appearance="outline" class="w-full">
-                        <input matInput [(ngModel)]="i.batch" (keydown)="onItemKeydown($event, rowIndex)">
+                        <input matInput [(ngModel)]="i.batch" (keydown)="onItemKeydown($event, rowIndex)" required>
                     </mat-form-field>
                 </td>
             </ng-container>
@@ -96,7 +124,7 @@
                 <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
                     <mat-form-field appearance="outline" class="w-full">
                         <input matInput type="number" [(ngModel)]="i.qty" (input)="calculate(i)"
-                            (keydown)="onItemKeydown($event, rowIndex)">
+                            (keydown)="onItemKeydown($event, rowIndex)" required>
                     </mat-form-field>
                 </td>
             </ng-container>
@@ -107,7 +135,7 @@
                 <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
                     <mat-form-field appearance="outline" class="w-full">
                         <input matInput type="number" [(ngModel)]="i.rate" (input)="calculate(i)"
-                            (keydown)="onItemKeydown($event, rowIndex)">
+                            (keydown)="onItemKeydown($event, rowIndex)" required>
                     </mat-form-field>
                 </td>
             </ng-container>
@@ -125,6 +153,26 @@
                     </button>
                 </td>
             </ng-container>
+            <!-- Expiry -->
+            <ng-container matColumnDef="expiry">
+                <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">
+                    Expiry
+                </th>
+
+                <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                    <mat-form-field appearance="outline" class="w-full">
+
+                        <input matInput [matDatepicker]="picker" [(ngModel)]="i.expiry"
+                            (keydown)="onItemKeydown($event, rowIndex)" required>
+
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker startView="multi-year"></mat-datepicker>
+
+                    </mat-form-field>
+                </td>
+            </ng-container>
+
+
 
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

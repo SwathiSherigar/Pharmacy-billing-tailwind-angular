@@ -114,7 +114,7 @@ export class PdfService {
         i.batch || '',
         (i.rate || 0).toFixed(2),
         i.qty || 0,
-        i.expiry || '',
+         formatDate(i.expiry),
         ((i.qty || 0) * (i.rate || 0)).toFixed(2)
       ]),
       theme: 'grid',
@@ -140,8 +140,21 @@ export class PdfService {
     doc.setFont("NotoSans", "normal");
     doc.text(`TOTAL: ₹${grandTotal.toFixed(2)}`, rightX, finalY + 16, { align: 'right' });
 
+function formatDate(dateString?: string): string {
+  if (!dateString) return '';
+
+  const date = new Date(dateString);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
 
     // Save PDF
     doc.save('Invoice.pdf');
   }
+
+  
 }
