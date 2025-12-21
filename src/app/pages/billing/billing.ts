@@ -14,6 +14,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
  import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats, MatNativeDateModule } from '@angular/material/core';
 import { CustomDateAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
+import { Topbar } from "../../shared/components/layout/topbar/topbar/topbar";
 
 const CUSTOM_DATE_FORMATS: MatDateFormats = {
   parse: {
@@ -43,9 +44,9 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
     MatDatepickerModule,
     MatNativeDateModule,
     MatAutocompleteModule,
-    MatOptionModule
-
-  ],
+    MatOptionModule,
+    Topbar
+],
    providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
@@ -110,7 +111,7 @@ export class BillingComponent {
     const p = this.products.find(x => x.name === name);
     if (p) {
       this.items[index].name = p.name;
-      this.items[index].rate = p.rate;
+      // this.items[index].rate = p.rate;
       this.items[index].batch = p.batch;
     }
   }
@@ -130,24 +131,24 @@ export class BillingComponent {
     return this.items.reduce((sum, i) => sum + i.mrp, 0);
   }
 
-  async saveBill() {
-    await this.db.saveIfNotExists('patients', this.patient, 'name');
-    await this.db.saveIfNotExists('doctors', this.doctor, 'name');
-
-    for (const item of this.items) {
-      await this.db.saveIfNotExists('products', item, 'name');
-    }
-
-    const bill = {
-      patient: this.patient,
-      doctor: this.doctor,
-      items: this.items,
-      total: this.total,
-      date: new Date(),
-    };
-
-    await this.db.add('bills', bill);
+ async saveBill() {
+  const toPlainObject = (obj: any) => JSON.parse(JSON.stringify(obj));
+  await this.db.saveIfNotExists('patients', toPlainObject(this.patient), 'name');
+  await this.db.saveIfNotExists('doctors', toPlainObject(this.doctor), 'name');
+  for (const item of this.items) {
+    await this.db.saveIfNotExists('products', toPlainObject(item), 'name');
   }
+
+  const bill = {
+    patient: toPlainObject(this.patient),
+    doctor: toPlainObject(this.doctor),
+    items: this.items.map(i => toPlainObject(i)),
+    total: this.total,
+    date: new Date(),
+  };
+
+  await this.db.add('bills', bill);
+}
 
 
   printBill() {
@@ -188,12 +189,12 @@ export class BillingComponent {
   }
   onItemKeydown(event: KeyboardEvent, rowIndex: number) {
 
-    // For Windows: ctrlKey, For Mac: metaKey (Command key)
+   
     const isCtrlOrCmd = event.ctrlKey || event.metaKey;
 
     if (isCtrlOrCmd && event.key === 'Enter') {
       event.preventDefault();
-      this.addRow(); // Add row **after the current row**
+      this.addRow(); 
     }
 
   }
@@ -203,10 +204,7 @@ export class BillingComponent {
     const newItem = { name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 };
 
 
-    // Add new row
     this.items = [...this.items, newItem];
-
-    // Focus first cell of new row
     setTimeout(() => {
       const inputs = document.querySelectorAll('table input[matInput]');
       (inputs[inputs.length - 5] as HTMLElement)?.focus();
@@ -215,7 +213,7 @@ export class BillingComponent {
 
   deleteRow(index: number) {
     this.items.splice(index, 1);
-    this.items = [...this.items]; // Refresh binding
+    this.items = [...this.items];
   }
 
 }

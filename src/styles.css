@@ -17,3 +17,57 @@
 .mat-form-field-appearance-outline .mat-form-field-outline {
   border: none !important;
 }
+
+.mat-mdc-table {
+  background-color: white !important;
+}
+
+.mat-mdc-paginator {
+  .mat-mdc-paginator-page-size {
+    &:before {
+      content: 'Rows per page:';
+    }
+  }
+
+  .mat-mdc-paginator-page-size-label {
+    display: none;
+  }
+}
+
+.mat-mdc-cell {
+  border: none !important;
+
+  &.sticky-actions {
+    border-left: 1px solid #d1d5db !important;
+    position: sticky !important;
+  }
+}
+
+.mdc-data-table__row:nth-child(even) .mat-mdc-cell {
+  background-color:  #F8F8F8 !important;
+}
+
+.mdc-data-table__row:nth-child(odd) .mat-mdc-cell {
+  background-color: white !important;
+}
+
+.mat-sm-text-field {
+  .mdc-text-field--filled {
+    height: 40px !important;
+  }
+}
+
+.mat-sm-input {
+  .mat-mdc-form-field-flex:not(:has(textarea)) {
+    height: 40px !important;
+
+    .mat-mdc-form-field-infix {
+      padding-top: 6px !important;
+      padding-bottom: 6px !important;
+    }
+  }
+
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label:not(.mdc-floating-label--float-above) {
+    top: 18px !important;
+  }
+}
