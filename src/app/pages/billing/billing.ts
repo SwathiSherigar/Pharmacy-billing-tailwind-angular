@@ -12,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
- import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats, MatNativeDateModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats, MatNativeDateModule } from '@angular/material/core';
 import { CustomDateAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
 import { Topbar } from "../../shared/components/layout/topbar/topbar/topbar";
 
@@ -46,8 +46,8 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
     MatAutocompleteModule,
     MatOptionModule,
     Topbar
-],
-   providers: [
+  ],
+  providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
   ],
@@ -56,7 +56,7 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
 export class BillingComponent {
   patient: any = {};
   doctor: any = {};
-  items: any[] = [{ name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 }];
+  items: any[] = [{ name: '', batch: '', qty: 1, rate: 0, gst: 0, expiry: '', mrp: 0 }];
   patients: any[] = [];
   doctors: any[] = [];
   products: any[] = [];
@@ -65,7 +65,8 @@ export class BillingComponent {
   filteredItems: any[][] = [];
 
 
-  displayedColumns = ['name', 'batch', 'qty', 'rate', 'expiry', 'mrp', 'delete'];
+  displayedColumns = ['name', 'batch', 'qty', 'rate', 'gst', 'expiry', 'mrp', 'delete'];
+
 
   constructor(
     private db: IndexedDbService,
@@ -124,31 +125,34 @@ export class BillingComponent {
   }
 
   calculate(item: any) {
-    item.mrp = item.qty * item.rate;
+    const base = item.qty * item.rate;
+    const gstAmount = base * (item.gst / 100);
+    item.mrp = base + gstAmount;
   }
+
 
   get total() {
     return this.items.reduce((sum, i) => sum + i.mrp, 0);
   }
 
- async saveBill() {
-  const toPlainObject = (obj: any) => JSON.parse(JSON.stringify(obj));
-  await this.db.saveIfNotExists('patients', toPlainObject(this.patient), 'name');
-  await this.db.saveIfNotExists('doctors', toPlainObject(this.doctor), 'name');
-  for (const item of this.items) {
-    await this.db.saveIfNotExists('products', toPlainObject(item), 'name');
+  async saveBill() {
+    const toPlainObject = (obj: any) => JSON.parse(JSON.stringify(obj));
+    await this.db.saveIfNotExists('patients', toPlainObject(this.patient), 'name');
+    await this.db.saveIfNotExists('doctors', toPlainObject(this.doctor), 'name');
+    for (const item of this.items) {
+      await this.db.saveIfNotExists('products', toPlainObject(item), 'name');
+    }
+
+    const bill = {
+      patient: toPlainObject(this.patient),
+      doctor: toPlainObject(this.doctor),
+      items: this.items.map(i => toPlainObject(i)),
+      total: this.total,
+      date: new Date(),
+    };
+
+    await this.db.add('bills', bill);
   }
-
-  const bill = {
-    patient: toPlainObject(this.patient),
-    doctor: toPlainObject(this.doctor),
-    items: this.items.map(i => toPlainObject(i)),
-    total: this.total,
-    date: new Date(),
-  };
-
-  await this.db.add('bills', bill);
-}
 
 
   printBill() {
@@ -189,19 +193,19 @@ export class BillingComponent {
   }
   onItemKeydown(event: KeyboardEvent, rowIndex: number) {
 
-   
+
     const isCtrlOrCmd = event.ctrlKey || event.metaKey;
 
     if (isCtrlOrCmd && event.key === 'Enter') {
       event.preventDefault();
-      this.addRow(); 
+      this.addRow();
     }
 
   }
 
 
   addRow() {
-    const newItem = { name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 };
+    const newItem = { name: '', batch: '', qty: 1, rate: 0, gst: 0, expiry: '', mrp: 0 };
 
 
     this.items = [...this.items, newItem];
