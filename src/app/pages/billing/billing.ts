@@ -13,20 +13,17 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats, MatNativeDateModule } from '@angular/material/core';
-import { CustomDateAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
 import { Topbar } from "../../shared/components/layout/topbar/topbar/topbar";
-
+import { CustomMonthYearAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
 const CUSTOM_DATE_FORMATS: MatDateFormats = {
-  parse: {
-    dateInput: 'l, LTS'
-  },
+  parse: { dateInput: 'MM/YYYY' },
   display: {
-    dateInput: 'DD/MM/YYYY',
+    dateInput: 'MM/YYYY',
     monthYearLabel: 'MMM YYYY',
-    dateA11yLabel: 'LL',
+    dateA11yLabel: 'MM/YYYY',
     monthYearA11yLabel: 'MMMM YYYY',
   }
-}
+};
 
 
 @Component({
@@ -47,10 +44,10 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
     MatOptionModule,
     Topbar
   ],
-  providers: [
-    { provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
-  ],
+providers: [
+  { provide: DateAdapter, useClass: CustomMonthYearAdapter },
+  { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
+],
   templateUrl: './billing.html',
 })
 export class BillingComponent {
@@ -80,6 +77,12 @@ export class BillingComponent {
       e.preventDefault();
     }
   }
+
+  convertToDate(value: string | null): Date | null {
+  if (!value) return null;
+  const [month, year] = value.split('/');
+  return new Date(+year, +month - 1, 1); // day is always 1
+}
 
   filterPatients() {
     const name = this.patient.name?.toLowerCase() || '';
@@ -116,6 +119,14 @@ export class BillingComponent {
       this.items[index].batch = p.batch;
     }
   }
+selectedMonth(date: Date, datepicker: any, item: any) {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  item.expiry = `${month}/${year}`; 
+  datepicker.close();
+}
+
+
 
 
   async loadData() {
@@ -161,10 +172,6 @@ export class BillingComponent {
       return;
     }
 
-    if (!this.patient.phone || this.patient.phone.length !== 10) {
-      alert("❗ Patient phone must be 10 digits");
-      return;
-    }
 
     if (!this.doctor.name) {
       alert("❗ Doctor name required");

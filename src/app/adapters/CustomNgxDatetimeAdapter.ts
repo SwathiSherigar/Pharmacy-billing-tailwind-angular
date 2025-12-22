@@ -1,23 +1,32 @@
-import { MomentDateAdapter } from "@angular/material-moment-adapter";
-import moment, { Moment } from "moment";
+import { Injectable } from '@angular/core';
+import { NativeDateAdapter } from '@angular/material/core';
 
-export class CustomDateAdapter extends MomentDateAdapter {
+@Injectable()
+export class CustomMonthYearAdapter extends NativeDateAdapter {
 
-    private static readonly PARSE_FORMAT: string = 'DD/MM/YYYY';
-    private static readonly DISPLAY_FORMAT: string = 'DD/MM/YYYY';
-
-    constructor() {
-        super('en');
+  // parse from string like MM/YYYY
+  override parse(value: any): Date | null {
+    if (!value) return null;
+    if (typeof value === 'string') {
+      const parts = value.split('/');
+      if (parts.length === 2) {
+        const month = Number(parts[0]) - 1;
+        const year = Number(parts[1]);
+        return new Date(year, month, 1); // day is always 1
+      }
     }
+    return null;
+  }
 
-    public override format(date: Moment, _displayFormat: string): string {
-        return date.format(CustomDateAdapter.DISPLAY_FORMAT);
-    }
+  // format Date object as MM/YYYY
+  override format(date: Date, displayFormat: Object): string {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${year}`;
+  }
 
-    public override parse(value: any, _parseFormat: string | string[]): Moment | null {
-        if (!value || value.trim() === '') {
-            return null;
-        }
-        return moment(value, CustomDateAdapter.PARSE_FORMAT, 'en', false);
-    }
+  // ignore day calculations
+  override getFirstDayOfWeek(): number {
+    return 0; // Sunday
+  }
 }

@@ -29,7 +29,7 @@ export interface Item {
   rate?: number;
   expiry?: string;
   mrp?: number;
-  gst?:number;
+  gst?: number;
 }
 
 export interface BillData {
@@ -57,7 +57,7 @@ export class PdfService {
     });
     (doc as any).addFileToVFS(
       "NotoSans-Regular.ttf",
-      FONT );
+      FONT);
     (doc as any).addFont(
       "NotoSans-Regular.ttf",
       "NotoSans",
@@ -109,16 +109,16 @@ export class PdfService {
     // Items Table
     autoTable(doc, {
       startY: invoiceY + 4,
-  head: [['Item Name', 'Batch', 'Rate', 'Qty', 'GST%', 'Expiry', 'MRP']],
-  body: data.items.map(i => [
-    i.name,
-    i.batch || '',
-    (i.rate || 0).toFixed(2),
-    i.qty || 0,
-    i.gst || 0,
-    formatDate(i.expiry),
-    ((i.qty || 0) * (i.rate || 0) * (1 + (i.gst || 0)/100)).toFixed(2)
-  ]),
+      head: [['Item Name', 'Batch', 'Rate', 'Qty', 'GST%', 'Expiry', 'MRP']],
+      body: data.items.map(i => [
+        i.name,
+        i.batch || '',
+        (i.rate || 0).toFixed(2),
+        i.qty || 0,
+        i.gst || 0,
+        formatDate(i.expiry),
+        ((i.qty || 0) * (i.rate || 0) * (1 + (i.gst || 0) / 100)).toFixed(2)
+      ]),
 
       theme: 'grid',
       styles: { fontSize: 5 }, // smaller font for many items
@@ -143,21 +143,14 @@ export class PdfService {
     doc.setFont("NotoSans", "normal");
     doc.text(`TOTAL: ₹${grandTotal.toFixed(2)}`, rightX, finalY + 16, { align: 'right' });
 
-function formatDate(dateString?: string): string {
-  if (!dateString) return '';
+    function formatDate(expiry?: string): string {
+      return expiry || '';
+    }
 
-  const date = new Date(dateString);
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
-}
 
     // Save PDF
     doc.save('Invoice.pdf');
   }
 
-  
+
 }
