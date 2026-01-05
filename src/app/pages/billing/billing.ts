@@ -53,7 +53,7 @@ providers: [
 export class BillingComponent {
   patient: any = {};
   doctor: any = {};
-  items: any[] = [{ name: '', batch: '', qty: 1, rate: 0, gst: 0, expiry: '', mrp: 0 }];
+  items: any[] = [{ name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 }];
   patients: any[] = [];
   doctors: any[] = [];
   products: any[] = [];
@@ -62,7 +62,7 @@ export class BillingComponent {
   filteredItems: any[][] = [];
 
 
-  displayedColumns = ['name', 'batch', 'qty', 'rate', 'gst', 'expiry', 'mrp', 'delete'];
+  displayedColumns = ['name', 'batch', 'qty', 'rate', 'expiry', 'mrp', 'delete'];
 
 
   constructor(
@@ -137,8 +137,8 @@ selectedMonth(date: Date, datepicker: any, item: any) {
 
   calculate(item: any) {
     const base = item.qty * item.rate;
-    const gstAmount = base * (item.gst / 100);
-    item.mrp = base + gstAmount;
+    // const gstAmount = base * (item.gst / 100);
+    item.mrp = base;
   }
 
 
@@ -212,7 +212,7 @@ selectedMonth(date: Date, datepicker: any, item: any) {
 
 
   addRow() {
-    const newItem = { name: '', batch: '', qty: 1, rate: 0, gst: 0, expiry: '', mrp: 0 };
+    const newItem = { name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 };
 
 
     this.items = [...this.items, newItem];
