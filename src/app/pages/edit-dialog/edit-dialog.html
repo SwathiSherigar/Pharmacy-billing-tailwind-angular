@@ -1,0 +1,41 @@
+
+<h3 mat-dialog-title  class="my-0 p-2 px-3">Edit</h3>
+<button mat-icon-button class="close"  tabindex="-1" (click)="close()">
+    <mat-icon class="material-symbols-outlined"> close</mat-icon>
+</button>
+
+<mat-dialog-content class="flex flex-col gap-2">
+  <mat-form-field  appearance="outline" class="w-full mat-sm-input">
+    <mat-label>Name</mat-label>
+    <input matInput placeholder="Name" [(ngModel)]="data.name">
+  </mat-form-field>
+
+  <mat-form-field  appearance="outline" class="w-full mat-sm-input">
+    <mat-label>Phone</mat-label>
+    <input matInput placeholder="Phone" [(ngModel)]="data.phone">
+  </mat-form-field>
+@if(data.type=='patient'){
+ <mat-form-field  appearance="outline" class="w-full mat-sm-input">
+    <mat-label>Age</mat-label>
+    <input matInput type="number" placeholder="Age" [(ngModel)]="data.age">
+  </mat-form-field>
+
+}
+
+@if(data.type=='doctor'){
+   <mat-form-field  appearance="outline" class="w-full mat-sm-input">
+    <mat-label>Registration Number</mat-label>
+    <input matInput type="number" placeholder="Registration Number" [(ngModel)]="data.regNo">
+  </mat-form-field>
+}
+ 
+  <mat-form-field  appearance="outline" class="w-full mat-sm-input">
+    <mat-label>Address</mat-label>
+    <input matInput placeholder="Address" [(ngModel)]="data.address">
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()" color="accent" class="!text-gray-700">Cancel</button>
+  <button matButton="outlined" (click)="save()" class="!text-gray-700">Save</button>
+</mat-dialog-actions>

@@ -1,0 +1,29 @@
+<mat-toolbar
+  class="!bg-white px-4 py-2 flex justify-between items-center topbar">
+  
+
+  <div class="flex items-center space-x-6">
+    @if(isCollapsed){
+<img src="assets/images/logo.png" width="38" height="38" alt="logo" />
+
+
+
+    }
+    @if (!isCollapsed) {
+    <span class="font-semibold  text-xl select-none text-primary">
+       Akash Pharma
+    </span>
+    }
+
+
+   <div [ngClass]="isCollapsed ? 'pl-2' : 'pl-10'" class="transition-all duration-300">
+      <button mat-icon-button aria-label="Toggle sidebar" (click)="toggle.emit()">
+        <mat-icon class="material-symbols-outlined">menu</mat-icon>
+      </button>
+    </div>
+
+
+  </div>
+  
+
+</mat-toolbar>

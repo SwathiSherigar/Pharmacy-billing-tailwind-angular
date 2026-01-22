@@ -13,8 +13,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats, MatNativeDateModule } from '@angular/material/core';
-import { Topbar } from "../../shared/components/layout/topbar/topbar/topbar";
+import { Topbar } from "../../shared/components/layout/topbar/topbar";
 import { CustomMonthYearAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
+import { DataStoreService } from '../../core/services/data-store';
 const CUSTOM_DATE_FORMATS: MatDateFormats = {
   parse: { dateInput: 'MM/YYYY' },
   display: {
@@ -44,10 +45,10 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
     MatOptionModule,
     Topbar
   ],
-providers: [
-  { provide: DateAdapter, useClass: CustomMonthYearAdapter },
-  { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
-],
+  providers: [
+    { provide: DateAdapter, useClass: CustomMonthYearAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
+  ],
   templateUrl: './billing.html',
 })
 export class BillingComponent {
@@ -67,7 +68,8 @@ export class BillingComponent {
 
   constructor(
     private db: IndexedDbService,
-    private pdf: PdfService
+    private pdf: PdfService,
+    private store: DataStoreService
   ) {
     this.loadData();
   }
@@ -79,10 +81,10 @@ export class BillingComponent {
   }
 
   convertToDate(value: string | null): Date | null {
-  if (!value) return null;
-  const [month, year] = value.split('/');
-  return new Date(+year, +month - 1, 1); // day is always 1
-}
+    if (!value) return null;
+    const [month, year] = value.split('/');
+    return new Date(+year, +month - 1, 1); // day is always 1
+  }
 
   filterPatients() {
     const name = this.patient.name?.toLowerCase() || '';
@@ -119,12 +121,12 @@ export class BillingComponent {
       this.items[index].batch = p.batch;
     }
   }
-selectedMonth(date: Date, datepicker: any, item: any) {
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  item.expiry = `${month}/${year}`; 
-  datepicker.close();
-}
+  selectedMonth(date: Date, datepicker: any, item: any) {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    item.expiry = `${month}/${year}`;
+    datepicker.close();
+  }
 
 
 
@@ -148,22 +150,36 @@ selectedMonth(date: Date, datepicker: any, item: any) {
 
   async saveBill() {
     const toPlainObject = (obj: any) => JSON.parse(JSON.stringify(obj));
-    await this.db.saveIfNotExists('patients', toPlainObject(this.patient), 'name');
-    await this.db.saveIfNotExists('doctors', toPlainObject(this.doctor), 'name');
+
+    const savedPatient = await this.store.saveOrGetPatient(
+      toPlainObject(this.patient)
+    );
+
+    const savedDoctor = await this.store.saveOrGetDoctor(
+      toPlainObject(this.doctor)
+    );
+
     for (const item of this.items) {
-      await this.db.saveIfNotExists('products', toPlainObject(item), 'name');
+      await this.db.saveIfNotExists(
+        'products',
+        toPlainObject(item),
+        'name'
+      );
     }
 
     const bill = {
-      patient: toPlainObject(this.patient),
-      doctor: toPlainObject(this.doctor),
+      patientId: savedPatient.id,
+      doctorId: savedDoctor.id,
       items: this.items.map(i => toPlainObject(i)),
       total: this.total,
       date: new Date(),
     };
 
-    await this.db.add('bills', bill);
+    // ✅ THIS IS THE KEY LINE
+    await this.store.addBill(bill);
   }
+
+
 
 
   printBill() {

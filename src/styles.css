@@ -1,19 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
-/* Remove bottom border from all MDC table header cells */
+
 .mat-mdc-header-cell, 
 .mat-mdc-cell {
-  border-bottom: none !important;   /* Remove default border */
-  box-shadow: none !important;      /* Remove any shadow if present */
+  border-bottom: none !important;  
+  box-shadow: none !important;   
 }
 
-/* Optional: Remove hover effect */
+
+.topbar {
+    height: 57px !important;
+}
+
+.mat-mdc-header-cell{
+  background-color: white !important;
+}
+
 .mat-mdc-row:hover {
-  background-color: #f9fafb !important; /* Keep subtle hover if needed */
+  background-color: #f9fafb !important;
 }
 
-/* Remove outline from mat-form-fields inside table */
+
 .mat-form-field-appearance-outline .mat-form-field-outline {
   border: none !important;
 }
@@ -70,4 +77,54 @@
   .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label:not(.mdc-floating-label--float-above) {
     top: 18px !important;
   }
+}
+
+
+.dialog-wrapper {
+  position: relative;
+  min-width: unset !important;
+  max-width: unset !important;
+
+  .close {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+  }
+
+  .close-icon {
+    position: absolute;
+    right: 5px;
+    top: 10px
+  }
+
+  .mat-mdc-dialog-content {
+    color: inherit !important;
+  }
+
+  .mat-mdc-dialog-surface {
+    border-radius: 6px !important;
+    overflow: hidden !important;
+  }
+
+  .mat-mdc-dialog-title::before {
+    height: 30px !important;
+  }
+}
+
+.action-panel {
+  background-color: white !important;
+
+  .mat-mdc-menu-item {
+    min-height: 32px !important;
+  }
+}
+
+.mat-md-icon {
+  height: 18px !important;
+  width: 18px !important;
+  font-size: 18px !important;
+}
+
+.text-primary{
+  color: #1C2B70
 }

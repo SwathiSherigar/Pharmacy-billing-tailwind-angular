@@ -1,0 +1,55 @@
+<div class="p-4 !pt-0 flex flex-col gap-4 h-full" style="height: calc(100vh - 100px);">
+
+  <div class="flex justify-between items-center ">
+    <div class="text-lg font-semibold pt-2">Patients</div>
+    <!-- <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="goToBilling()">
+      + Add Bill
+    </button> -->
+  </div>
+
+  <div class="flex flex-col bg-white rounded shadow-md flex-1 overflow-hidden">
+    <div class="overflow-auto flex-1">
+      <table mat-table [dataSource]="dataSource" class="w-full mat-elevation-z2 rounded">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let b"> {{ b.name }} </td>
+        </ng-container>
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef> Phone </th>
+          <td mat-cell *matCellDef="let b"> {{ b.phone }} </td>
+        </ng-container>
+        <ng-container matColumnDef="age">
+          <th mat-header-cell *matHeaderCellDef> Age </th>
+          <td mat-cell *matCellDef="let b"> {{ b.age }} </td>
+        </ng-container>
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef> Address </th>
+          <td mat-cell *matCellDef="let b"> {{b.address}} </td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Action </th>
+
+          <td mat-cell *matCellDef="let b">
+
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon class="mat-md-icon text-primary material-symbols-outlined">more_vert</mat-icon>
+            </button>
+            <mat-menu class="action-panel" #menu="matMenu" xPosition="before">
+              <button mat-menu-item color="primary" (click)="editPatient(b)">Edit</button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-100 border-b !border-gray-300"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 50, 100]" showFirstLastButtons></mat-paginator>
+
+  </div>
+
+
+</div>

@@ -90,7 +90,7 @@ const doctorX = pageWidth - margin - columnWidth +4;
     const drawText = (text: string, x: number, y: number, maxWidth = 60) => {
       const lines = doc.splitTextToSize(text, maxWidth);
       doc.text(lines, x, y);
-      return lines.length * 3; // approximate height increment for next line
+      return lines.length * 3;
     };
 
 

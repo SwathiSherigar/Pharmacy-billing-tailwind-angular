@@ -34,11 +34,27 @@ export class IndexedDbService {
   }
 
   async saveIfNotExists(store: string, data: any, key: string) {
-    const all = await this.getAll(store);
-    if (!all.find((i: any) =>
-      i[key]?.toLowerCase() === data[key]?.toLowerCase()
-    )) {
-      await this.add(store, data);
-    }
-  }
+  const existing = await this.findByKey(store, key, data[key]);
+  if (existing) return existing;
+
+  const id = await this.add(store, data);
+  return { ...data, id };
+}
+
+  async update(store: string, data: any) {
+  const db = await this.dbPromise;
+  return db.put(store, data);
+}
+
+async getById(store: string, id: number) {
+  const db = await this.dbPromise;
+  return db.get(store, id);
+}
+
+async findByKey(storeName: string, key: string, value: any): Promise<any | null> {
+  const all = await this.getAll(storeName);
+  return all.find(item => item[key] === value) ?? null;
+}
+
+
 }

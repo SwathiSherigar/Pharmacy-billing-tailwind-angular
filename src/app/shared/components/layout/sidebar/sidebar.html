@@ -1,0 +1,29 @@
+<nav class="sidebar-menu" [class.collapsed]="collapsed">
+  @for (item of featureList; track item.featureCode) {
+
+  <!-- MAIN ITEM -->
+  <div class="menu-item" [class.collapsed-item]="collapsed" [routerLink]="item?.featureRoute ?? null"
+    routerLinkActive="active">
+    <span class="icon-wrapper">
+      <mat-icon class="material-symbols-outlined">{{ item.featureIcon }}</mat-icon>
+    </span>
+
+    @if (!collapsed) {
+    <span class="feature-name">
+      {{ item.featureName }}
+    </span>
+    }
+  </div>
+
+  <!-- SUB MENU -->
+  @if (item?.subFeatureList && !collapsed) {
+  <div class="submenu">
+    @for (sub of item?.subFeatureList; track sub.featureCode) {
+    <a class="submenu-item" [routerLink]="sub.featureRoute" routerLinkActive="active">
+      {{ sub.featureName }}
+    </a>
+    }
+  </div>
+  }
+  }
+</nav>

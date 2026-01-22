@@ -1,8 +1,18 @@
-<div>
-  <topbar></topbar>
-  <!-- <div class="body-wrapper box-shadow-md">
-    <div class="transition-all duration-300">
-      <sidebar [collapsed]="collapsed"></sidebar>
+<div class="layout-grid">
+
+  <!-- Topbar -->
+  <topbar [isCollapsed]="collapsed" (toggle)="toggle()"></topbar>
+
+  <!-- Sidebar -->
+  <aside class="sidebar-wrapper" [class.collapsed]="collapsed">
+    <sidebar [collapsed]="collapsed"></sidebar>
+  </aside>
+
+  <!-- Main content -->
+  <main class="content-wrapper">
+    <div class="content">
+      <router-outlet></router-outlet>
     </div>
-  </div> -->
+  </main>
+
 </div>

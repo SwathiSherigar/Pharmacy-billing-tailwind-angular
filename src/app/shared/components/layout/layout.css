@@ -1,0 +1,36 @@
+.layout-grid {
+  display: grid;
+  grid-template-rows: 56px 1fr; 
+  grid-template-columns: auto 1fr; 
+  height: 100vh !important;
+  overflow: hidden !important
+}
+
+
+topbar {
+  grid-column: 1 / 3;
+}
+
+
+.sidebar-wrapper {
+  width: 240px;
+  transition: width 0.3s;
+}
+
+.sidebar-wrapper.collapsed {
+  width: 80px  !important;
+}
+
+.content-wrapper {
+  background-color: #f8fafc; 
+  transition: margin-left 0.3s;
+  overflow-y: auto;
+}
+
+.content-wrapper {
+  margin-left: 10px;
+}
+
+.sidebar-wrapper.collapsed ~ .content-wrapper {
+  margin-left: 10px;
+}
