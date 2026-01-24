@@ -1,0 +1,66 @@
+<div class="p-6 font-sans text-gray-800 relative overflow-auto">
+    <div class="flex justify-between items-start mb-6 border-b pb-4">
+        <div>
+            <h2 class="text-2xl font-bold text-primary m-0">INVOICE</h2>
+            <p class="text-sm text-gray-500">ID: #{{data.id}}</p>
+        </div>
+        <div class="text-right">
+            <p class="font-semibold text-lg">Akash Pharma</p>
+            <p class="text-xs text-gray-500">{{ formatDate(data.date) }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+        <div>
+            <p class="text-gray-500 uppercase text-[10px] font-bold tracking-wider">Patient</p>
+            <p class="font-medium text-base">{{ data.patient?.name }}</p>
+        </div>
+        <div class="text-right">
+            <p class="text-gray-500 uppercase text-[10px] font-bold tracking-wider">Doctor</p>
+            <p class="font-medium text-base">Dr. {{ data.doctor?.name }}</p>
+        </div>
+    </div>
+
+    <div class="border rounded-lg overflow-hidden mb-6">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="px-3 py-2">Item</th>
+                    <th class="px-3 py-2 text-center">Qty</th>
+                    <th class="px-3 py-2 text-right">Price</th>
+                    <th class="px-3 py-2 text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(item of data.items;track $index){
+                <tr class="border-b last:border-0">
+                    <td class="px-3 py-3">
+                        <div class="font-medium">{{ item.name }}</div>
+                        <div class="text-[10px] text-gray-400">Batch: {{item.batch}} | Exp: {{item.expiry}}</div>
+                    </td>
+                    <td class="px-3 py-3 text-center">{{ item.qty }}</td>
+                    <td class="px-3 py-3 text-right">₹{{ item.rate }}</td>
+                    <td class="px-3 py-3 text-right font-semibold">₹{{ item.qty * item.rate }}</td>
+                </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex justify-end pt-2">
+        <div class="w-1/2">
+            <div class="flex justify-between items-center py-2 border-t-2 border-primary">
+                <span class="font-bold text-lg text-primary">Grand Total</span>
+                <span class="font-bold text-xl text-primary">₹{{ data.total }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 flex justify-end gap-2 no-print">
+        <button mat-button mat-dialog-close (click)="close()">Close</button>
+        <!-- <button mat-raised-button color="primary" onclick="window.print()">
+            Print PDF
+        </button> -->
+    </div>
+</div>

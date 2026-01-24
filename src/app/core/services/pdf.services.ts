@@ -3,56 +3,21 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FONT } from '../constants/font';
 
-// Extend jsPDF type to include lastAutoTable
 declare module 'jspdf' {
   interface jsPDF {
     lastAutoTable?: { finalY: number };
   }
 }
 
-export interface Patient {
-  name: string;
-  phone?: string;
-  address?: string;
-}
+export interface Patient { name: string; phone?: string; address?: string; }
+export interface Doctor { name: string; phone?: string; address?: string; }
+export interface Item { name: string; batch?: string; qty?: number; rate?: number; expiry?: string; mrp?: number; }
+export interface BillData { patient: Patient; doctor: Doctor; items: Item[]; invoiceNo?: string; dueDate?: string; total: number; taxRate?: number; }
 
-export interface Doctor {
-  name: string;
-  phone?: string;
-  address?: string;
-}
-const termsText = [
-  'Terms & Conditions:',
-  '• GST not applicable.',
-  // '• Medicines once sold cannot be returned.',
-  // '• Subject to local jurisdiction.'
-];
+const termsText = ['Terms & Conditions:', '• GST not applicable.'];
 
-export interface Item {
-  name: string;
-  batch?: string;
-  qty?: number;
-  rate?: number;
-  expiry?: string;
-  mrp?: number;
-}
-
-export interface BillData {
-  patient: Patient;
-  doctor: Doctor;
-  items: Item[];
-  invoiceNo?: string;
-  dueDate?: string;
-  total: number;
-  taxRate?: number;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PdfService {
-
-
 
   generateBill(data: BillData) {
     const doc = new jsPDF({
@@ -60,182 +25,122 @@ export class PdfService {
       unit: 'mm',
       format: 'a5'
     });
-    (doc as any).addFileToVFS(
-      "NotoSans-Regular.ttf",
-      FONT);
-    (doc as any).addFont(
-      "NotoSans-Regular.ttf",
-      "NotoSans",
-      "normal"
-    );
+
+    // 1. Setup NotoSans - CRITICAL: Register for both normal and bold
+    (doc as any).addFileToVFS("NotoSans-Regular.ttf", FONT);
+    (doc as any).addFont("NotoSans-Regular.ttf", "NotoSans", "normal");
+    (doc as any).addFont("NotoSans-Regular.ttf", "NotoSans", "bold");
 
     const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 10;
+    const colWidth = 55; 
+    const doctorStartX = pageWidth - margin - colWidth; 
 
-    // Header
-    doc.setFontSize(12);
+    // Header Details
     doc.setFont('NotoSans', 'bold');
+    doc.setFontSize(14);
     doc.text('AKASH PHARMA', pageWidth / 2, 12, { align: 'center' });
-
-    // Patient Info
-    doc.setFontSize(5);
+    
+    doc.setFontSize(6);
     doc.setFont('NotoSans', 'normal');
+    let headerY = 16;
+    doc.text('Licence No: KA-BE2-274111', pageWidth / 2, headerY, { align: 'center' });
+    headerY += 3;
+    doc.text('1/326 MAIN ROAD HURULIHAL, KUDLIGI, Hurlihalu, Karnataka 583126', pageWidth / 2, headerY, { align: 'center' });
+    headerY += 3;
+    doc.text('Phone: +91 9876543210 | Email: contact@akashpharma.com', pageWidth / 2, headerY, { align: 'center' });
 
-        const margin = 10;
-const columnGap = 6;
-const doctorOffset = 4;
-const usableWidth = pageWidth - margin * 2;
-const columnWidth = (usableWidth - columnGap) / 2;
-const patientX = margin;
-const doctorX = pageWidth - margin - columnWidth +4;
-    const drawText = (text: string, x: number, y: number, maxWidth = 60) => {
-      const lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, x, y);
-      return lines.length * 3;
+    // 2. Invoice/Date (Placed above details)
+    let infoRowY = headerY + 6;
+    doc.setFont('NotoSans', 'bold');
+    doc.setFontSize(6);
+    doc.text(`Invoice #: ${data.invoiceNo || 'N/A'}`, margin, infoRowY);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, pageWidth - margin, infoRowY, { align: 'right' });
+
+    // 3. Section Titles
+    let sectionTitleY = infoRowY + 5;
+    doc.text('PATIENT INFORMATION', margin, sectionTitleY);
+    doc.text("PRESCRIBING PHYSICIAN'S INFORMATION", doctorStartX, sectionTitleY);
+
+    // 4. Info Blocks
+    doc.setFont('NotoSans', 'normal');
+    doc.setFontSize(5);
+    const drawBlock = (name: string, phone: string, addr: string, x: number) => {
+      let currentY = sectionTitleY + 4;
+      const nameLines = doc.splitTextToSize(`Name: ${name}`, colWidth);
+      const phoneLines = doc.splitTextToSize(`Phone: ${phone}`, colWidth);
+      const addrLines = doc.splitTextToSize(`Address: ${addr}`, colWidth);
+      doc.text(nameLines, x, currentY);
+      currentY += nameLines.length * 2.5;
+      doc.text(phoneLines, x, currentY);
+      currentY += phoneLines.length * 2.5;
+      doc.text(addrLines, x, currentY);
+      currentY += addrLines.length * 2.5;
+      return currentY;
     };
 
+    const pFinalY = drawBlock(data.patient.name, data.patient.phone || 'N/A', data.patient.address || 'N/A', margin);
+    const dFinalY = drawBlock(data.doctor.name, data.doctor.phone || 'N/A', data.doctor.address || 'N/A', doctorStartX);
 
-doc.setFontSize(5);
-
-// Titles
-doc.text('PATIENT INFORMATION', patientX, 18);
-doc.text("PRESCRIBING PHYSICIAN'S INFORMATION", doctorX, 18);
-
-let patientY = 22;
-let doctorY = 22;
-
-// Patient (LEFT)
-patientY += drawText(`Name: ${data.patient.name}`, patientX, patientY, columnWidth);
-patientY += drawText(`Phone: ${data.patient.phone || 'N/A'}`, patientX, patientY, columnWidth);
-patientY += drawText(`Address: ${data.patient.address || 'N/A'}`, patientX, patientY, columnWidth);
-
-// Doctor (RIGHT)
-doctorY += drawText(`Name: ${data.doctor.name}`, doctorX, doctorY, columnWidth);
-doctorY += drawText(`Phone: ${data.doctor.phone || 'N/A'}`, doctorX, doctorY, columnWidth);
-doctorY += drawText(`Address: ${data.doctor.address || 'N/A'}`, doctorX, doctorY, columnWidth);
-
-    // Invoice Info (Single Line)
-    const invoiceY = Math.max(patientY, doctorY) + 2; // below patient & doctor info
-const padding = 10;
-
-// Left-aligned: Invoice #
-doc.text(`Invoice #: ${data.invoiceNo || 'N/A'}`, padding, invoiceY);
-
-// Right-aligned: Date
-doc.text(`Date: ${new Date().toLocaleDateString()}`, pageWidth - padding, invoiceY, { align: 'right' });
-
-    // doc.text(`Due Date: ${data.dueDate || 'N/A'}`, padding + colWidth * 2, invoiceY);
-    // doc.text(`Amount Due: ₹${data.total.toFixed(2)}`, padding + colWidth * 3, invoiceY);
-
-    const finalY = doc.lastAutoTable?.finalY || (invoiceY + 4);
-    const taxRate = data.taxRate || 0;
-    const taxAmount = data.total * (taxRate / 100);
-    const grandTotal = data.total + taxAmount;
-
-
-
-    const itemRows = data.items.map((i, index) => [
+    // 5. Table Preparation
+    const tableStartY = Math.max(pFinalY, dFinalY) + 3;
+    const itemRows: any[] = data.items.map((i, index) => [
       index + 1,
       i.name,
       i.batch || '',
       (i.rate || 0).toFixed(2),
       i.qty || 0,
-      formatDate(i.expiry),
+      i.expiry || '',
       ((i.qty || 0) * (i.rate || 0)).toFixed(2)
     ]);
+
+    const grandTotal = data.total + (data.total * ((data.taxRate || 0) / 100));
+
+    // Summary Row
     itemRows.push([
-  {
-    content: termsText.join('\n'),
-    colSpan: 6, // spans all columns except MRP
-    styles: {
-      font: 'NotoSans',
-      fontSize: 5,
-      valign: 'top',
-      halign: 'left'
-    }
-  } as any,
-  {
-    content: `Sub Total:  ₹${data.total.toFixed(2)}\nTOTAL:  ₹${grandTotal.toFixed(2)}`,
-    styles: {
-      font: 'NotoSans',
-      fontSize: 5,
-      valign: 'middle',
-      halign: 'left'
-    }
-  } as any
-] as any);
+      {
+        content: termsText.join('\n'),
+        colSpan: 5,
+        styles: { halign: 'left' }
+      },
+      {
+        content: `TOTAL`,
+        styles: { halign: 'left', fontStyle: 'bold' }
+      },
+      {
+        content: `₹${grandTotal.toFixed(2)}`,
+        styles: { halign: 'left', fontStyle: 'bold' }
+      }
+    ]);
 
-
-    // Items Table
+    // 6. Render Table
     autoTable(doc, {
-      startY: invoiceY + 4,
-      head: [['S.No', 'Item Name', 'Batch', 'Rate', 'Qty', 'Expiry', 'MRP']],
+      startY: tableStartY,
+      head: [['S.No', 'Description', 'Batch', 'Rate', 'Qty', 'Expiry', 'Total']],
       body: itemRows,
       theme: 'grid',
-      styles: {
-        font: 'NotoSans',      // REQUIRED for ₹
-        fontSize: 5,
-        textColor: [0, 0, 0],
-        lineColor: [0, 0, 0],
-        lineWidth: 0.1
+      styles: { font: 'NotoSans', fontSize: 5, textColor: [0, 0, 0], lineWidth: 0.1 },
+      headStyles: { fillColor: [255, 255, 255], fontStyle: 'bold' },
+      
+      // THE FIX: Explicitly forcing bold on the last row during cell parsing
+      didParseCell: (cellData) => {
+        const isLastRow = cellData.row.index === itemRows.length - 1;
+        if (isLastRow) {
+          cellData.cell.styles.fontStyle = 'bold';
+          cellData.cell.styles.font = 'NotoSans';
+          // Optional: Add a subtle background color to the total row to make it pop
+          cellData.cell.styles.fillColor = [255, 255, 255];
+        }
       },
-      headStyles: {
-        textColor: [0, 0, 0],
-        fontStyle: 'bold',
-        fillColor: [220, 220, 220]
-      },
-      didParseCell: (data) => {
-  const summaryRowIndex = itemRows.length - 1;
-
-  if (data.row.index === summaryRowIndex) {
-    // Remove LEFT border of MRP column
-    if (data.column.index === 6) {
-      data.cell.styles.lineWidth = {
-        top: 0.1,
-        bottom: 0.1,
-        left: 0.1,   // remove middle line
-        right: 0.1
-      };
-    }
-  }
-},
-
-      margin: { left: 10, right: 10 }
+      margin: { left: margin, right: margin }
     });
 
-
-    // Totals (RIGHT ALIGNED)
-
-    // const rightX = pageWidth - 10; // small right margin
-
-    // doc.setFontSize(6);
-    // doc.setFont('NotoSans', 'normal');
-    // doc.text(`Sub Total: ₹${data.total.toFixed(2)}`, rightX, finalY + 5, { align: 'right' });
-    // // doc.text(`Tax Rate: ${taxRate}%`, rightX, finalY + 8, { align: 'right' });
-    // // doc.text(`Tax: ${taxAmount.toFixed(2)}`, rightX, finalY + 11, { align: 'right' });
-    // doc.setFont("NotoSans", "normal");
-    // doc.text(`TOTAL: ₹${grandTotal.toFixed(2)}`, rightX, finalY + 8, { align: 'right' });
-    // // ---- TERMS & CONDITIONS (FIXED AT PAGE BOTTOM) ----
-    // const pageHeight = doc.internal.pageSize.getHeight();
-    // const footerMargin = 5;        // bottom margin
-    // const lineHeight = 3;           // line spacing
-    // const footerY =
-    //   pageHeight - footerMargin - (termsText.length * lineHeight);
-
-    // const leftX = 10;
-
-    // doc.setFontSize(5);
-    // doc.setFont('NotoSans', 'normal');
-    // doc.text(termsText, leftX, footerY);
-
-
-    function formatDate(expiry?: string): string {
-      return expiry || '';
+    // 7. Output
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    const printWindow = window.open(url, '_blank');
+    if (printWindow) {
+      printWindow.onload = () => printWindow.print();
     }
-
-
-    // Save PDF
-    doc.save('Invoice.pdf');
   }
-
-
 }

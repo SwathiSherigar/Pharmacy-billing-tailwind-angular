@@ -14,7 +14,7 @@
       <table mat-table [dataSource]="dataSource" class="w-full mat-elevation-z2 rounded">
         <ng-container matColumnDef="patient">
           <th mat-header-cell *matHeaderCellDef> Patient </th>
-          <td mat-cell *matCellDef="let b"  class="text-primary font-medium"> {{ b.patient.name }} </td>
+          <td mat-cell *matCellDef="let b"  class="text-primary font-medium" (click)="viewBill(b)"> {{ b.patient.name }} </td>
         </ng-container>
         <ng-container matColumnDef="doctor">
           <th mat-header-cell *matHeaderCellDef> Doctor </th>

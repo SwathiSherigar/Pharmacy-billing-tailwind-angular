@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DataStoreService } from '../../core/services/data-store';
+import { BillViewDialog } from './bill-view-dialog/bill-view-dialog';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,7 +37,8 @@ export class Dashboard implements AfterViewInit {
 
   constructor(
     private router: Router,
-    public store: DataStoreService
+    public store: DataStoreService,
+    private dialog: MatDialog
   ) {
     effect(() => {
       this.dataSource.data = this.bills();
@@ -54,4 +57,26 @@ export class Dashboard implements AfterViewInit {
     const d = new Date(date);
     return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
   }
+
+  viewBill(data:any){
+    console.log(data)
+       const dialogRef = this.dialog.open(BillViewDialog, {
+         data: { ...data, type: 'patient' },
+         width: '500px',
+         maxHeight: '70vh',
+         autoFocus: false,
+         panelClass: 'dialog-wrapper',
+       });
+   
+       dialogRef.afterClosed().subscribe(async updated => {
+         if (updated) {
+           await this.store.updatePatient(updated);
+   
+         }
+       });
+  }
+
+
+  
+
 }

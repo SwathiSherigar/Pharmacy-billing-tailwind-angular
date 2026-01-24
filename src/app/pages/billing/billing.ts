@@ -6,7 +6,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { IndexedDbService } from '../../core/services/indexed-db';
 import { PdfService } from '../../core/services/pdf.services';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -16,6 +15,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats, MatNati
 import { Topbar } from "../../shared/components/layout/topbar/topbar";
 import { CustomMonthYearAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
 import { DataStoreService } from '../../core/services/data-store';
+import { IndexedDbService } from '../../core/services/indexed-db';
 const CUSTOM_DATE_FORMATS: MatDateFormats = {
   parse: { dateInput: 'MM/YYYY' },
   display: {
@@ -83,24 +83,24 @@ export class BillingComponent {
   convertToDate(value: string | null): Date | null {
     if (!value) return null;
     const [month, year] = value.split('/');
-    return new Date(+year, +month - 1, 1); // day is always 1
+    return new Date(+year, +month - 1, 1); 
   }
 
   filterPatients() {
     const name = this.patient.name?.toLowerCase() || '';
-    this.filteredPatients = this.patients.filter(p =>
+    this.filteredPatients = this.patients?.filter(p =>
       p.name.toLowerCase().includes(name)
     );
   }
   filterDoctors() {
     const name = this.doctor.name?.toLowerCase() || '';
-    this.filteredDoctors = this.doctors.filter(d =>
+    this.filteredDoctors = this.doctors?.filter(d =>
       d.name.toLowerCase().includes(name)
     );
   }
   filterItems(index: number) {
     const name = this.items[index].name?.toLowerCase() || '';
-    this.filteredItems[index] = this.products.filter(p =>
+    this.filteredItems[index] = this.products?.filter(p =>
       p.name.toLowerCase().includes(name)
     );
   }
@@ -151,6 +151,8 @@ export class BillingComponent {
   async saveBill() {
     const toPlainObject = (obj: any) => JSON.parse(JSON.stringify(obj));
 
+    const invoiceNo = await this.getNextInvoiceNumber();
+
     const savedPatient = await this.store.saveOrGetPatient(
       toPlainObject(this.patient)
     );
@@ -168,6 +170,7 @@ export class BillingComponent {
     }
 
     const bill = {
+      invoiceNo,                    
       patientId: savedPatient.id,
       doctorId: savedDoctor.id,
       items: this.items.map(i => toPlainObject(i)),
@@ -175,38 +178,75 @@ export class BillingComponent {
       date: new Date(),
     };
 
-    // ✅ THIS IS THE KEY LINE
     await this.store.addBill(bill);
+
+
+    alert(`✅ Bill Saved (${invoiceNo})`);
+    this.resetForm()
   }
 
 
-
-
-  printBill() {
-    if (!this.patient.name) {
-      alert("❗ Patient name required");
+  async printBill() {
+    if (!this.patient.name || !this.doctor.name) {
+      alert('❗ Patient and Doctor required');
       return;
     }
+    const invoiceNo = await this.getNextInvoiceNumber();
+    const savedPatient = await this.store.saveOrGetPatient(
+      JSON.parse(JSON.stringify(this.patient))
+    );
 
-
-    if (!this.doctor.name) {
-      alert("❗ Doctor name required");
-      return;
+    const savedDoctor = await this.store.saveOrGetDoctor(
+      JSON.parse(JSON.stringify(this.doctor))
+    );
+    for (const item of this.items) {
+      await this.db.saveIfNotExists(
+        'products',
+        JSON.parse(JSON.stringify(item)),
+        'name'
+      );
     }
-
-    for (const i of this.items) {
-      if (!i.name || !i.batch || !i.qty || !i.rate || !i.expiry) {
-        alert("❗ All item fields are required");
-        return;
-      }
-    }
-    this.pdf.generateBill({
-      patient: this.patient,
-      doctor: this.doctor,
-      items: this.items,
+    const bill = {
+      invoiceNo,
+      patientId: savedPatient.id,
+      doctorId: savedDoctor.id,
+      items: this.items.map(i => JSON.parse(JSON.stringify(i))),
       total: this.total,
+      date: new Date()
+    };
+
+    await this.store.addBill(bill);
+    this.pdf.generateBill({
+      invoiceNo,
+      patient: savedPatient,
+      doctor: savedDoctor,
+      items: this.items,
+      total: this.total
+    });
+
+    this.resetForm()
+  }
+
+  resetForm() {
+    this.patient = {};
+    this.doctor = {};
+
+    this.items = [
+      { name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 }
+    ];
+
+    this.filteredPatients = [];
+    this.filteredDoctors = [];
+    this.filteredItems = [];
+
+    setTimeout(() => {
+      const firstInput = document.querySelector(
+        'input[matInput]'
+      ) as HTMLElement;
+      firstInput?.focus();
     });
   }
+
 
   @HostListener('window:keydown', ['$event'])
   handleKeys(e: KeyboardEvent) {
@@ -225,6 +265,31 @@ export class BillingComponent {
     }
 
   }
+
+  async getNextInvoiceNumber(): Promise<string> {
+    const bills = await this.db.getAll('bills');
+    const invoiceNumbers = bills
+      .map(b => b?.invoiceNo)
+      .filter((v): v is string => typeof v === 'string' && v.startsWith('INV-'));
+
+    if (!invoiceNumbers.length) {
+      return 'INV-0001';
+    }
+
+    const lastInvoice = invoiceNumbers
+      .sort((a, b) => {
+        const na = Number(a.split('-')[1]);
+        const nb = Number(b.split('-')[1]);
+        return na - nb;
+      })
+      .pop()!;
+
+    const lastNumber = Number(lastInvoice.split('-')[1]) || 0;
+    const nextNumber = lastNumber + 1;
+
+    return `INV-${nextNumber.toString().padStart(4, '0')}`;
+  }
+
 
 
   addRow() {
