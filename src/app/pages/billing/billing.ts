@@ -64,7 +64,9 @@ export class BillingComponent {
 
 
   displayedColumns = ['name', 'batch', 'qty', 'rate', 'expiry', 'mrp', 'delete'];
-
+  isEditMode = false;
+  editingBillId?: number;
+  invoiceNo?: string;
 
   constructor(
     private db: IndexedDbService,
@@ -79,11 +81,33 @@ export class BillingComponent {
       e.preventDefault();
     }
   }
+  ngOnInit() {
+    const nav = history.state;
+
+    if (nav?.mode === 'edit' && nav?.bill) {
+      this.isEditMode = true;
+      this.loadBillForEdit(nav.bill);
+    }
+  }
+
+  loadBillForEdit(bill: any) {
+    this.editingBillId = bill.id;
+    this.invoiceNo = bill.invoiceNo;
+
+    this.patient = { ...bill.patient };
+    this.doctor = { ...bill.doctor };
+
+    this.items = bill.items.map((i: any) => ({
+      ...i,
+      mrp: i.qty * i.rate
+    }));
+  }
+
 
   convertToDate(value: string | null): Date | null {
     if (!value) return null;
     const [month, year] = value.split('/');
-    return new Date(+year, +month - 1, 1); 
+    return new Date(+year, +month - 1, 1);
   }
 
   filterPatients() {
@@ -150,9 +174,9 @@ export class BillingComponent {
 
   async saveBill() {
     const toPlainObject = (obj: any) => JSON.parse(JSON.stringify(obj));
-
-    const invoiceNo = await this.getNextInvoiceNumber();
-
+    const invoiceNo = this.isEditMode
+      ? this.invoiceNo!       // ✅ keep same
+      : await this.getNextInvoiceNumber();
     const savedPatient = await this.store.saveOrGetPatient(
       toPlainObject(this.patient)
     );
@@ -170,15 +194,20 @@ export class BillingComponent {
     }
 
     const bill = {
-      invoiceNo,                    
+      invoiceNo,
       patientId: savedPatient.id,
       doctorId: savedDoctor.id,
       items: this.items.map(i => toPlainObject(i)),
       total: this.total,
       date: new Date(),
     };
-
-    await this.store.addBill(bill);
+    if (this.isEditMode) {
+      await this.store.updateBill(bill);   // ✅ UPDATE
+      alert('✅ Bill Updated');
+    } else {
+      await this.store.addBill(bill);      // ✅ NEW
+      alert(`✅ Bill Saved (${bill.invoiceNo})`);
+    }
 
 
     alert(`✅ Bill Saved (${invoiceNo})`);
@@ -191,7 +220,11 @@ export class BillingComponent {
       alert('❗ Patient and Doctor required');
       return;
     }
-    const invoiceNo = await this.getNextInvoiceNumber();
+    const invoiceNo = this.isEditMode
+      ? this.invoiceNo!       // ✅ keep same
+      : await this.getNextInvoiceNumber();
+
+
     const savedPatient = await this.store.saveOrGetPatient(
       JSON.parse(JSON.stringify(this.patient))
     );
@@ -215,7 +248,14 @@ export class BillingComponent {
       date: new Date()
     };
 
-    await this.store.addBill(bill);
+    if (this.isEditMode) {
+      await this.store.updateBill(bill);  // ✅ update before print
+    }
+    else {
+      await this.store.addBill(bill);
+    }
+
+
     this.pdf.generateBill({
       invoiceNo,
       patient: savedPatient,
@@ -268,27 +308,19 @@ export class BillingComponent {
 
   async getNextInvoiceNumber(): Promise<string> {
     const bills = await this.db.getAll('bills');
-    const invoiceNumbers = bills
-      .map(b => b?.invoiceNo)
-      .filter((v): v is string => typeof v === 'string' && v.startsWith('INV-'));
 
-    if (!invoiceNumbers.length) {
-      return 'INV-0001';
+    const numbers = bills
+      .map(b => Number(b?.invoiceNo))
+      .filter(n => !isNaN(n));
+
+    if (!numbers.length) {
+      return '1';
     }
 
-    const lastInvoice = invoiceNumbers
-      .sort((a, b) => {
-        const na = Number(a.split('-')[1]);
-        const nb = Number(b.split('-')[1]);
-        return na - nb;
-      })
-      .pop()!;
-
-    const lastNumber = Number(lastInvoice.split('-')[1]) || 0;
-    const nextNumber = lastNumber + 1;
-
-    return `INV-${nextNumber.toString().padStart(4, '0')}`;
+    const max = Math.max(...numbers);
+    return String(max + 1);
   }
+
 
 
 
@@ -307,5 +339,83 @@ export class BillingComponent {
     this.items.splice(index, 1);
     this.items = [...this.items];
   }
+
+  showJsonBox = false;
+  jsonInput: string = '';
+  toggleJsonBox() {
+    this.showJsonBox = !this.showJsonBox;
+  }
+
+  async importJson() {
+    try {
+      const parsed = JSON.parse(this.jsonInput);
+
+      // Support single object OR array
+      const billsArray = Array.isArray(parsed) ? parsed : [parsed];
+
+      let invoiceNumber = Number(await this.getNextInvoiceNumber());
+
+      for (const data of billsArray) {
+
+        if (!data.patient || !data.doctor || !data.items?.length) {
+          console.warn('Invalid bill skipped', data);
+          continue;
+        }
+
+        const toPlainObject = (obj: any) =>
+          JSON.parse(JSON.stringify(obj));
+
+        // Save patient
+        const savedPatient = await this.store.saveOrGetPatient(
+          toPlainObject(data.patient)
+        );
+
+        // Save doctor
+        const savedDoctor = await this.store.saveOrGetDoctor(
+          toPlainObject(data.doctor)
+        );
+
+        // Save products
+        for (const item of data.items) {
+          await this.db.saveIfNotExists(
+            'products',
+            toPlainObject(item),
+            'name'
+          );
+        }
+
+        const total = data.items.reduce(
+          (sum: number, i: any) => sum + (i.qty * i.rate),
+          0
+        );
+
+        const bill = {
+          invoiceNo: String(invoiceNumber++),
+          patientId: savedPatient.id,
+          doctorId: savedDoctor.id,
+          items: data.items.map((i: any) => ({
+            ...i,
+            mrp: i.qty * i.rate
+          })),
+          total,
+          date: data.date ? new Date(data.date) : new Date()
+        };
+
+        await this.store.addBill(bill);
+      }
+
+      alert(`✅ ${billsArray.length} Bill(s) Imported Successfully`);
+
+      this.jsonInput = '';
+      this.showJsonBox = false;
+
+      await this.store.loadAll();
+
+    } catch (error) {
+      alert('❌ Invalid JSON Format');
+    }
+  }
+
+
 
 }

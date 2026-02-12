@@ -12,7 +12,7 @@ declare module 'jspdf' {
 export interface Patient { name: string; phone?: string; address?: string; }
 export interface Doctor { name: string; phone?: string; address?: string; }
 export interface Item { name: string; batch?: string; qty?: number; rate?: number; expiry?: string; mrp?: number; }
-export interface BillData { patient: Patient; doctor: Doctor; items: Item[]; invoiceNo?: string; dueDate?: string; total: number; taxRate?: number; }
+export interface BillData { patient: Patient; doctor: Doctor; items: Item[]; invoiceNo?: string; dueDate?: string; total: number; taxRate?: number; date?: any; }
 
 const termsText = ['Terms & Conditions:', '• GST not applicable.'];
 
@@ -26,22 +26,20 @@ export class PdfService {
       format: 'a5'
     });
 
-    // 1. Setup NotoSans - CRITICAL: Register for both normal and bold
     (doc as any).addFileToVFS("NotoSans-Regular.ttf", FONT);
     (doc as any).addFont("NotoSans-Regular.ttf", "NotoSans", "normal");
     (doc as any).addFont("NotoSans-Regular.ttf", "NotoSans", "bold");
 
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 10;
-    const colWidth = 55; 
-    const doctorStartX = pageWidth - margin - colWidth; 
+    const colWidth = 55;
+    const doctorStartX = pageWidth - margin - colWidth;
 
-    // Header Details
     doc.setFont('NotoSans', 'bold');
     doc.setFontSize(14);
     doc.text('AKASH PHARMA', pageWidth / 2, 12, { align: 'center' });
-    
-    doc.setFontSize(6);
+
+    doc.setFontSize(8);
     doc.setFont('NotoSans', 'normal');
     let headerY = 16;
     doc.text('Licence No: KA-BE2-274111', pageWidth / 2, headerY, { align: 'center' });
@@ -50,21 +48,26 @@ export class PdfService {
     headerY += 3;
     doc.text('Phone: +91 9876543210 | Email: contact@akashpharma.com', pageWidth / 2, headerY, { align: 'center' });
 
-    // 2. Invoice/Date (Placed above details)
     let infoRowY = headerY + 6;
     doc.setFont('NotoSans', 'bold');
-    doc.setFontSize(6);
+    doc.setFontSize(8);
     doc.text(`Invoice #: ${data.invoiceNo || 'N/A'}`, margin, infoRowY);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, pageWidth - margin, infoRowY, { align: 'right' });
+    const billDate = data.date ? new Date(data.date) : new Date();
 
-    // 3. Section Titles
+    doc.text(
+      `Date: ${billDate.toLocaleDateString()}`,
+      pageWidth - margin,
+      infoRowY,
+      { align: 'right' }
+    );
+
+
     let sectionTitleY = infoRowY + 5;
     doc.text('PATIENT INFORMATION', margin, sectionTitleY);
     doc.text("PRESCRIBING PHYSICIAN'S INFORMATION", doctorStartX, sectionTitleY);
 
-    // 4. Info Blocks
     doc.setFont('NotoSans', 'normal');
-    doc.setFontSize(5);
+    doc.setFontSize(8);
     const drawBlock = (name: string, phone: string, addr: string, x: number) => {
       let currentY = sectionTitleY + 4;
       const nameLines = doc.splitTextToSize(`Name: ${name}`, colWidth);
@@ -82,7 +85,6 @@ export class PdfService {
     const pFinalY = drawBlock(data.patient.name, data.patient.phone || 'N/A', data.patient.address || 'N/A', margin);
     const dFinalY = drawBlock(data.doctor.name, data.doctor.phone || 'N/A', data.doctor.address || 'N/A', doctorStartX);
 
-    // 5. Table Preparation
     const tableStartY = Math.max(pFinalY, dFinalY) + 3;
     const itemRows: any[] = data.items.map((i, index) => [
       index + 1,
@@ -96,7 +98,6 @@ export class PdfService {
 
     const grandTotal = data.total + (data.total * ((data.taxRate || 0) / 100));
 
-    // Summary Row
     itemRows.push([
       {
         content: termsText.join('\n'),
@@ -113,7 +114,6 @@ export class PdfService {
       }
     ]);
 
-    // 6. Render Table
     autoTable(doc, {
       startY: tableStartY,
       head: [['S.No', 'Description', 'Batch', 'Rate', 'Qty', 'Expiry', 'Total']],
@@ -121,21 +121,20 @@ export class PdfService {
       theme: 'grid',
       styles: { font: 'NotoSans', fontSize: 5, textColor: [0, 0, 0], lineWidth: 0.1 },
       headStyles: { fillColor: [255, 255, 255], fontStyle: 'bold' },
-      
-      // THE FIX: Explicitly forcing bold on the last row during cell parsing
+
       didParseCell: (cellData) => {
         const isLastRow = cellData.row.index === itemRows.length - 1;
         if (isLastRow) {
           cellData.cell.styles.fontStyle = 'bold';
           cellData.cell.styles.font = 'NotoSans';
-          // Optional: Add a subtle background color to the total row to make it pop
+
           cellData.cell.styles.fillColor = [255, 255, 255];
         }
       },
       margin: { left: margin, right: margin }
     });
 
-    // 7. Output
+
     const blob = doc.output('blob');
     const url = URL.createObjectURL(blob);
     const printWindow = window.open(url, '_blank');

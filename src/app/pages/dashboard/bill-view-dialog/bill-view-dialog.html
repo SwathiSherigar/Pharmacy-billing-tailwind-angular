@@ -59,8 +59,11 @@
 
     <div class="mt-8 flex justify-end gap-2 no-print">
         <button mat-button mat-dialog-close (click)="close()">Close</button>
-        <!-- <button mat-raised-button color="primary" onclick="window.print()">
-            Print PDF
-        </button> -->
+        <button mat-raised-button color="primary" (click)="printBill()">
+            Print
+        </button>
+        <button mat-raised-button color="accent" (click)="editBill()">
+            Edit
+        </button>
     </div>
 </div>

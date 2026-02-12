@@ -4,8 +4,8 @@ import { IndexedDbService } from './indexed-db';
 @Injectable({ providedIn: 'root' })
 export class DataStoreService {
   patients = signal<any[]>([]);
-  doctors  = signal<any[]>([]);
-  bills    = signal<any[]>([]);
+  doctors = signal<any[]>([]);
+  bills = signal<any[]>([]);
 
   constructor(private db: IndexedDbService) {
     this.loadAll();
@@ -35,54 +35,65 @@ export class DataStoreService {
     const id = await this.db.add('bills', bill);
     this.bills.update(b => [...b, { ...bill, id }]);
   }
+  async updateBill(bill: any) {
+    if (!bill.id) {
+      throw new Error('Bill ID is required for update');
+    }
 
-enrichedBills = computed(() => {
-  const patientMap = new Map(
-    this.patients().map(p => [p.id, p])
-  );
-  const doctorMap = new Map(
-    this.doctors().map(d => [d.id, d])
-  );
+    await this.db.update('bills', bill);
 
-  return this.bills()
-    .map(b => {
-      const patient = patientMap.get(b.patientId);
-      const doctor = doctorMap.get(b.doctorId);
-
-      if (!patient || !doctor) return null;
-
-      return {
-        ...b,
-        patient,
-        doctor
-      };
-    })
-    .filter(Boolean)
-    .sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    this.bills.update(b =>
+      b.map(x => x.id === bill.id ? bill : x)
     );
-});
+  }
+
+  enrichedBills = computed(() => {
+    const patientMap = new Map(
+      this.patients().map(p => [p.id, p])
+    );
+    const doctorMap = new Map(
+      this.doctors().map(d => [d.id, d])
+    );
+
+    return this.bills()
+      .map(b => {
+        const patient = patientMap.get(b.patientId);
+        const doctor = doctorMap.get(b.doctorId);
+
+        if (!patient || !doctor) return null;
+
+        return {
+          ...b,
+          patient,
+          doctor
+        };
+      })
+      .filter(Boolean)
+      .sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+  });
 
 
-async saveOrGetPatient(patient: any) {
-  const saved = await this.db.saveIfNotExists('patients', patient, 'name');
+  async saveOrGetPatient(patient: any) {
+    const saved = await this.db.saveIfNotExists('patients', patient, 'name');
 
-  this.patients.update(p =>
-    p.some(x => x.id === saved.id) ? p : [...p, saved]
-  );
+    this.patients.update(p =>
+      p.some(x => x.id === saved.id) ? p : [...p, saved]
+    );
 
-  return saved;
-}
+    return saved;
+  }
 
-async saveOrGetDoctor(doctor: any) {
-  const saved = await this.db.saveIfNotExists('doctors', doctor, 'name');
+  async saveOrGetDoctor(doctor: any) {
+    const saved = await this.db.saveIfNotExists('doctors', doctor, 'name');
 
-  this.doctors.update(d =>
-    d.some(x => x.id === saved.id) ? d : [...d, saved]
-  );
+    this.doctors.update(d =>
+      d.some(x => x.id === saved.id) ? d : [...d, saved]
+    );
 
-  return saved;
-}
+    return saved;
+  }
 
 
 }

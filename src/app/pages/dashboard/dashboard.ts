@@ -58,25 +58,34 @@ export class Dashboard implements AfterViewInit {
     return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
   }
 
-  viewBill(data:any){
-    console.log(data)
-       const dialogRef = this.dialog.open(BillViewDialog, {
-         data: { ...data, type: 'patient' },
-         width: '500px',
-         maxHeight: '70vh',
-         autoFocus: false,
-         panelClass: 'dialog-wrapper',
-       });
-   
-       dialogRef.afterClosed().subscribe(async updated => {
-         if (updated) {
-           await this.store.updatePatient(updated);
-   
-         }
-       });
+  viewBill(data: any) {
+    const dialogRef = this.dialog.open(BillViewDialog, {
+      data: { ...data, type: 'patient' },
+      width: '500px',
+      maxHeight: '70vh',
+      autoFocus: false,
+      panelClass: 'dialog-wrapper',
+    });
+
+    dialogRef.afterClosed().subscribe(async updated => {
+      if (updated) {
+
+        if (updated?.action === 'edit') {
+          this.editBill(updated.bill);
+        }
+      }
+    });
   }
 
 
-  
+  editBill(bill: any) {
+    this.router.navigate(['/billing'], {
+      state: {
+        mode: 'edit',
+        bill
+      }
+    });
+  }
+
 
 }
