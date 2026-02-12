@@ -39,7 +39,7 @@ export class PdfService {
     doc.setFontSize(14);
     doc.text('AKASH PHARMA', pageWidth / 2, 12, { align: 'center' });
 
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.setFont('NotoSans', 'normal');
     let headerY = 16;
     doc.text('Licence No: KA-BE2-274111', pageWidth / 2, headerY, { align: 'center' });
@@ -50,7 +50,7 @@ export class PdfService {
 
     let infoRowY = headerY + 6;
     doc.setFont('NotoSans', 'bold');
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     doc.text(`Invoice #: ${data.invoiceNo || 'N/A'}`, margin, infoRowY);
     const billDate = data.date ? new Date(data.date) : new Date();
 
@@ -67,18 +67,21 @@ export class PdfService {
     doc.text("PRESCRIBING PHYSICIAN'S INFORMATION", doctorStartX, sectionTitleY);
 
     doc.setFont('NotoSans', 'normal');
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     const drawBlock = (name: string, phone: string, addr: string, x: number) => {
       let currentY = sectionTitleY + 4;
       const nameLines = doc.splitTextToSize(`Name: ${name}`, colWidth);
       const phoneLines = doc.splitTextToSize(`Phone: ${phone}`, colWidth);
       const addrLines = doc.splitTextToSize(`Address: ${addr}`, colWidth);
       doc.text(nameLines, x, currentY);
-      currentY += nameLines.length * 2.5;
+      currentY += nameLines.length * 3;
+      currentY += 1; 
       doc.text(phoneLines, x, currentY);
-      currentY += phoneLines.length * 2.5;
+      currentY += phoneLines.length * 3;
+      currentY += 1; 
       doc.text(addrLines, x, currentY);
-      currentY += addrLines.length * 2.5;
+      currentY += addrLines.length * 3;
+      currentY += 1; 
       return currentY;
     };
 
@@ -119,7 +122,7 @@ export class PdfService {
       head: [['S.No', 'Description', 'Batch', 'Rate', 'Qty', 'Expiry', 'Total']],
       body: itemRows,
       theme: 'grid',
-      styles: { font: 'NotoSans', fontSize: 5, textColor: [0, 0, 0], lineWidth: 0.1 },
+      styles: { font: 'NotoSans', fontSize: 7, textColor: [0, 0, 0], lineWidth: 0.1 },
       headStyles: { fillColor: [255, 255, 255], fontStyle: 'bold' },
 
       didParseCell: (cellData) => {
