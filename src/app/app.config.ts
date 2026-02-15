@@ -1,14 +1,20 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, isDevMode } from '@angular/core';
 import { provideRouter, withHashLocation, withPreloading, PreloadAllModules } from '@angular/router';
 import { routes } from './app.routes';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(
       routes,
-      withHashLocation(),                 // ✅ MUST be inside provideRouter
-      withPreloading(PreloadAllModules)   // ✅ fixes multi-click lazy loading
+      withHashLocation(),
+      withPreloading(PreloadAllModules)
     ),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+
   ]
 };
