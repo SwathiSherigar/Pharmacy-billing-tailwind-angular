@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FONT } from '../constants/font';
+import { PdfSettingsService } from './pdf-settings/pdf-settings';
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -19,7 +20,11 @@ const termsText = ['Terms & Conditions:', '• GST not applicable.'];
 @Injectable({ providedIn: 'root' })
 export class PdfService {
 
+  constructor(private pdfSettings: PdfSettingsService) { }
+
+
   generateBill(data: BillData) {
+    const settings = this.pdfSettings.getSettings();
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -36,21 +41,21 @@ export class PdfService {
     const doctorStartX = pageWidth - margin - colWidth;
 
     doc.setFont('NotoSans', 'bold');
-    doc.setFontSize(14);
+    doc.setFontSize(settings.headingSize);
     doc.text('AKASH PHARMA', pageWidth / 2, 12, { align: 'center' });
 
-    doc.setFontSize(7);
+    doc.setFontSize(settings.normalTextSize);
     doc.setFont('NotoSans', 'normal');
-    let headerY = 16;
+    let headerY = 18;
     doc.text('Licence No: KA-BE2-274111', pageWidth / 2, headerY, { align: 'center' });
-    headerY += 3;
+    headerY += 5;
     doc.text('1/326 MAIN ROAD HURULIHAL, KUDLIGI, Hurlihalu, Karnataka 583126', pageWidth / 2, headerY, { align: 'center' });
-    headerY += 3;
+    headerY += 5;
     doc.text('Phone: +91 9876543210 | Email: contact@akashpharma.com', pageWidth / 2, headerY, { align: 'center' });
 
-    let infoRowY = headerY + 6;
+    let infoRowY = headerY + 7;
     doc.setFont('NotoSans', 'bold');
-    doc.setFontSize(7);
+    doc.setFontSize(settings.normalTextSize);
     doc.text(`Invoice #: ${data.invoiceNo || 'N/A'}`, margin, infoRowY);
     const billDate = data.date ? new Date(data.date) : new Date();
 
@@ -62,12 +67,12 @@ export class PdfService {
     );
 
 
-    let sectionTitleY = infoRowY + 5;
-    doc.text('PATIENT INFORMATION', margin, sectionTitleY);
-    doc.text("PRESCRIBING PHYSICIAN'S INFORMATION", doctorStartX, sectionTitleY);
+    let sectionTitleY = infoRowY + 10;
+    doc.text('Patient Information', margin, sectionTitleY);
+    doc.text("Prescribing Physician's Information", doctorStartX, sectionTitleY);
 
     doc.setFont('NotoSans', 'normal');
-    doc.setFontSize(7);
+    doc.setFontSize(settings.normalTextSize);
     const drawBlock = (name: string, phone: string, addr: string, x: number) => {
       let currentY = sectionTitleY + 4;
       const nameLines = doc.splitTextToSize(`Name: ${name}`, colWidth);
@@ -75,13 +80,13 @@ export class PdfService {
       const addrLines = doc.splitTextToSize(`Address: ${addr}`, colWidth);
       doc.text(nameLines, x, currentY);
       currentY += nameLines.length * 3;
-      currentY += 1; 
+      currentY += 1;
       doc.text(phoneLines, x, currentY);
       currentY += phoneLines.length * 3;
-      currentY += 1; 
+      currentY += 1;
       doc.text(addrLines, x, currentY);
       currentY += addrLines.length * 3;
-      currentY += 1; 
+      currentY += 1;
       return currentY;
     };
 
@@ -122,7 +127,7 @@ export class PdfService {
       head: [['S.No', 'Description', 'Batch', 'Rate', 'Qty', 'Expiry', 'Total']],
       body: itemRows,
       theme: 'grid',
-      styles: { font: 'NotoSans', fontSize: 7, textColor: [0, 0, 0], lineWidth: 0.1 },
+      styles: { font: 'NotoSans', fontSize: settings.tableSize, textColor: [0, 0, 0], lineWidth: 0.1 },
       headStyles: { fillColor: [255, 255, 255], fontStyle: 'bold' },
 
       didParseCell: (cellData) => {

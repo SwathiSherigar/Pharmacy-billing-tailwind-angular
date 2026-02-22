@@ -14,6 +14,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { DataStoreService } from '../../core/services/data-store';
 import { BillViewDialog } from './bill-view-dialog/bill-view-dialog';
 import { MatDialog } from '@angular/material/dialog';
+import { SettingsDialog } from './settings-dialog/settings-dialog';
 
 @Component({
   selector: 'app-dashboard',
@@ -87,5 +88,11 @@ export class Dashboard implements AfterViewInit {
     });
   }
 
+
+  openSettings() {
+  this.dialog.open(SettingsDialog, {
+    width: '400px'
+  });
+}
 
 }
