@@ -26,7 +26,7 @@ export class PdfService {
   generateBill(data: BillData) {
     const settings = this.pdfSettings.getSettings();
     const doc = new jsPDF({
-      orientation: 'portrait',
+      orientation: 'landscape',
       unit: 'mm',
       format: 'a5'
     });
@@ -59,8 +59,21 @@ export class PdfService {
     doc.text(`Invoice #: ${data.invoiceNo || 'N/A'}`, margin, infoRowY);
     const billDate = data.date ? new Date(data.date) : new Date();
 
+    // doc.text(
+    //   `Date: ${billDate.toLocaleDateString()}`,
+    //   pageWidth - margin,
+    //   infoRowY,
+    //   { align: 'right' }
+    // );
+
+    const pad = (n: number) => n.toString().padStart(2, '0');
+
+    const formatted =
+      `${pad(billDate.getDate())}/${pad(billDate.getMonth() + 1)}/${billDate.getFullYear()} ` +
+      `${pad(billDate.getHours())}:${pad(billDate.getMinutes())}:${pad(billDate.getSeconds())}`;
+
     doc.text(
-      `Date: ${billDate.toLocaleDateString()}`,
+      `Date & Time: ${formatted}`,
       pageWidth - margin,
       infoRowY,
       { align: 'right' }
