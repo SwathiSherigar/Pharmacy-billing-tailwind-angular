@@ -33,6 +33,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/Pharmacy-billing-tailwind-angular/",
               "budgets": [
                 {
                   "type": "initial",
