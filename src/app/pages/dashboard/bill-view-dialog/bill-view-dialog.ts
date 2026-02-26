@@ -11,9 +11,14 @@ import { PdfService } from '../../../core/services/pdf.services';
 export class BillViewDialog {
 constructor(@Inject(MAT_DIALOG_DATA) public data: any, private pdf: PdfService,  private dialogRef: MatDialogRef<BillViewDialog>) {}
 
-  formatDate(date: any) {
-    return new Date(date).toLocaleDateString('en-IN');
-  }
+  formatDate(date: string | Date): string {
+  const billDate = new Date(date);
+
+  const pad = (n: number) => n.toString().padStart(2, '0');
+
+  return `${pad(billDate.getDate())}/${pad(billDate.getMonth() + 1)}/${billDate.getFullYear()} ` +
+         `${pad(billDate.getHours())}:${pad(billDate.getMinutes())}:${pad(billDate.getSeconds())}`;
+}
 
   close(){
     this.dialogRef.close()
