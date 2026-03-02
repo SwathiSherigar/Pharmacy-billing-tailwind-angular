@@ -6,22 +6,40 @@ import { openDB } from 'idb';
 })
 export class IndexedDbService {
 
-  private dbPromise = openDB('pharmacy-db', 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains('patients')) {
-        db.createObjectStore('patients', { keyPath: 'id', autoIncrement: true });
-      }
-      if (!db.objectStoreNames.contains('doctors')) {
-        db.createObjectStore('doctors', { keyPath: 'id', autoIncrement: true });
-      }
-      if (!db.objectStoreNames.contains('products')) {
-        db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
-      }
-      if (!db.objectStoreNames.contains('bills')) {
-        db.createObjectStore('bills', { keyPath: 'id', autoIncrement: true });
-      }
+private dbPromise = openDB('pharmacy-db', 2, {
+  upgrade(db, oldVersion) {
+
+
+    if (!db.objectStoreNames.contains('patients')) {
+      db.createObjectStore('patients', { keyPath: 'id', autoIncrement: true });
     }
-  });
+
+    if (!db.objectStoreNames.contains('doctors')) {
+      db.createObjectStore('doctors', { keyPath: 'id', autoIncrement: true });
+    }
+
+    if (!db.objectStoreNames.contains('products')) {
+      db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+    }
+
+    if (!db.objectStoreNames.contains('bills')) {
+      db.createObjectStore('bills', { keyPath: 'id', autoIncrement: true });
+    }
+
+    //  STORE – batches
+    if (!db.objectStoreNames.contains('productBatches')) {
+      db.createObjectStore('productBatches', { keyPath: 'id', autoIncrement: true });
+    }
+
+    //  STORE – purchase invoices
+    if (!db.objectStoreNames.contains('purchaseInvoices')) {
+      db.createObjectStore('purchaseInvoices', { keyPath: 'id', autoIncrement: true });
+    }
+
+  }
+});
+
+  
 
   async getAll(store: string) {
     const db = await this.dbPromise;

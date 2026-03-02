@@ -95,5 +95,124 @@ export class DataStoreService {
     return saved;
   }
 
+  async getAllBatches() {
+    return await this.db.getAll('productBatches');
+  }
+
+  async getAllProducts() {
+    return await this.db.getAll('products');
+  }
+  async importPurchaseCsv(text: string) {
+
+    const lines = text.split('\n');
+
+    let supplier = '';
+    let invoiceNo = '';
+    let invoiceDate = '';
+    let totalAmount = 0;
+
+    // Extract header
+    for (const line of lines) {
+      const cols = line.split(',');
+
+      if (cols[0] === 'H' && cols[1]?.trim() === 'Supplier') {
+        supplier = cols[2]?.trim();
+      }
+
+      if (cols[0] === 'H' && cols[1]?.trim() === 'Inv.No.') {
+        invoiceNo = cols[2]?.trim();
+      }
+
+      if (cols[0] === 'H' && cols[1]?.trim() === 'Inv. Date') {
+        invoiceDate = this.convertDDMMYYYYToISO(cols[2]?.trim());
+      }
+      if (cols[0] === 'F') {
+        totalAmount = parseFloat(cols[2]);
+      }
+    }
+
+    // Duplicate check
+    const existing = await this.db.findByKey(
+      'purchaseInvoices',
+      'invoiceNo',
+      invoiceNo
+    );
+
+    if (existing) {
+      throw new Error('Invoice already imported');
+    }
+
+    // Save invoice
+    const invoiceId = await this.db.add('purchaseInvoices', {
+      supplier,
+      invoiceNo,
+      invoiceDate,
+      totalAmount
+    });
+
+    // Process D rows
+    for (const line of lines) {
+
+      const cols = line.split(',');
+      if (cols[0] !== 'D') continue;
+
+      const code = cols[1]?.trim();
+      const name = cols[2]?.trim();
+      const packing = cols[3]?.trim();
+      const quantity = parseInt(cols[4]);
+      const free = parseInt(cols[5]);
+      const sellingRate = parseFloat(cols[6]);
+      const mrp = parseFloat(cols[7]);
+      const batch = cols[8]?.trim();
+      const expiry = this.convertMMYYYYToISO(cols[9]?.trim());
+      const hsn = cols[17]?.trim();
+
+      const product = await this.db.saveIfNotExists(
+        'products',
+        { code, name, packing, hsn },
+        'code'
+      );
+
+      await this.db.add('productBatches', {
+        productId: product.id,
+        batch,
+        expiry,
+        qty: quantity,
+        freeQty: free,
+        rate: sellingRate,
+        mrp,
+        invoiceId
+      });
+    }
+
+    return true;
+  }
+
+
+  private convertDDMMYYYYToISO(dateStr: string): string {
+    if (!dateStr) return '';
+
+    const [day, month, year] = dateStr.split('/');
+    const date = new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day)
+    );
+
+    return date.toISOString();
+  }
+
+  private convertMMYYYYToISO(dateStr: string): string {
+    if (!dateStr) return '';
+
+    const [month, year] = dateStr.split('/');
+    const date = new Date(
+      Number(year),
+      Number(month) - 1,
+      1
+    );
+
+    return date.toISOString();
+  }
 
 }

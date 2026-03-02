@@ -2,12 +2,12 @@ import { Routes } from '@angular/router';
 import { routes as routeConstants } from './core/constants/routes';
 import { Layout } from './shared/components/layout/layout';
 
-const { DASHBOARD, BILLING_PAGE, DOCTOR_LISTING,PATIENTS_LISTING } = routeConstants;
+const { DASHBOARD, BILLING_PAGE, DOCTOR_LISTING,PATIENTS_LISTING, ITEM_LISTING } = routeConstants;
 
 export const routes: Routes = [
   {
     path: '',
-    component: Layout, // 👈 layout wrapper
+    component: Layout,
     children: [
       { path: '', redirectTo: DASHBOARD, pathMatch: 'full' },
       {
@@ -27,6 +27,10 @@ export const routes: Routes = [
        {
         path: DOCTOR_LISTING,
         loadComponent:() => import('./pages/doctors-listing/doctors-listing').then(m=>m.DoctorsListing),
+      },
+       {
+        path: ITEM_LISTING,
+        loadComponent:() => import('./pages/item-listing/item-listing').then(m=>m.ItemListing),
       }
     ],
   },

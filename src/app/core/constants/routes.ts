@@ -2,12 +2,14 @@ export const routes = {
     DASHBOARD: 'dashboard',
     BILLING_PAGE: 'billing',
     PATIENTS_LISTING: 'patient-listing',
-    DOCTOR_LISTING: 'doctor-listing'
+    DOCTOR_LISTING: 'doctor-listing',
+    ITEM_LISTING:'items'
 }
 
 export const routesName = {
     DASHBOARD: 'dashboard',
     BILLING_PAGE: 'billing',
     PATIENTS_LISTING: 'patient-listing',
-    DOCTOR_LISTING: 'doctor-listing'
+    DOCTOR_LISTING: 'doctor-listing',
+    ITEM_LISTING:'items'
 }       

@@ -53,6 +53,12 @@ export class SidebarComponent {
         featureName: 'Doctor',
         featureIcon: 'person',
         featureRoute: '/doctor-listing'
+      },
+       {
+        featureCode: 'PRODUCT_LISTING',
+        featureName: 'Products',
+        featureIcon: 'person',
+        featureRoute: '/items'
       }
     ];
 
