@@ -1,45 +1,142 @@
-<div class="p-4 !pt-0 flex flex-col gap-4 h-full" style="height: calc(100vh - 54px);">
+<div class="p-4 !pt-0 flex flex-col gap-3 h-full" style="height: calc(100vh - 54px);">
 
-  <div class="flex justify-end items-center pt-2 gap-2">
-  <!-- <button mat-icon-button (click)="openSettings()">
-    <mat-icon  class="material-symbols-outlined">settings</mat-icon>
-  </button> -->
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+          <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-[#1C2B70]">receipt_long</mat-icon>
+        </div>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Bills</span>
+      </div>
+      <span class="text-xl font-extrabold text-[#1C2B70]">{{ totalBills }}</span>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+          <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-emerald-600">currency_rupee</mat-icon>
+        </div>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Revenue</span>
+      </div>
+      <span class="text-xl font-extrabold text-emerald-600">₹{{ totalRevenue.toFixed(2) }}</span>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center">
+          <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-violet-600">group</mat-icon>
+        </div>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Patients</span>
+      </div>
+      <span class="text-xl font-extrabold text-violet-600">{{ uniquePatients }}</span>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+          <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-amber-600">today</mat-icon>
+        </div>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Today's Bills</span>
+      </div>
+      <span class="text-xl font-extrabold text-amber-600">{{ todayBills }}</span>
+    </div>
+  </div>
 
-    <button 
-      mat-raised-button 
-      color="primary" 
-      (click)="goToBilling()">
-      + Add Bill
+  <!-- Toolbar: Search + Add -->
+  <div class="flex items-center justify-between gap-3">
+    <div class="relative flex-1 max-w-md">
+      <mat-icon class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] !w-[18px] !h-[18px] text-slate-400 pointer-events-none z-10">search</mat-icon>
+      <input type="text"
+        class="w-full h-9 pl-9 pr-8 rounded-lg border border-slate-300 bg-white text-sm text-slate-700
+               placeholder:text-slate-400 outline-none
+               focus:border-[#1C2B70] focus:ring-2 focus:ring-[#1C2B70]/10 transition-all"
+        placeholder="Search by patient, doctor, invoice..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="applyFilter()">
+      @if (searchTerm) {
+      <button class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+        (click)="clearSearch()">
+        <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4">close</mat-icon>
+      </button>
+      }
+    </div>
+    <button mat-flat-button (click)="goToBilling()"
+      class="!bg-[#1C2B70] !text-white !rounded-lg !font-semibold !h-9 !text-sm">
+      <mat-icon class="material-symbols-outlined !text-[18px]">add</mat-icon>
+      New Bill
     </button>
   </div>
 
-  <div class="flex flex-col bg-white rounded shadow-md flex-1 overflow-hidden">
+  <!-- Table -->
+  <div class="flex flex-col bg-white rounded-xl shadow-sm border border-slate-200/80 flex-1 overflow-hidden">
     <div class="overflow-auto flex-1">
-      <table mat-table [dataSource]="dataSource" class="w-full mat-elevation-z2 rounded">
-        <ng-container matColumnDef="patient">
-          <th mat-header-cell *matHeaderCellDef> Patient </th>
-          <td mat-cell *matCellDef="let b"  class="text-primary font-medium" (click)="viewBill(b)"> {{ b.patient.name }} </td>
-        </ng-container>
-        <ng-container matColumnDef="doctor">
-          <th mat-header-cell *matHeaderCellDef> Doctor </th>
-          <td mat-cell *matCellDef="let b"> {{ b.doctor.name }} </td>
-        </ng-container>
-        <ng-container matColumnDef="total">
-          <th mat-header-cell *matHeaderCellDef> Total </th>
-          <td mat-cell *matCellDef="let b"> ₹{{ b.total }} </td>
-        </ng-container>
-        <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef> Date </th>
-          <td mat-cell *matCellDef="let b"> {{ formatDate(b.date) }} </td>
+      <table mat-table [dataSource]="dataSource" matSort class="w-full bill-table">
+
+        <ng-container matColumnDef="invoiceNo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Invoice # </th>
+          <td mat-cell *matCellDef="let b" class="!font-semibold !text-[#1C2B70]">
+            {{ b.invoiceNo || '-' }}
+          </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="!bg-gray-100 border-b !border-gray-300"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <ng-container matColumnDef="patient">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Patient </th>
+          <td mat-cell *matCellDef="let b">
+            <span class="font-semibold text-slate-800 cursor-pointer hover:text-[#1C2B70] transition-colors"
+              (click)="viewBill(b)">
+              {{ b.patient.name }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="doctor">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Doctor </th>
+          <td mat-cell *matCellDef="let b" class="!text-slate-600"> {{ b.doctor.name }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Amount </th>
+          <td mat-cell *matCellDef="let b" class="!font-semibold !text-slate-700">
+            ₹{{ b.total.toFixed(2) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+          <td mat-cell *matCellDef="let b" class="!text-slate-500">
+            {{ formatDate(b.date) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef class="!w-14"> </th>
+          <td mat-cell *matCellDef="let b" class="!px-0">
+            <button class="!w-8 !h-8" (click)="viewBill(b)">
+              <mat-icon class="material-symbols-outlined !text-[20px] text-slate-500 hover:text-[#1C2B70]">visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"
+          class="hover:!bg-slate-50/80 transition-colors"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center !py-8 !text-slate-400 !text-sm" [attr.colspan]="displayedColumns.length">
+            @if (searchTerm) {
+              No bills matching "{{ searchTerm }}"
+            } @else {
+              No bills yet. Create your first bill to get started.
+            }
+          </td>
+        </tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[10, 50, 100]" ></mat-paginator>
 
+    <div class="border-t border-slate-100 flex items-center justify-between px-4">
+      <span class="text-xs text-slate-400">
+        Showing {{ dataSource.filteredData.length }} of {{ totalBills }} entries
+      </span>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
   </div>
-
 
 </div>

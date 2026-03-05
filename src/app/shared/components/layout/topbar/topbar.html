@@ -1,29 +1,20 @@
-<mat-toolbar
-  class="!bg-white px-4 py-2 flex justify-between items-center topbar">
-  
+<mat-toolbar class="!bg-white !px-4 !py-0 flex justify-between items-center topbar !border-b !border-slate-200 !shadow-sm">
 
-  <div class="flex items-center space-x-6">
-    @if(isCollapsed){
-<img src="assets/images/logo.png" width="38" height="38" alt="logo" />
-
-
-
-    }
-    @if (!isCollapsed) {
-    <span class="font-semibold  text-xl select-none text-primary">
-       Akash Pharma
+  <div class="flex items-center gap-3">
+    @if (isCollapsed) {
+    <img src="assets/images/logo.png" width="34" height="34" alt="logo" class="rounded-lg" />
+    } @else {
+    <span class="font-bold text-lg select-none text-[#1C2B70] tracking-tight">
+      Akash Pharma
     </span>
     }
 
-
-   <div [ngClass]="isCollapsed ? 'pl-2' : 'pl-10'" class="transition-all duration-300">
-      <button mat-icon-button aria-label="Toggle sidebar" (click)="toggle.emit()">
-        <mat-icon class="material-symbols-outlined">menu</mat-icon>
+    <div [ngClass]="isCollapsed ? 'pl-1' : 'pl-6'" class="transition-all duration-200">
+      <button mat-icon-button aria-label="Toggle sidebar" (click)="toggle.emit()"
+        class="!w-8 !h-8 !text-slate-500 hover:!text-[#1C2B70] hover:!bg-slate-100 !rounded-lg">
+        <mat-icon class="material-symbols-outlined !text-[25px] my-auto">menu</mat-icon>
       </button>
     </div>
-
-
   </div>
-  
 
 </mat-toolbar>

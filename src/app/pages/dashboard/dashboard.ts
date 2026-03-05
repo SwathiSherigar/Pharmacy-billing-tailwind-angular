@@ -6,11 +6,12 @@ import {
   effect
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { DataStoreService } from '../../core/services/data-store';
 import { BillViewDialog } from './bill-view-dialog/bill-view-dialog';
 import { MatDialog } from '@angular/material/dialog';
@@ -20,20 +21,25 @@ import { SettingsDialog } from './settings-dialog/settings-dialog';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
+    FormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSortModule
   ],
   templateUrl: './dashboard.html',
+  styleUrl: './dashboard.css',
 })
 export class Dashboard implements AfterViewInit {
 
-  displayedColumns = ['patient', 'doctor', 'total', 'date'];
+  displayedColumns = ['invoiceNo', 'patient', 'doctor', 'total', 'date', 'action'];
   dataSource = new MatTableDataSource<any>([]);
+  searchTerm = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   bills = computed(() => this.store.enrichedBills());
 
   constructor(
@@ -48,6 +54,50 @@ export class Dashboard implements AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+      switch (property) {
+        case 'patient': return item.patient?.name || '';
+        case 'doctor': return item.doctor?.name || '';
+        case 'date': return new Date(item.date).getTime();
+        default: return item[property];
+      }
+    };
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      const searchStr = `${data.invoiceNo} ${data.patient?.name} ${data.doctor?.name}`.toLowerCase();
+      return searchStr.includes(filter);
+    };
+  }
+
+  get totalBills(): number {
+    return this.bills().length;
+  }
+
+  get totalRevenue(): number {
+    return this.bills().reduce((sum: number, b: any) => sum + (b.total || 0), 0);
+  }
+
+  get uniquePatients(): number {
+    return new Set(this.bills().map((b: any) => b.patient?.name)).size;
+  }
+
+  get todayBills(): number {
+    const today = new Date();
+    return this.bills().filter((b: any) => {
+      const d = new Date(b.date);
+      return d.getDate() === today.getDate() &&
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear();
+    }).length;
+  }
+
+  applyFilter() {
+    this.dataSource.filter = this.searchTerm.trim().toLowerCase();
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+    this.applyFilter();
   }
 
   goToBilling() {
@@ -56,7 +106,8 @@ export class Dashboard implements AfterViewInit {
 
   formatDate(date: any) {
     const d = new Date(date);
-    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
   }
 
   viewBill(data: any) {
@@ -69,30 +120,19 @@ export class Dashboard implements AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(async updated => {
-      if (updated) {
-
-        if (updated?.action === 'edit') {
-          this.editBill(updated.bill);
-        }
+      if (updated?.action === 'edit') {
+        this.editBill(updated.bill);
       }
     });
   }
-
 
   editBill(bill: any) {
     this.router.navigate(['/billing'], {
-      state: {
-        mode: 'edit',
-        bill
-      }
+      state: { mode: 'edit', bill }
     });
   }
 
-
   openSettings() {
-  this.dialog.open(SettingsDialog, {
-    width: '400px'
-  });
-}
-
+    this.dialog.open(SettingsDialog, { width: '400px' });
+  }
 }

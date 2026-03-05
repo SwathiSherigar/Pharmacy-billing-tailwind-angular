@@ -45,7 +45,6 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
     MatNativeDateModule,
     MatAutocompleteModule,
     MatOptionModule,
-    Topbar
   ],
   providers: [
     { provide: DateAdapter, useClass: CustomMonthYearAdapter },

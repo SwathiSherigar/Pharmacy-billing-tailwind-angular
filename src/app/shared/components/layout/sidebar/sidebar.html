@@ -1,29 +1,42 @@
-<nav class="sidebar-menu" [class.collapsed]="collapsed">
-  @for (item of featureList; track item.featureCode) {
+<nav class="sidebar-nav" [class.collapsed]="collapsed">
 
-  <!-- MAIN ITEM -->
-  <div class="menu-item" [class.collapsed-item]="collapsed" [routerLink]="item?.featureRoute ?? null"
-    routerLinkActive="active">
-    <span class="icon-wrapper">
-      <mat-icon class="material-symbols-outlined">{{ item.featureIcon }}</mat-icon>
-    </span>
-
-    @if (!collapsed) {
-    <span class="feature-name">
-      {{ item.featureName }}
-    </span>
-    }
-  </div>
-
-  <!-- SUB MENU -->
-  @if (item?.subFeatureList && !collapsed) {
-  <div class="submenu">
-    @for (sub of item?.subFeatureList; track sub.featureCode) {
-    <a class="submenu-item" [routerLink]="sub.featureRoute" routerLinkActive="active">
-      {{ sub.featureName }}
+  <!-- Menu Items -->
+  <div class="menu-list">
+    @for (item of featureList; track item.featureCode) {
+    <a class="menu-item" [class.collapsed-item]="collapsed"
+      [routerLink]="item.featureRoute"
+      routerLinkActive="active"
+      [matTooltip]="collapsed ? item.featureName : ''"
+      matTooltipPosition="right">
+      <span class="icon-box">
+        <mat-icon class="material-symbols-outlined">{{ item.featureIcon }}</mat-icon>
+      </span>
+      @if (!collapsed) {
+      <span class="item-label">{{ item.featureName }}</span>
+      }
     </a>
+
+    @if (item.subFeatureList && !collapsed) {
+    <div class="submenu">
+      @for (sub of item.subFeatureList; track sub.featureCode) {
+      <a class="submenu-item" [routerLink]="sub.featureRoute" routerLinkActive="active">
+        {{ sub.featureName }}
+      </a>
+      }
+    </div>
+    }
     }
   </div>
-  }
-  }
+
+  <!-- Bottom section -->
+  <div class="sidebar-footer">
+    <div class="menu-item footer-item" [class.collapsed-item]="collapsed">
+      <span class="icon-box">
+        <mat-icon class="material-symbols-outlined">settings</mat-icon>
+      </span>
+      @if (!collapsed) {
+      <span class="item-label">Settings</span>
+      }
+    </div>
+  </div>
 </nav>

@@ -1,0 +1,30 @@
+:host ::ng-deep .patient-table .mat-mdc-header-row {
+  height: 40px;
+  background: #1C2B70 !important;
+}
+
+:host ::ng-deep .patient-table .mat-mdc-header-cell {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 14px !important;
+}
+
+:host ::ng-deep .patient-table .mat-mdc-row {
+  height: 44px;
+  transition: background-color 0.12s ease;
+}
+
+:host ::ng-deep .patient-table .mat-mdc-cell {
+  font-size: 13px;
+  padding: 0 14px !important;
+  border-bottom: 1px solid #f1f3f8 !important;
+}
+
+:host ::ng-deep .mat-sort-header-arrow {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
