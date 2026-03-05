@@ -160,8 +160,8 @@ export class PdfService {
         cellPadding: { top: 1.8, right: 2, bottom: 1.8, left: 2 }
       },
       headStyles: {
-        fillColor: [28, 43, 112],
-        textColor: [255, 255, 255],
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
         fontStyle: 'bold',
         fontSize: 7.5,
         cellPadding: { top: 2.2, right: 2, bottom: 2.2, left: 2 }
@@ -169,16 +169,16 @@ export class PdfService {
       bodyStyles: {
         fillColor: [255, 255, 255]
       },
-      alternateRowStyles: {
-        fillColor: [250, 250, 255]
-      },
+      // alternateRowStyles: {
+      //   fillColor: [250, 250, 255]
+      // },
       columnStyles: {
         0: { halign: 'center', cellWidth: 8 },
         1: { cellWidth: 'auto' },
-        3: { halign: 'right', cellWidth: 20 },
+        3: { halign: 'left', cellWidth: 20 },
         4: { halign: 'center', cellWidth: 13 },
         5: { cellWidth: 20 },
-        6: { halign: 'right', cellWidth: 24 }
+        6: { halign: 'left', cellWidth: 24 }
       },
       margin: { left: margin, right: margin },
       tableWidth: contentWidth

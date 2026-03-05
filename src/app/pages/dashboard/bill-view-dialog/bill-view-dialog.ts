@@ -1,10 +1,11 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { PdfService } from '../../../core/services/pdf.services';
 
 @Component({
   selector: 'app-bill-view-dialog',
-  imports: [],
+  imports: [MatButtonModule, MatDialogModule],
   templateUrl: './bill-view-dialog.html',
   styleUrl: './bill-view-dialog.css',
 })

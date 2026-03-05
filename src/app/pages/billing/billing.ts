@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,6 +16,8 @@ import { Topbar } from "../../shared/components/layout/topbar/topbar";
 import { CustomMonthYearAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
 import { DataStoreService } from '../../core/services/data-store';
 import { IndexedDbService } from '../../core/services/indexed-db';
+import { MatDialog } from '@angular/material/dialog';
+import { BatchAllocationDialog, BatchAllocationData, BatchAllocationResult } from './batch-allocation-dialog/batch-allocation-dialog';
 const CUSTOM_DATE_FORMATS: MatDateFormats = {
   parse: { dateInput: 'MM/YYYY' },
   display: {
@@ -73,7 +75,9 @@ export class BillingComponent {
   constructor(
     private db: IndexedDbService,
     private pdf: PdfService,
-    private store: DataStoreService
+    private store: DataStoreService,
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {
     this.loadData();
   }
@@ -205,44 +209,64 @@ export class BillingComponent {
 
   onQtyBlur(item: any, index: number) {
     if (!item.productId) return;
-    if (!item.availableQty || item.qty <= item.availableQty) return;
 
     const batches = this.getBatchesForProduct(item.productId);
-    if (batches.length <= 1) return;
+    if (batches.length <= 1 && (!item.availableQty || item.qty <= item.availableQty)) return;
 
-    let remainingQty = item.qty;
-    const newItems: any[] = [];
+    // Open batch allocation dialog
+    const dialogRef = this.dialog.open(BatchAllocationDialog, {
+      width: '700px',
+      disableClose: true,
+      data: {
+        productName: item.name,
+        requestedQty: item.qty,
+        batches: batches.map(b => ({
+          id: b.id,
+          batch: b.batch,
+          expiry: b.expiry,
+          rate: b.rate,
+          qty: b.qty,
+        })),
+      } as BatchAllocationData,
+    });
 
-    for (const batch of batches) {
-      if (remainingQty <= 0) break;
-      const takeQty = Math.min(remainingQty, batch.qty);
-      if (takeQty <= 0) continue;
+    dialogRef.afterClosed().subscribe((result: BatchAllocationResult | null) => {
+      if (!result) return;
 
-      newItems.push({
+      const newItems: any[] = result.allocated.map(r => ({
         name: item.name,
         productId: item.productId,
-        batch: batch.batch,
-        qty: takeQty,
-        rate: batch.rate,
-        expiry: this.formatExpiryFromISO(batch.expiry),
-        mrp: takeQty * batch.rate,
-        availableQty: batch.qty,
-        batchId: batch.id
-      });
-      remainingQty -= takeQty;
-    }
+        batch: r.batch,
+        qty: r.allocate,
+        rate: r.rate,
+        expiry: this.formatExpiryFromISO(r.expiry),
+        mrp: r.allocate * r.rate,
+        availableQty: r.available,
+        batchId: r.batchId,
+      }));
 
-    // If qty exceeds total stock, add remaining to last row
-    if (remainingQty > 0 && newItems.length > 0) {
-      const lastItem = newItems[newItems.length - 1];
-      lastItem.qty += remainingQty;
-      lastItem.mrp = lastItem.qty * lastItem.rate;
-    }
+      // Unfulfilled qty → separate row without batch
+      if (result.unfulfilled > 0) {
+        const fallbackRate = newItems.length > 0
+          ? newItems[newItems.length - 1].rate
+          : item.rate;
+        newItems.push({
+          name: item.name,
+          productId: item.productId,
+          batch: '',
+          qty: result.unfulfilled,
+          rate: fallbackRate,
+          expiry: '',
+          mrp: result.unfulfilled * fallbackRate,
+        });
+      }
 
-    if (newItems.length > 1) {
-      this.items.splice(index, 1, ...newItems);
-      this.items = [...this.items];
-    }
+      if (newItems.length > 0) {
+        this.items.splice(index, 1, ...newItems);
+        this.items = [...this.items];
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   // --- Data loading ---

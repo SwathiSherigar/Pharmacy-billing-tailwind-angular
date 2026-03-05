@@ -88,7 +88,8 @@
                     <td class="px-2 py-1.5 text-right text-gray-700">{{ (item.rate || 0).toFixed(2) }}</td>
                     <td class="px-2 py-1.5 text-center text-gray-700">{{ item.qty }}</td>
                     <td class="px-2 py-1.5 text-gray-600">{{ item.expiry }}</td>
-                    <td class="px-2 py-1.5 text-right font-medium text-gray-800">{{ (item.qty * item.rate).toFixed(2) }}</td>
+                    <td class="px-2 py-1.5 text-right font-medium text-gray-800">{{ (item.qty * item.rate).toFixed(2) }}
+                    </td>
                 </tr>
                 }
             </tbody>
@@ -129,10 +130,17 @@
         </p>
     </div>
 
-    <!-- ACTION BUTTONS -->
-    <div class="mt-4 flex justify-end gap-2 no-print">
-        <button mat-button mat-dialog-close (click)="close()">Close</button>
-        <button mat-raised-button color="primary" (click)="printBill()">Print</button>
-        <button mat-raised-button color="accent" (click)="editBill()">Edit</button>
+
+
+    <div class="dialog-actions">
+        <div class="justify-between">
+            <button mat-button mat-dialog-close (click)="close()" class="!text-slate-500">Close</button>
+           
+                <button mat-flat-button (click)="printBill()"
+                    class="!bg-[#1C2B70] !text-white !rounded-lg !font-semibold">Print</button>
+                <button mat-flat-button (click)="editBill()"
+                    class="!bg-amber-600 !text-white !rounded-lg !font-semibold ms-4">Edit</button>
+          
+        </div>
     </div>
 </div>

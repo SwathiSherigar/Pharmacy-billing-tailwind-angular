@@ -1,0 +1,175 @@
+.batch-dialog {
+  padding: 0;
+  font-family: inherit;
+}
+
+/* ─── Header ─── */
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 2px solid #1C2B70;
+  background: linear-gradient(to right, #f8f9ff, #ffffff);
+}
+
+.header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1C2B70, #263680);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-badge {
+  font-size: 12px;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.qty-badge strong {
+  color: #1C2B70;
+  font-size: 14px;
+}
+
+/* ─── Table ─── */
+.dialog-body {
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+:host ::ng-deep .batch-table .mat-mdc-header-row {
+  height: 38px;
+  background: #1C2B70 !important;
+}
+
+:host ::ng-deep .batch-table .mat-mdc-header-cell {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 14px !important;
+}
+
+:host ::ng-deep .batch-table .mat-mdc-row {
+  height: 46px;
+  transition: background-color 0.12s ease;
+}
+
+:host ::ng-deep .batch-table .mat-mdc-row:hover {
+  background-color: #f0f2ff !important;
+}
+
+:host ::ng-deep .batch-table .mat-mdc-cell {
+  font-size: 13px;
+  padding: 0 14px !important;
+  border-bottom: 1px solid #f1f3f8 !important;
+}
+
+.row-allocated {
+  background-color: #f8faf8 !important;
+}
+
+/* ─── Stock pill ─── */
+.stock-pill {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.stock-ok {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.stock-low {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* ─── Allocate input ─── */
+.allocate-input {
+  width: 70px;
+  height: 32px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: #1C2B70;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.allocate-input:focus {
+  border-color: #1C2B70;
+  box-shadow: 0 0 0 3px rgba(28, 43, 112, 0.1);
+}
+
+.allocate-input.input-error {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* Hide number spinner */
+.allocate-input::-webkit-outer-spin-button,
+.allocate-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ─── Summary ─── */
+.dialog-summary {
+  padding: 14px 20px;
+  background: #f8f9fc;
+  border-top: 1px solid #e5e7eb;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+/* ─── Actions ─── */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+:host ::ng-deep .confirm-btn.mat-mdc-unelevated-button {
+  background: linear-gradient(135deg, #1C2B70 0%, #263680 100%) !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  height: 38px !important;
+  padding: 0 20px !important;
+}
+
+:host ::ng-deep .confirm-btn.mat-mdc-unelevated-button:disabled {
+  background: #94a3b8 !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.cancel-btn {
+  color: #64748b !important;
+}
