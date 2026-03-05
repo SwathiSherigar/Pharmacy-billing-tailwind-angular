@@ -1,1 +1,189 @@
-    
+/* ═══════════════════════════════════════════════
+   BILLING PAGE — Enterprise Styling
+   ═══════════════════════════════════════════════ */
+
+/* ─── Form field compacting ─── */
+:host ::ng-deep .billing-compact .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-form-field {
+  margin-bottom: 0;
+}
+
+/* ─── Section headers (d-flex icon + label) ─── */
+:host ::ng-deep .billing-compact .d-flex {
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Icon badges ─── */
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* ─── Card hover lift ─── */
+.card-section {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-section:focus-within {
+  box-shadow: 0 4px 16px rgba(28, 43, 112, 0.08);
+  border-color: rgba(28, 43, 112, 0.2);
+}
+
+/* ─── Table wrapper ─── */
+.table-wrapper {
+  transition: box-shadow 0.2s ease;
+}
+
+/* ─── Table header — branded ─── */
+:host ::ng-deep .billing-compact .mat-mdc-header-row {
+  height: 40px;
+  background: linear-gradient(135deg, #1C2B70 0%, #263680 100%) !important;
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-header-cell {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  background: #1C2B70 !important;
+  border-bottom: none !important;
+  padding: 0 12px !important;
+  z-index: 10 !important;
+}
+
+/* ─── Table rows ─── */
+:host ::ng-deep .billing-compact .mat-mdc-row {
+  height: 48px;
+  transition: background-color 0.12s ease;
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-row:nth-child(even) {
+  background-color: #f8f9fc;
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-row:hover {
+  background-color: #eef1ff !important;
+}
+
+/* ─── Cell borders ─── */
+:host ::ng-deep .billing-compact .mat-mdc-cell {
+  border-bottom: 1px solid #eef0f4 !important;
+}
+
+/* ─── Form field outlines inside table ─── */
+:host ::ng-deep .billing-compact .mat-sm-input .mdc-notched-outline__leading,
+:host ::ng-deep .billing-compact .mat-sm-input .mdc-notched-outline__trailing,
+:host ::ng-deep .billing-compact .mat-sm-input .mdc-notched-outline__notch {
+  border-color: #e2e5ed !important;
+  transition: border-color 0.15s ease;
+}
+
+:host ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__trailing,
+:host ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__notch {
+  border-color: #1C2B70 !important;
+  border-width: 2px !important;
+}
+
+/* ─── Add-row FAB ─── */
+:host ::ng-deep .billing-compact .mat-mdc-mini-fab.mat-primary {
+  background: linear-gradient(135deg, #1C2B70 0%, #263680 100%) !important;
+  box-shadow: 0 2px 8px rgba(28, 43, 112, 0.3) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-mini-fab.mat-primary:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 14px rgba(28, 43, 112, 0.4) !important;
+}
+
+/* ─── Action buttons ─── */
+:host ::ng-deep .billing-compact .mat-mdc-raised-button.mat-primary {
+  background: linear-gradient(135deg, #1C2B70 0%, #263680 100%) !important;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0 20px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  color:#c8ccda !important;
+  box-shadow: 0 2px 8px rgba(28, 43, 112, 0.25) !important;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-raised-button.mat-primary:hover {
+  box-shadow: 0 4px 14px rgba(28, 43, 112, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-raised-button.mat-accent {
+  background: linear-gradient(135deg, #1a7a2e 0%, #2e9e42 100%) !important;
+  color: #fff !important;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0 20px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(30, 120, 50, 0.25) !important;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-raised-button.mat-accent:hover {
+  box-shadow: 0 4px 14px rgba(30, 120, 50, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+/* ─── Shortcut hints inside buttons ─── */
+.shortcut-hint {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Delete button — ghost until hover ─── */
+:host ::ng-deep .billing-compact .delete-btn {
+  opacity: 0.3;
+  transition: opacity 0.15s ease;
+}
+
+:host ::ng-deep .billing-compact .mat-mdc-row:hover .delete-btn {
+  opacity: 1;
+}
+
+/* ─── Footer bar ─── */
+.footer-bar {
+  background: linear-gradient(to right, #ffffff, #fafbff) !important;
+}
+
+/* ─── Scrollbar ─── */
+:host ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar {
+  width: 5px;
+}
+
+:host ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:host ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar-thumb {
+  background: #c8ccda;
+  border-radius: 4px;
+}
+
+:host ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar-thumb:hover {
+  background: #9ba0b4;
+}

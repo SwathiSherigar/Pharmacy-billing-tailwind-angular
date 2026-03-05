@@ -50,6 +50,7 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
   ],
   templateUrl: './billing.html',
+  styleUrl: './billing.css',
 })
 export class BillingComponent {
   patient: any = {};
@@ -58,6 +59,7 @@ export class BillingComponent {
   patients: any[] = [];
   doctors: any[] = [];
   products: any[] = [];
+  productBatches: any[] = [];
   filteredPatients: any[] = [];
   filteredDoctors: any[] = [];
   filteredItems: any[][] = [];
@@ -122,11 +124,25 @@ export class BillingComponent {
       d.name.toLowerCase().includes(name)
     );
   }
+
   filterItems(index: number) {
     const name = this.items[index].name?.toLowerCase() || '';
-    this.filteredItems[index] = this.products?.filter(p =>
-      p.name.toLowerCase().includes(name)
-    );
+    const seen = new Set<string>();
+    this.filteredItems[index] = this.products
+      ?.filter((p: any) => {
+        const pName = p.name?.toLowerCase();
+        if (!pName || !pName.includes(name) || seen.has(pName)) return false;
+        seen.add(pName);
+        return true;
+      })
+      .map((p: any) => {
+        if (p.code) {
+          const batches = this.getBatchesForProduct(p.id);
+          const totalStock = batches.reduce((sum: number, b: any) => sum + (b.qty || 0), 0);
+          return { ...p, totalStock };
+        }
+        return p;
+      });
   }
 
   selectPatient(name: string) {
@@ -137,14 +153,35 @@ export class BillingComponent {
     const d = this.doctors.find(x => x.name === name);
     if (d) this.doctor = { ...d };
   }
+
   selectItem(name: string, index: number) {
-    const p = this.products.find(x => x.name === name);
-    if (p) {
-      this.items[index].name = p.name;
-      // this.items[index].rate = p.rate;
-      this.items[index].batch = p.batch;
+    // Prefer inventory product (has code field) over billing-saved product
+    const inventoryProduct = this.products.find((x: any) => x.name === name && x.code);
+    const product = inventoryProduct || this.products.find((x: any) => x.name === name);
+    if (!product) return;
+
+    if (product.code) {
+      // Inventory product — load batch data
+      const batches = this.getBatchesForProduct(product.id);
+      this.items[index].name = product.name;
+      this.items[index].productId = product.id;
+
+      if (batches.length > 0) {
+        const batch = batches[0]; // First batch sorted by expiry (FIFO)
+        this.items[index].batch = batch.batch;
+        this.items[index].rate = batch.rate;
+        this.items[index].expiry = this.formatExpiryFromISO(batch.expiry);
+        this.items[index].availableQty = batch.qty;
+        this.items[index].batchId = batch.id;
+        this.calculate(this.items[index]);
+      }
+    } else {
+      // Non-inventory product — old behavior
+      this.items[index].name = product.name;
+      this.items[index].batch = product.batch || '';
     }
   }
+
   selectedMonth(date: Date, datepicker: any, item: any) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
@@ -152,18 +189,73 @@ export class BillingComponent {
     datepicker.close();
   }
 
+  // --- Inventory helpers ---
 
+  getBatchesForProduct(productId: number): any[] {
+    return this.productBatches
+      .filter((b: any) => b.productId === productId && b.qty > 0)
+      .sort((a: any, b: any) => new Date(a.expiry).getTime() - new Date(b.expiry).getTime());
+  }
 
+  formatExpiryFromISO(isoDate: string): string {
+    if (!isoDate) return '';
+    const d = new Date(isoDate);
+    return `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+  }
+
+  onQtyBlur(item: any, index: number) {
+    if (!item.productId) return;
+    if (!item.availableQty || item.qty <= item.availableQty) return;
+
+    const batches = this.getBatchesForProduct(item.productId);
+    if (batches.length <= 1) return;
+
+    let remainingQty = item.qty;
+    const newItems: any[] = [];
+
+    for (const batch of batches) {
+      if (remainingQty <= 0) break;
+      const takeQty = Math.min(remainingQty, batch.qty);
+      if (takeQty <= 0) continue;
+
+      newItems.push({
+        name: item.name,
+        productId: item.productId,
+        batch: batch.batch,
+        qty: takeQty,
+        rate: batch.rate,
+        expiry: this.formatExpiryFromISO(batch.expiry),
+        mrp: takeQty * batch.rate,
+        availableQty: batch.qty,
+        batchId: batch.id
+      });
+      remainingQty -= takeQty;
+    }
+
+    // If qty exceeds total stock, add remaining to last row
+    if (remainingQty > 0 && newItems.length > 0) {
+      const lastItem = newItems[newItems.length - 1];
+      lastItem.qty += remainingQty;
+      lastItem.mrp = lastItem.qty * lastItem.rate;
+    }
+
+    if (newItems.length > 1) {
+      this.items.splice(index, 1, ...newItems);
+      this.items = [...this.items];
+    }
+  }
+
+  // --- Data loading ---
 
   async loadData() {
     this.patients = await this.db.getAll('patients');
     this.doctors = await this.db.getAll('doctors');
     this.products = await this.db.getAll('products');
+    this.productBatches = await this.store.getAllBatches();
   }
 
   calculate(item: any) {
     const base = item.qty * item.rate;
-    // const gstAmount = base * (item.gst / 100);
     item.mrp = base;
   }
 
@@ -175,7 +267,7 @@ export class BillingComponent {
   async saveBill() {
     const toPlainObject = (obj: any) => JSON.parse(JSON.stringify(obj));
     const invoiceNo = this.isEditMode
-      ? this.invoiceNo!       // ✅ keep same
+      ? this.invoiceNo!
       : await this.getNextInvoiceNumber();
     const savedPatient = await this.store.saveOrGetPatient(
       toPlainObject(this.patient)
@@ -193,7 +285,7 @@ export class BillingComponent {
       );
     }
 
-    const bill = {
+    const bill: any = {
       invoiceNo,
       patientId: savedPatient.id,
       doctorId: savedDoctor.id,
@@ -202,26 +294,28 @@ export class BillingComponent {
       date: new Date(),
     };
     if (this.isEditMode) {
-      await this.store.updateBill(bill);   // ✅ UPDATE
-      alert('✅ Bill Updated');
+      bill.id = this.editingBillId;
+      await this.store.updateBill(bill);
+      alert('Bill Updated');
     } else {
-      await this.store.addBill(bill);      // ✅ NEW
-      alert(`✅ Bill Saved (${bill.invoiceNo})`);
+      await this.store.addBill(bill);
+      alert(`Bill Saved (${bill.invoiceNo})`);
     }
 
+    await this.store.deductInventory(this.items);
+    this.productBatches = await this.store.getAllBatches();
 
-    alert(`✅ Bill Saved (${invoiceNo})`);
     this.resetForm()
   }
 
 
   async printBill() {
     if (!this.patient.name || !this.doctor.name) {
-      alert('❗ Patient and Doctor required');
+      alert('Patient and Doctor required');
       return;
     }
     const invoiceNo = this.isEditMode
-      ? this.invoiceNo!       // ✅ keep same
+      ? this.invoiceNo!
       : await this.getNextInvoiceNumber();
 
 
@@ -239,7 +333,7 @@ export class BillingComponent {
         'name'
       );
     }
-    const bill = {
+    const bill: any = {
       invoiceNo,
       patientId: savedPatient.id,
       doctorId: savedDoctor.id,
@@ -249,12 +343,15 @@ export class BillingComponent {
     };
 
     if (this.isEditMode) {
-      await this.store.updateBill(bill);  // ✅ update before print
+      bill.id = this.editingBillId;
+      await this.store.updateBill(bill);
     }
     else {
       await this.store.addBill(bill);
     }
 
+    await this.store.deductInventory(this.items);
+    this.productBatches = await this.store.getAllBatches();
 
     this.pdf.generateBill({
       invoiceNo,
@@ -295,15 +392,12 @@ export class BillingComponent {
     if (e.key === 'F4') this.addRow();
   }
   onItemKeydown(event: KeyboardEvent, rowIndex: number) {
-
-
     const isCtrlOrCmd = event.ctrlKey || event.metaKey;
 
     if (isCtrlOrCmd && event.key === 'Enter') {
       event.preventDefault();
       this.addRow();
     }
-
   }
 
   async getNextInvoiceNumber(): Promise<string> {
@@ -322,11 +416,8 @@ export class BillingComponent {
   }
 
 
-
-
   addRow() {
     const newItem = { name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 };
-
 
     this.items = [...this.items, newItem];
     setTimeout(() => {
@@ -350,7 +441,6 @@ export class BillingComponent {
     try {
       const parsed = JSON.parse(this.jsonInput);
 
-      // Support single object OR array
       const billsArray = Array.isArray(parsed) ? parsed : [parsed];
 
       let invoiceNumber = Number(await this.getNextInvoiceNumber());
@@ -365,17 +455,14 @@ export class BillingComponent {
         const toPlainObject = (obj: any) =>
           JSON.parse(JSON.stringify(obj));
 
-        // Save patient
         const savedPatient = await this.store.saveOrGetPatient(
           toPlainObject(data.patient)
         );
 
-        // Save doctor
         const savedDoctor = await this.store.saveOrGetDoctor(
           toPlainObject(data.doctor)
         );
 
-        // Save products
         for (const item of data.items) {
           await this.db.saveIfNotExists(
             'products',
@@ -404,7 +491,7 @@ export class BillingComponent {
         await this.store.addBill(bill);
       }
 
-      alert(`✅ ${billsArray.length} Bill(s) Imported Successfully`);
+      alert(`${billsArray.length} Bill(s) Imported Successfully`);
 
       this.jsonInput = '';
       this.showJsonBox = false;
@@ -412,10 +499,8 @@ export class BillingComponent {
       await this.store.loadAll();
 
     } catch (error) {
-      alert('❌ Invalid JSON Format');
+      alert('Invalid JSON Format');
     }
   }
-
-
 
 }

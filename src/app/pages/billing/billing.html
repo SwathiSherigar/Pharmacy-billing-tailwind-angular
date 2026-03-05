@@ -1,116 +1,119 @@
-<div class=" p-4 flex flex-col gap-4" style="height: calc(100vh - 64px);">
+<div class="billing-compact flex flex-col bg-slate-100" style="height: calc(100vh - 64px);">
 
-    <!-- PATIENT & DOCTOR DETAILS -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- PATIENT & DOCTOR -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 px-4 pt-3">
+
         <!-- Patient Card -->
-        <div class="bg-white p-5 rounded-xl shadow-md flex flex-col gap-4">
-            <div class="flex items-center gap-2 text-xl font-semibold text-blue-600">
-                <mat-icon class="material-symbols-outlined" (click)="toggleJsonBox()">person</mat-icon>
-                    Patient Details
+        <div class="card-section bg-white px-4 py-3 rounded-xl shadow-sm border border-slate-200/80">
+            <div class="d-flex items-center gap-2 mb-2">
+                <div class="icon-badge bg-blue-50 text-[#1C2B70]">
+                    <mat-icon class="material-symbols-outlined !text-[18px] !w-[18px] !h-[18px]"
+                        (click)="toggleJsonBox()">person</mat-icon>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput [matAutocomplete]="patientAuto" placeholder="Patient Name"
-                            [(ngModel)]="patient.name" (ngModelChange)="filterPatients()" required>
-                        <mat-autocomplete #patientAuto="matAutocomplete"
-                            (optionSelected)="selectPatient($event.option.value)">
-                            <mat-option *ngFor="let p of filteredPatients" [value]="p.name">
-                                {{ p.name }}
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput type="number" placeholder="Age" [(ngModel)]="patient.age" required>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput placeholder="Phone" [(ngModel)]="patient.phone" maxlength="10" minlength="10"
-                            pattern="[0-9]*" (keypress)="allowOnlyNumbers($event)">
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput placeholder="Address" [(ngModel)]="patient.address">
-                    </mat-form-field>
-                </div>
+                <span class="text-xs font-bold text-[#1C2B70] uppercase tracking-widest">Patient</span>
             </div>
-
-            <!-- Doctor Card -->
-            <div class="bg-white p-5 rounded-xl shadow-md flex flex-col gap-4">
-                <div class="flex items-center gap-2 text-xl font-semibold text-green-600">
-                    <mat-icon class="material-symbols-outlined">medical_services</mat-icon>
-                    Doctor Details
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput [matAutocomplete]="doctorAuto" placeholder="Doctor Name"
-                            [(ngModel)]="doctor.name" (ngModelChange)="filterDoctors()" required>
-                        <mat-autocomplete #doctorAuto="matAutocomplete"
-                            (optionSelected)="selectDoctor($event.option.value)">
-                            <mat-option *ngFor="let d of filteredDoctors" [value]="d.name">
-                                {{ d.name }}
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo" required>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput placeholder="Phone" [(ngModel)]="doctor.phone" maxlength="10" minlength="10"
-                            pattern="[0-9]*" (keypress)="allowOnlyNumbers($event)">
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput placeholder="Address" [(ngModel)]="doctor.address">
-                    </mat-form-field>
-                </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2">
+                <mat-form-field appearance="outline" class="w-full mat-sm-input">
+                    <input matInput [matAutocomplete]="patientAuto" placeholder="Name" [(ngModel)]="patient.name"
+                        (ngModelChange)="filterPatients()" required>
+                    <mat-autocomplete #patientAuto="matAutocomplete"
+                        (optionSelected)="selectPatient($event.option.value)">
+                        <mat-option *ngFor="let p of filteredPatients" [value]="p.name">{{ p.name }}</mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full mat-sm-input">
+                    <input matInput type="number" placeholder="Age" [(ngModel)]="patient.age" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full mat-sm-input">
+                    <input matInput placeholder="Phone" [(ngModel)]="patient.phone" maxlength="10" minlength="10"
+                        pattern="[0-9]*" (keypress)="allowOnlyNumbers($event)">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full mat-sm-input">
+                    <input matInput placeholder="Address" [(ngModel)]="patient.address">
+                </mat-form-field>
             </div>
         </div>
 
-                    @if(showJsonBox){
-                    <div class="p-4 border rounded bg-gray-50">
-                        <mat-form-field appearance="outline" class="w-full">
-                            <mat-label>Paste JSON Here</mat-label>
-                            <textarea matInput rows="10" [(ngModel)]="jsonInput"></textarea>
-                        </mat-form-field>
+        <!-- Doctor Card -->
+        <div class="card-section bg-white px-4 py-3 rounded-xl shadow-sm border border-slate-200/80">
+            <div class="d-flex items-center gap-2 mb-2">
+                <div class="icon-badge bg-emerald-50 text-emerald-700">
+                    <mat-icon class="material-symbols-outlined !text-[18px] !w-[18px] !h-[18px]">medical_services</mat-icon>
+                </div>
+                <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest">Doctor</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2">
+                <mat-form-field appearance="outline" class="w-full mat-sm-input">
+                    <input matInput [matAutocomplete]="doctorAuto" placeholder="Name" [(ngModel)]="doctor.name"
+                        (ngModelChange)="filterDoctors()" required>
+                    <mat-autocomplete #doctorAuto="matAutocomplete"
+                        (optionSelected)="selectDoctor($event.option.value)">
+                        <mat-option *ngFor="let d of filteredDoctors" [value]="d.name">{{ d.name }}</mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full mat-sm-input">
+                    <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo" required>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full mat-sm-input">
+                    <input matInput placeholder="Phone" [(ngModel)]="doctor.phone" maxlength="10" minlength="10"
+                        pattern="[0-9]*" (keypress)="allowOnlyNumbers($event)">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full mat-sm-input">
+                    <input matInput placeholder="Address" [(ngModel)]="doctor.address">
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
 
-                        <div class="flex gap-2 mt-2">
-                            <button mat-raised-button color="primary" (click)="importJson()">
-                                Import
-                            </button>
-                            <button mat-button (click)="toggleJsonBox()">Cancel</button>
-                        </div>
+    @if(showJsonBox) {
+    <div class="mx-4 mt-3 p-4 border border-slate-200 rounded-xl bg-white shadow-sm">
+        <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Paste JSON Here</mat-label>
+            <textarea matInput rows="8" [(ngModel)]="jsonInput"></textarea>
+        </mat-form-field>
+        <div class="flex gap-2 mt-2">
+            <button mat-raised-button color="primary" (click)="importJson()">Import</button>
+            <button mat-button (click)="toggleJsonBox()">Cancel</button>
+        </div>
+    </div>
+    }
+    @else {
+    <!-- ITEMS TABLE -->
+    <div class="flex-1 flex flex-col overflow-hidden px-4 pt-3">
+        <div class="table-wrapper bg-white rounded-xl shadow-sm border border-slate-200/80 flex-1 flex flex-col overflow-hidden">
+
+            <div class="flex items-center justify-between px-4 py-2 border-b border-slate-100">
+                <div class="d-flex items-center gap-2">
+                    <div class="icon-badge bg-slate-100 text-slate-600">
+                        <mat-icon class="material-symbols-outlined !text-[18px] !w-[18px] !h-[18px]">inventory_2</mat-icon>
                     </div>
-                    }
-                    @else {
-        <!-- ITEMS TABLE SECTION -->
-        <div class="bg-white rounded-xl shadow-md flex-1 flex flex-col overflow-hidden mt-4">
-
-            <!-- Table Header + Add Button -->
-            <div class="flex items-center justify-between p-5">
-                <div class="text-lg font-semibold">Items</div>
+                    <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Items</span>
+                </div>
                 <button mat-mini-fab color="primary" (click)="addRow()" matTooltip="Add Row (F4)">
-                    <mat-icon class="material-symbols-outlined">add</mat-icon>
+                    <mat-icon class="material-symbols-outlined !text-white">add</mat-icon>
                 </button>
             </div>
 
-            <!-- Scrollable Table -->
-            <div class="flex-1 overflow-auto p-5 !pt-0">
-                <table mat-table [dataSource]="items" class="w-full table-auto">
+            <div class="flex-1 overflow-auto">
+                <table mat-table [dataSource]="items" class="w-full billing-table">
 
                     <!-- Item Name -->
                     <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Item</th>
-                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                        <th mat-header-cell *matHeaderCellDef>Item</th>
+                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="!px-1 !py-0">
                             <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                                <input matInput [matAutocomplete]="itemAuto" placeholder=" Name" [(ngModel)]="i.name"
-                                    (ngModelChange)="filterItems(rowIndex)" required>
+                                <input matInput [matAutocomplete]="itemAuto" placeholder="Product name"
+                                    [(ngModel)]="i.name" (ngModelChange)="filterItems(rowIndex)" required>
                                 <mat-autocomplete #itemAuto="matAutocomplete"
                                     (optionSelected)="selectItem($event.option.value, rowIndex)">
                                     <mat-option *ngFor="let p of filteredItems[rowIndex]" [value]="p.name">
-                                        {{ p.name }}
+                                        <div class="flex justify-between items-center w-full">
+                                            <span>{{ p.name }}</span>
+                                            <span *ngIf="p.totalStock !== undefined"
+                                                class="text-[11px] text-gray-400 ml-2">
+                                                Stock: {{ p.totalStock }}
+                                            </span>
+                                        </div>
                                     </mat-option>
                                 </mat-autocomplete>
                             </mat-form-field>
@@ -119,8 +122,8 @@
 
                     <!-- Batch -->
                     <ng-container matColumnDef="batch">
-                        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Batch</th>
-                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                        <th mat-header-cell *matHeaderCellDef>Batch</th>
+                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="!px-1 !py-0">
                             <mat-form-field appearance="outline" class="w-full mat-sm-input">
                                 <input matInput [(ngModel)]="i.batch" (keydown)="onItemKeydown($event, rowIndex)"
                                     required>
@@ -130,19 +133,20 @@
 
                     <!-- Qty -->
                     <ng-container matColumnDef="qty">
-                        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Qty</th>
-                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
-                            <mat-form-field appearance="outline" class="w-full mat-sm-input !w-25">
+                        <th mat-header-cell *matHeaderCellDef class="!w-20">Qty</th>
+                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="!px-1 !py-0">
+                            <mat-form-field appearance="outline" class="w-full mat-sm-input !w-20">
                                 <input matInput type="number" [(ngModel)]="i.qty" (input)="calculate(i)"
-                                    (keydown)="onItemKeydown($event, rowIndex)" required>
+                                    (blur)="onQtyBlur(i, rowIndex)" (keydown)="onItemKeydown($event, rowIndex)"
+                                    required>
                             </mat-form-field>
                         </td>
                     </ng-container>
 
                     <!-- Rate -->
                     <ng-container matColumnDef="rate">
-                        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Rate</th>
-                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                        <th mat-header-cell *matHeaderCellDef>Rate</th>
+                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="!px-1 !py-0">
                             <mat-form-field appearance="outline" class="w-full mat-sm-input">
                                 <input matInput type="number" [(ngModel)]="i.rate" (input)="calculate(i)"
                                     (keydown)="onItemKeydown($event, rowIndex)" required>
@@ -150,35 +154,10 @@
                         </td>
                     </ng-container>
 
-                    <!-- <ng-container matColumnDef="gst">
-                    <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">GST</th>
-                    <td mat-cell *matCellDef="let item; let i = index">
-                          <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                        <input matInput type="number" [(ngModel)]="item.gst" (input)="calculate(item)" />
-                       </mat-form-field>
-                    </td>
-
-                </ng-container> -->
-                    <!-- MRP -->
-                    <ng-container matColumnDef="mrp">
-                        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">MRP</th>
-                        <td mat-cell *matCellDef="let i" class="p-1">{{ i.mrp }}</td>
-                    </ng-container>
-
-                    <!-- Delete -->
-                    <ng-container matColumnDef="delete">
-                        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left"></th>
-                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
-                            <button mat-icon-button color="warn" (click)="deleteRow(rowIndex)" matTooltip="Delete Row">
-                                <mat-icon class="material-symbols-outlined">delete</mat-icon>
-                            </button>
-                        </td>
-                    </ng-container>
-
                     <!-- Expiry -->
                     <ng-container matColumnDef="expiry">
-                        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 p-2 text-left">Expiry</th>
-                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="p-1">
+                        <th mat-header-cell *matHeaderCellDef>Expiry</th>
+                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="!px-1 !py-0">
                             <mat-form-field appearance="outline" class="w-full mat-sm-input">
                                 <input matInput [matDatepicker]="picker" [value]="convertToDate(i.expiry)" readonly
                                     (click)="picker.open()" />
@@ -186,31 +165,52 @@
                                 <mat-datepicker #picker startView="multi-year"
                                     (monthSelected)="selectedMonth($event, picker, i)"></mat-datepicker>
                             </mat-form-field>
-
-
                         </td>
                     </ng-container>
 
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <!-- MRP / Amount -->
+                    <ng-container matColumnDef="mrp">
+                        <th mat-header-cell *matHeaderCellDef>Amount</th>
+                        <td mat-cell *matCellDef="let i" class="!px-3 !py-0 !font-semibold !text-slate-700 !text-sm">
+                            ₹{{ i.mrp }}
+                        </td>
+                    </ng-container>
+
+                    <!-- Delete -->
+                    <ng-container matColumnDef="delete">
+                        <th mat-header-cell *matHeaderCellDef class="!w-10"></th>
+                        <td mat-cell *matCellDef="let i; let rowIndex = index" class="!px-0 !py-0">
+                            <button mat-icon-button color="warn" (click)="deleteRow(rowIndex)" matTooltip="Delete Row"
+                                class="!w-8 !h-8 delete-btn">
+                                <mat-icon class="material-symbols-outlined" style="font-size:18px">delete</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                 </table>
             </div>
-
-
-
         </div>
+    </div>
     }
 
-        <div class="bg-white p-5 rounded-xl shadow-md flex justify-between items-center mt-4">
-            <div class="text-xl font-bold">Total: ₹{{ total }}</div>
-            <div class="flex gap-2">
-                <button mat-raised-button color="primary" (click)="saveBill()">
-                    <mat-icon class="material-symbols-outlined">save</mat-icon> Save (F9)
-                </button>
-                <button mat-raised-button color="accent" (click)="printBill()">
-                    <mat-icon class="material-symbols-outlined">print</mat-icon> Print (F10)
-                </button>
-            </div>
+    <!-- FOOTER -->
+    <div class="footer-bar mx-4 mb-3 mt-3 px-5 py-3 bg-white rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Grand Total</span>
+            <span class="text-2xl font-extrabold text-[#1C2B70] tracking-tight">₹{{ total }}</span>
         </div>
-
+        <div class="flex gap-3">
+            <button mat-raised-button color="primary" (click)="saveBill()" class="action-btn">
+                <mat-icon class="material-symbols-outlined">save</mat-icon> Save
+                <span class="shortcut-hint">F9</span>
+            </button>
+            <button mat-raised-button color="accent" (click)="printBill()" class="action-btn">
+                <mat-icon class="material-symbols-outlined">print</mat-icon> Print
+                <span class="shortcut-hint">F10</span>
+            </button>
+        </div>
     </div>
+
+</div>

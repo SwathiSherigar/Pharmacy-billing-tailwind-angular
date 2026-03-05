@@ -99,9 +99,20 @@ export class DataStoreService {
     return await this.db.getAll('productBatches');
   }
 
+  async deductInventory(items: any[]) {
+    for (const item of items) {
+      if (!item.batchId) continue;
+      const batch = await this.db.getById('productBatches', item.batchId);
+      if (!batch) continue;
+      batch.qty = Math.max(0, batch.qty - item.qty);
+      await this.db.update('productBatches', batch);
+    }
+  }
+
   async getAllProducts() {
     return await this.db.getAll('products');
   }
+  
   async importPurchaseCsv(text: string) {
 
     const lines = text.split('\n');

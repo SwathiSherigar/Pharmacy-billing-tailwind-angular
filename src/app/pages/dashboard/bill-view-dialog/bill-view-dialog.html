@@ -1,69 +1,138 @@
-<div class="p-6 font-sans text-gray-800 relative overflow-auto">
-    <div class="flex justify-between items-start mb-6 border-b pb-4">
-        <div>
-            <h2 class="text-2xl font-bold text-primary m-0">INVOICE</h2>
-            <p class="text-sm text-gray-500">ID: #{{data.id}}</p>
-        </div>
-        <div class="text-right">
-            <p class="font-semibold text-lg">Akash Pharma</p>
-            <p class="text-xs text-gray-500">{{ formatDate(data.date) }}</p>
-        </div>
+<div class="invoice-popup font-sans text-gray-800 overflow-auto">
+
+    <!-- HEADER -->
+    <div class="text-center pb-3">
+        <h1 class="text-xl font-bold text-[#1C2B70] m-0 tracking-wide">AKASH PHARMA</h1>
+        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
+            DL No: KA-BE2-274111 &nbsp;|&nbsp; GSTIN: 29XXXXX1234X1ZX
+        </p>
+        <p class="text-[11px] text-gray-500 leading-relaxed">
+            1/326 Main Road, Hurulihal, Kudligi, Karnataka 583126
+        </p>
+        <p class="text-[11px] text-gray-500 leading-relaxed">
+            Ph: +91 9876543210 &nbsp;|&nbsp; Email: contact&#64;akashpharma.com
+        </p>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
-        <div>
-            <p class="text-gray-500 uppercase text-[10px] font-bold tracking-wider">Patient</p>
-            <p class="font-medium text-base">{{ data.patient?.name }}</p>
-        </div>
-        <div class="text-right">
-            <p class="text-gray-500 uppercase text-[10px] font-bold tracking-wider">Doctor</p>
-            <p class="font-medium text-base">Dr. {{ data.doctor?.name }}</p>
-        </div>
+    <!-- Double line separator -->
+    <div class="border-t-2 border-[#1C2B70]"></div>
+    <div class="border-t border-[#1C2B70] mt-[2px] mb-3"></div>
+
+    <!-- INVOICE ROW -->
+    <div class="flex justify-between items-center mb-3 px-1">
+        <span class="font-bold text-sm text-[#1C2B70]">Invoice #: {{ data.invoiceNo || 'N/A' }}</span>
+        <span class="text-xs text-gray-500">{{ formatDate(data.date) }}</span>
     </div>
 
-    <div class="border rounded-lg overflow-hidden mb-6">
-        <table class="w-full text-left text-sm">
-            <thead class="bg-gray-50 border-b">
-                <tr>
-                    <th class="px-3 py-2">Item</th>
-                    <th class="px-3 py-2 text-center">Qty</th>
-                    <th class="px-3 py-2 text-right">Price</th>
-                    <th class="px-3 py-2 text-right">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for(item of data.items;track $index){
-                <tr class="border-b last:border-0">
-                    <td class="px-3 py-3">
-                        <div class="font-medium">{{ item.name }}</div>
-                        <div class="text-[10px] text-gray-400">Batch: {{item.batch}} | Exp: {{item.expiry}}</div>
-                    </td>
-                    <td class="px-3 py-3 text-center">{{ item.qty }}</td>
-                    <td class="px-3 py-3 text-right">₹{{ item.rate }}</td>
-                    <td class="px-3 py-3 text-right font-semibold">₹{{ item.qty * item.rate }}</td>
-                </tr>
-                }
+    <!-- PATIENT & DOCTOR BOXES -->
+    <div class="grid grid-cols-2 gap-3 mb-3">
+        <!-- Patient box -->
+        <div class="border border-gray-300 rounded px-3 py-2">
+            <p class="text-[11px] font-bold text-[#1C2B70] uppercase tracking-wider mb-1.5">Patient</p>
+            <div class="space-y-1 text-xs">
+                <div class="flex">
+                    <span class="text-gray-400 w-14 shrink-0">Name:</span>
+                    <span class="font-semibold text-gray-800">{{ data.patient?.name || 'N/A' }}</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-400 w-14 shrink-0">Phone:</span>
+                    <span class="text-gray-700">{{ data.patient?.phone || 'N/A' }}</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-400 w-14 shrink-0">Address:</span>
+                    <span class="text-gray-700">{{ data.patient?.address || 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
 
-            </tbody>
-        </table>
-    </div>
-
-    <div class="flex justify-end pt-2">
-        <div class="w-1/2">
-            <div class="flex justify-between items-center py-2 border-t-2 border-primary">
-                <span class="font-bold text-lg text-primary">Grand Total</span>
-                <span class="font-bold text-xl text-primary">₹{{ data.total }}</span>
+        <!-- Doctor box -->
+        <div class="border border-gray-300 rounded px-3 py-2">
+            <p class="text-[11px] font-bold text-[#1C2B70] uppercase tracking-wider mb-1.5">Prescribing Physician</p>
+            <div class="space-y-1 text-xs">
+                <div class="flex">
+                    <span class="text-gray-400 w-14 shrink-0">Name:</span>
+                    <span class="font-semibold text-gray-800">Dr. {{ data.doctor?.name || 'N/A' }}</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-400 w-14 shrink-0">Phone:</span>
+                    <span class="text-gray-700">{{ data.doctor?.phone || 'N/A' }}</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-400 w-14 shrink-0">Address:</span>
+                    <span class="text-gray-700">{{ data.doctor?.address || 'N/A' }}</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="mt-8 flex justify-end gap-2 no-print">
+    <!-- ITEMS TABLE -->
+    <div class="rounded overflow-hidden border border-gray-200 mb-3">
+        <table class="w-full text-xs">
+            <thead>
+                <tr class="bg-[#1C2B70] text-white text-[11px]">
+                    <th class="px-2 py-1.5 text-center w-8">#</th>
+                    <th class="px-2 py-1.5 text-left">Description</th>
+                    <th class="px-2 py-1.5 text-left">Batch</th>
+                    <th class="px-2 py-1.5 text-right">Rate (₹)</th>
+                    <th class="px-2 py-1.5 text-center">Qty</th>
+                    <th class="px-2 py-1.5 text-left">Expiry</th>
+                    <th class="px-2 py-1.5 text-right">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(item of data.items; track $index) {
+                <tr class="border-b border-gray-100">
+                    <td class="px-2 py-1.5 text-center text-gray-500">{{ $index + 1 }}</td>
+                    <td class="px-2 py-1.5 text-gray-800">{{ item.name }}</td>
+                    <td class="px-2 py-1.5 text-gray-600">{{ item.batch }}</td>
+                    <td class="px-2 py-1.5 text-right text-gray-700">{{ (item.rate || 0).toFixed(2) }}</td>
+                    <td class="px-2 py-1.5 text-center text-gray-700">{{ item.qty }}</td>
+                    <td class="px-2 py-1.5 text-gray-600">{{ item.expiry }}</td>
+                    <td class="px-2 py-1.5 text-right font-medium text-gray-800">{{ (item.qty * item.rate).toFixed(2) }}</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="border-t border-[#1C2B70] pt-3">
+        <div class="flex justify-between items-start">
+            <!-- Terms -->
+            <div class="text-[10px] text-gray-500 leading-relaxed">
+                <p class="font-bold text-gray-600 mb-1">Terms & Conditions:</p>
+                <p>&#8226; &nbsp;GST not applicable.</p>
+                <p>&#8226; &nbsp;Goods once sold will not be taken back.</p>
+                <p>&#8226; &nbsp;Subject to local jurisdiction.</p>
+            </div>
+
+            <!-- Totals -->
+            <div class="text-right min-w-[180px]">
+                <div class="flex justify-between text-xs text-gray-600 mb-1">
+                    <span>Subtotal:</span>
+                    <span>₹{{ data.total.toFixed(2) }}</span>
+                </div>
+                <div class="border-t-2 border-[#1C2B70] pt-2 mt-1">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-sm text-[#1C2B70]">GRAND TOTAL:</span>
+                        <span class="font-bold text-base text-[#1C2B70]">₹{{ data.total.toFixed(2) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM BAR -->
+    <div class="border-t border-[#1C2B70] mt-4 pt-2">
+        <p class="text-center text-[10px] text-gray-400">
+            Thank you for choosing Akash Pharma &nbsp;
+        </p>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="mt-4 flex justify-end gap-2 no-print">
         <button mat-button mat-dialog-close (click)="close()">Close</button>
-        <button mat-raised-button color="primary" (click)="printBill()">
-            Print
-        </button>
-        <button mat-raised-button color="accent" (click)="editBill()">
-            Edit
-        </button>
+        <button mat-raised-button color="primary" (click)="printBill()">Print</button>
+        <button mat-raised-button color="accent" (click)="editBill()">Edit</button>
     </div>
 </div>

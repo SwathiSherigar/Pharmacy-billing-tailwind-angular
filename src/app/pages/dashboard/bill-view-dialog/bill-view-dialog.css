@@ -1,0 +1,9 @@
+.invoice-popup {
+  padding: 24px;
+  background: #fff;
+}
+
+/* Alternate row tint for the items table */
+.invoice-popup table tbody tr:nth-child(even) {
+  background-color: #fafaff;
+}

@@ -62,8 +62,8 @@ export class Dashboard implements AfterViewInit {
   viewBill(data: any) {
     const dialogRef = this.dialog.open(BillViewDialog, {
       data: { ...data, type: 'patient' },
-      width: '500px',
-      maxHeight: '70vh',
+      width: '700px',
+      maxHeight: '85vh',
       autoFocus: false,
       panelClass: 'dialog-wrapper',
     });
