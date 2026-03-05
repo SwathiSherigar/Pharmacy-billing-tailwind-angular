@@ -1,1 +1,0 @@
-import{$b as m,Db as n,Eb as s,eb as i}from"./chunk-5EJ3PITV.js";import"./chunk-KAT7YFEL.js";var o=class e{static \u0275fac=function(t){return new(t||e)};static \u0275cmp=i({type:e,selectors:[["app-item-listing"]],decls:2,vars:0,template:function(t,p){t&1&&(n(0,"p"),m(1,"item-listing works!"),s())},encapsulation:2})};export{o as ItemListing};
