@@ -58,8 +58,37 @@ export class ItemListing implements AfterViewInit {
     return this.batches.reduce((sum, b) => sum + (b.qty || 0), 0);
   }
 
-  get lowStockCount(): number {
-    return this.batches.filter(b => b.qty <= 10).length;
+  activeFilter: 'all' | 'expiring' | 'expired' = 'all';
+
+  get expiringSoonCount(): number {
+    const now = new Date();
+    const threeMonths = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate());
+    return this.batches.filter(b => {
+      const exp = new Date(b.expiry);
+      return exp > now && exp <= threeMonths;
+    }).length;
+  }
+
+  get expiredCount(): number {
+    const now = new Date();
+    return this.batches.filter(b => new Date(b.expiry) <= now).length;
+  }
+
+  filterByExpiry(type: 'all' | 'expiring' | 'expired') {
+    this.activeFilter = type;
+    const now = new Date();
+    const threeMonths = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate());
+
+    if (type === 'expiring') {
+      this.dataSource.data = this.batches.filter(b => {
+        const exp = new Date(b.expiry);
+        return exp > now && exp <= threeMonths;
+      });
+    } else if (type === 'expired') {
+      this.dataSource.data = this.batches.filter(b => new Date(b.expiry) <= now);
+    } else {
+      this.dataSource.data = this.batches;
+    }
   }
 
   applyFilter() {

@@ -56,6 +56,7 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
 export class BillingComponent {
   patient: any = {};
   doctor: any = {};
+  billDate: Date = new Date();
   items: any[] = [{ name: '', batch: '', qty: 1, mrp: 0, expiry: '', amount: 0 }];
   patients: any[] = [];
   doctors: any[] = [];
@@ -101,6 +102,7 @@ export class BillingComponent {
 
     this.patient = { ...bill.patient };
     this.doctor = { ...bill.doctor };
+    this.billDate = bill.date ? new Date(bill.date) : new Date();
 
     this.items = bill.items.map((i: any) => ({
       ...i,
@@ -317,7 +319,7 @@ export class BillingComponent {
       doctorId: savedDoctor.id,
       items: this.items.map(i => toPlainObject(i)),
       total: this.total,
-      date: new Date(),
+      date: this.billDate,
     };
     if (this.isEditMode) {
       bill.id = this.editingBillId;
@@ -365,7 +367,7 @@ export class BillingComponent {
       doctorId: savedDoctor.id,
       items: this.items.map(i => JSON.parse(JSON.stringify(i))),
       total: this.total,
-      date: new Date()
+      date: this.billDate
     };
 
     if (this.isEditMode) {
@@ -384,7 +386,8 @@ export class BillingComponent {
       patient: savedPatient,
       doctor: savedDoctor,
       items: this.items,
-      total: this.total
+      total: this.total,
+      date: this.billDate
     });
 
     this.resetForm()
@@ -393,6 +396,7 @@ export class BillingComponent {
   resetForm() {
     this.patient = {};
     this.doctor = {};
+    this.billDate = new Date();
 
     this.items = [
       { name: '', batch: '', qty: 1, mrp: 0, expiry: '', amount: 0 }

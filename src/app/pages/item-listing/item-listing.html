@@ -1,8 +1,10 @@
 <div class="p-4 !pt-0 flex flex-col gap-3 h-full" style="height: calc(100vh - 60px);">
 
   <!-- Stats Cards -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3 pt-2">
+    <div class="bg-white rounded-xl shadow-sm border px-4 py-3 cursor-pointer transition-all"
+      [class]="activeFilter === 'all' ? 'border-[#1C2B70] ring-2 ring-[#1C2B70]/10' : 'border-slate-200/80 hover:border-slate-300'"
+      (click)="filterByExpiry('all')">
       <div class="flex items-center gap-2 mb-1">
         <div class="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
           <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-[#1C2B70]">inventory_2</mat-icon>
@@ -29,14 +31,27 @@
       </div>
       <span class="text-xl font-extrabold text-amber-600">{{ totalQty }}</span>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
+    <div class="bg-white rounded-xl shadow-sm border px-4 py-3 cursor-pointer transition-all"
+      [class]="activeFilter === 'expiring' ? 'border-orange-400 ring-2 ring-orange-400/10' : 'border-slate-200/80 hover:border-slate-300'"
+      (click)="filterByExpiry('expiring')">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center">
+          <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-orange-500">schedule</mat-icon>
+        </div>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Expiring Soon</span>
+      </div>
+      <span class="text-xl font-extrabold text-orange-500">{{ expiringSoonCount }}</span>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border px-4 py-3 cursor-pointer transition-all"
+      [class]="activeFilter === 'expired' ? 'border-red-400 ring-2 ring-red-400/10' : 'border-slate-200/80 hover:border-slate-300'"
+      (click)="filterByExpiry('expired')">
       <div class="flex items-center gap-2 mb-1">
         <div class="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
-          <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-red-500">warning</mat-icon>
+          <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-red-500">event_busy</mat-icon>
         </div>
-        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Low Stock</span>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Expired</span>
       </div>
-      <span class="text-xl font-extrabold text-red-500">{{ lowStockCount }}</span>
+      <span class="text-xl font-extrabold text-red-500">{{ expiredCount }}</span>
     </div>
   </div>
 
