@@ -209,8 +209,11 @@ export class BillingComponent {
   onQtyBlur(item: any, index: number) {
     if (!item.productId) return;
 
+    // Only open allocation dialog when qty exceeds current batch stock
+    if (!item.availableQty || item.qty <= item.availableQty) return;
+
     const batches = this.getBatchesForProduct(item.productId);
-    if (batches.length <= 1 && (!item.availableQty || item.qty <= item.availableQty)) return;
+    if (batches.length <= 1) return;
 
     // Open batch allocation dialog
     const dialogRef = this.dialog.open(BatchAllocationDialog, {

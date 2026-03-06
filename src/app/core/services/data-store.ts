@@ -156,11 +156,16 @@ export class DataStoreService {
       const expiry = this.convertMMYYYYToISO(cols[9]?.trim());
       const hsn = cols[17]?.trim();
 
+      const packCount = this.parsePackingCount(packing);
+      const perUnitMrp = packCount > 1 ? mrp / packCount : mrp;
+      const totalQty = quantity * packCount;
+      const totalFree = free * packCount;
+
       const product = await this.db.saveIfNotExists('products', { code, name, packing, hsn }, 'code');
 
       await this.db.add('productBatches', {
         productId: product.id, batch, expiry,
-        qty: quantity, freeQty: free, rate: sellingRate, mrp, invoiceId
+        qty: totalQty, freeQty: totalFree, rate: sellingRate, mrp: perUnitMrp, invoiceId
       });
     }
 
@@ -326,9 +331,14 @@ export class DataStoreService {
           'products', { code: item.code, name: item.name, packing: item.packing, hsn: item.hsn }, 'code'
         );
 
+        const packCount = this.parsePackingCount(item.packing);
+        const perUnitMrp = packCount > 1 ? item.mrp / packCount : item.mrp;
+        const totalQty = item.quantity * packCount;
+        const totalFree = item.free * packCount;
+
         await this.db.add('productBatches', {
           productId: product.id, batch: item.batch, expiry: item.expiry,
-          qty: item.quantity, freeQty: item.free, rate: item.rate, mrp: item.mrp, invoiceId
+          qty: totalQty, freeQty: totalFree, rate: item.rate, mrp: perUnitMrp, invoiceId
         });
       }
 
@@ -340,6 +350,15 @@ export class DataStoreService {
     return { imported, skipped };
   }
 
+
+  private parsePackingCount(packing: string): number {
+    if (!packing) return 1;
+    const match = packing.match(/(\d+)\s*[sS]$/);
+    if (match) return parseInt(match[1]) || 1;
+    const xMatch = packing.match(/\d+\s*[xX]\s*(\d+)/);
+    if (xMatch) return parseInt(xMatch[1]) || 1;
+    return 1;
+  }
 
   private convertDDMMYYYYToISO(dateStr: string): string {
     if (!dateStr) return '';

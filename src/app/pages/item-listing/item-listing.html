@@ -1,4 +1,4 @@
-<div class="p-4 !pt-0 flex flex-col gap-3 h-full" style="height: calc(100vh - 54px);">
+<div class="p-4 !pt-0 flex flex-col gap-3 h-full" style="height: calc(100vh - 60px);">
 
   <!-- Stats Cards -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
@@ -106,10 +106,10 @@
           <td mat-cell *matCellDef="let b" class="!text-slate-700"> {{ b.mrp.toFixed(2) }} </td>
         </ng-container>
 
-        <ng-container matColumnDef="value">
+        <!-- <ng-container matColumnDef="value">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Stock Value </th>
           <td mat-cell *matCellDef="let b" class="!font-semibold !text-slate-700"> {{ (b.qty * b.mrp).toFixed(2) }} </td>
-        </ng-container>
+        </ng-container> -->
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"
