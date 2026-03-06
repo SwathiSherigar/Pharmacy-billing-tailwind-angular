@@ -63,9 +63,9 @@
         class="!bg-[#1C2B70] !text-white !rounded-lg !font-semibold !h-9 !text-sm"
         (click)="fileInput.click()">
         <mat-icon class="material-symbols-outlined !text-[18px]">upload_file</mat-icon>
-        Import CSV
+        Import
       </button>
-      <input #fileInput type="file" accept=".csv" hidden (change)="importCsv($event)">
+      <input #fileInput type="file" accept=".csv,.xlsx,.xls" hidden (change)="importFile($event)">
     </div>
   </div>
 

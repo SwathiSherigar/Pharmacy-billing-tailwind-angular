@@ -90,15 +90,35 @@ export class ItemListing implements AfterViewInit {
     };
   }
 
-  async importCsv(event: any) {
+  async importFile(event: any) {
     const file = event.target.files[0];
     if (!file) return;
-
-    const text = await file.text();
+    event.target.value = '';
 
     try {
-      await this.store.importPurchaseCsv(text);
-      alert('Import successful');
+      let text: string;
+
+      if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+        const XLSX = await import('xlsx');
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: 'array' });
+        const allSheets: string[] = [];
+        for (const sheetName of workbook.SheetNames) {
+          const sheet = workbook.Sheets[sheetName];
+          const tsv = XLSX.utils.sheet_to_csv(sheet, { FS: '\t' });
+          allSheets.push(tsv);
+        }
+        text = allSheets.join('\n');
+      } else {
+        text = await file.text();
+      }
+
+      const result: any = await this.store.importPurchaseCsv(text);
+      if (result?.imported !== undefined) {
+        alert(`${result.imported} invoice(s) imported, ${result.skipped} skipped`);
+      } else {
+        alert('Import successful');
+      }
       await this.loadBatches();
     } catch (err: any) {
       alert(err.message);
