@@ -15,7 +15,7 @@ export interface BatchAllocationData {
     id: number;
     batch: string;
     expiry: string;
-    rate: number;
+    mrp: number;
     qty: number; // available stock
   }[];
 }
@@ -24,7 +24,7 @@ export interface BatchAllocationRow {
   batchId: number;
   batch: string;
   expiry: string;
-  rate: number;
+  mrp: number;
   available: number;
   allocate: number;
 }
@@ -52,7 +52,7 @@ export interface BatchAllocationResult {
 })
 export class BatchAllocationDialog {
   rows: BatchAllocationRow[] = [];
-  displayedColumns = ['batch', 'expiry', 'rate', 'available', 'allocate', 'amount'];
+  displayedColumns = ['batch', 'expiry', 'mrp', 'available', 'allocate', 'amount'];
   productName: string;
   requestedQty: number;
 
@@ -72,7 +72,7 @@ export class BatchAllocationDialog {
         batchId: b.id,
         batch: b.batch,
         expiry: b.expiry,
-        rate: b.rate,
+        mrp: b.mrp,
         available: b.qty,
         allocate,
       };
@@ -88,7 +88,7 @@ export class BatchAllocationDialog {
   }
 
   get totalAmount(): number {
-    return this.rows.reduce((sum, r) => sum + (r.allocate || 0) * r.rate, 0);
+    return this.rows.reduce((sum, r) => sum + (r.allocate || 0) * r.mrp, 0);
   }
 
   get unfulfilled(): number {

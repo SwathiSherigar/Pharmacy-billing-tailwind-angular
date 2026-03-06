@@ -11,7 +11,7 @@ declare module 'jspdf' {
 
 export interface Patient { name: string; phone?: string; address?: string; }
 export interface Doctor { name: string; phone?: string; address?: string; }
-export interface Item { name: string; batch?: string; qty?: number; rate?: number; expiry?: string; mrp?: number; }
+export interface Item { name: string; batch?: string; qty?: number; mrp?: number; expiry?: string; amount?: number; }
 export interface BillData { patient: Patient; doctor: Doctor; items: Item[]; invoiceNo?: string; dueDate?: string; total: number; taxRate?: number; date?: any; }
 
 @Injectable({ providedIn: 'root' })
@@ -140,15 +140,15 @@ export class PdfService {
       idx + 1,
       i.name,
       i.batch || '',
-      (i.rate || 0).toFixed(2),
+      (i.mrp || 0).toFixed(2),
       i.qty || 0,
       i.expiry || '',
-      ((i.qty || 0) * (i.rate || 0)).toFixed(2)
+      ((i.qty || 0) * (i.mrp || 0)).toFixed(2)
     ]);
 
     autoTable(doc, {
       startY: tableStartY,
-      head: [['#', 'Description', 'Batch', 'Rate (\u20B9)', 'Qty', 'Expiry', 'Amount (\u20B9)']],
+      head: [['#', 'Description', 'Batch', 'MRP (\u20B9)', 'Qty', 'Expiry', 'Amount (\u20B9)']],
       body: itemRows,
       theme: 'grid',
       styles: {

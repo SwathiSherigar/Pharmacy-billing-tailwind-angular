@@ -167,9 +167,33 @@ export class DataStoreService {
     return true;
   }
 
+  /**
+   * Detect bill column offsets by finding all "Type" headers in the first row.
+   * Returns the starting column index for each bill.
+   */
+  private detectBillOffsets(headerCols: string[]): number[] {
+    const offsets: number[] = [];
+    for (let i = 0; i < headerCols.length; i++) {
+      if (headerCols[i]?.trim() === 'Type') offsets.push(i);
+    }
+    return offsets;
+  }
+
+  /**
+   * Build a column name map for a bill given its offset and the next bill's offset.
+   * Maps header names like "Selling Rate", "MRP", "Batch No.", "Exp. Date", "Hsn" to their column index.
+   */
+  private buildColumnMap(headerCols: string[], startOffset: number, endOffset: number): Map<string, number> {
+    const map = new Map<string, number>();
+    for (let i = startOffset; i < endOffset; i++) {
+      const name = headerCols[i]?.trim();
+      if (name) map.set(name, i);
+    }
+    return map;
+  }
+
   private async importMultiBillTsv(text: string) {
     const allLines = text.split('\n');
-    const BILL_WIDTH = 6; // Type, Code, Name, Packing, Quantity, Free
 
     // Split into sections separated by empty lines
     const sections: string[][] = [];
@@ -187,73 +211,94 @@ export class DataStoreService {
     }
     if (currentSection.length > 0) sections.push(currentSection);
 
-    // Collect all bills from all sections
+    // Collect all bills across all sections
     const allBills = new Map<string, {
       supplier: string; invoiceNo: string; invoiceDate: string;
       totalAmount: number;
-      items: { code: string; name: string; packing: string; quantity: number; free: number }[];
+      items: { code: string; name: string; packing: string; quantity: number; free: number;
+               rate: number; mrp: number; batch: string; expiry: string; hsn: string }[];
     }>();
 
     for (const section of sections) {
-      // Determine bill count from first line of this section
-      const firstCols = section[0].split('\t');
-      const billCount = Math.floor(firstCols.length / BILL_WIDTH);
-      if (billCount === 0) continue;
+      // Find header row (first row containing "Type")
+      const headerLine = section.find(l => l.split('\t').some(c => c.trim() === 'Type'));
+      if (!headerLine) continue;
 
-      // Temp storage for this section's bills (by column index)
-      const sectionBills = new Map<number, {
-        supplier: string; invoiceNo: string; invoiceDate: string;
-        totalAmount: number;
-        items: { code: string; name: string; packing: string; quantity: number; free: number }[];
-      }>();
+      const headerCols = headerLine.split('\t');
+      const offsets = this.detectBillOffsets(headerCols);
+      if (offsets.length === 0) continue;
 
-      for (let i = 0; i < billCount; i++) {
-        sectionBills.set(i, { supplier: '', invoiceNo: '', invoiceDate: '', totalAmount: 0, items: [] });
+      // Build column maps for each bill
+      const billMaps: { offset: number; colMap: Map<string, number> }[] = [];
+      for (let i = 0; i < offsets.length; i++) {
+        const end = i + 1 < offsets.length ? offsets[i + 1] : headerCols.length;
+        billMaps.push({ offset: offsets[i], colMap: this.buildColumnMap(headerCols, offsets[i], end) });
       }
+
+      // Init section bills
+      const sectionBills = billMaps.map(() => ({
+        supplier: '', invoiceNo: '', invoiceDate: '', totalAmount: 0,
+        items: [] as { code: string; name: string; packing: string; quantity: number; free: number;
+                       rate: number; mrp: number; batch: string; expiry: string; hsn: string }[]
+      }));
 
       for (const line of section) {
         const cols = line.split('\t');
 
-        for (let b = 0; b < billCount; b++) {
-          const offset = b * BILL_WIDTH;
+        for (let b = 0; b < billMaps.length; b++) {
+          const { offset, colMap } = billMaps[b];
           const type = cols[offset]?.trim();
-          const col1 = cols[offset + 1]?.trim() || '';
-          const col2 = cols[offset + 2]?.trim() || '';
-          const col3 = cols[offset + 3]?.trim() || '';
-          const col4 = cols[offset + 4]?.trim() || '';
-          const col5 = cols[offset + 5]?.trim() || '';
-
           if (!type || type === 'Type') continue;
 
-          const bill = sectionBills.get(b)!;
+          const bill = sectionBills[b];
+          // Helper to get column value by header name
+          const col = (name: string) => {
+            const idx = colMap.get(name);
+            return idx !== undefined ? cols[idx]?.trim() || '' : '';
+          };
 
           if (type === 'H') {
-            if (col1 === 'Supplier') bill.supplier = col2;
-            else if (col1 === 'Inv.No.') bill.invoiceNo = col2;
-            else if (col1 === 'Inv. Date') bill.invoiceDate = this.convertDDMMYYYYToISO(col2);
+            const label = col('Code');
+            const value = col('Name');
+            if (label === 'Supplier') bill.supplier = value;
+            else if (label === 'Inv.No.') bill.invoiceNo = value;
+            else if (label === 'Inv. Date') bill.invoiceDate = this.convertDDMMYYYYToISO(value);
           }
 
           if (type === 'D') {
-            const quantity = Math.round(parseFloat(col4) || 0);
-            const free = Math.round(parseFloat(col5) || 0);
+            const quantity = Math.round(parseFloat(col('Quantity')) || 0);
+            const free = Math.round(parseFloat(col('Free')) || 0);
             if (quantity <= 0 && free <= 0) continue;
 
-            bill.items.push({ code: col1, name: col2, packing: col3, quantity, free });
+            bill.items.push({
+              code: col('Code'),
+              name: col('Name'),
+              packing: col('Packing'),
+              quantity,
+              free,
+              rate: parseFloat(col('Selling Rate')) || 0,
+              mrp: parseFloat(col('MRP')) || 0,
+              batch: col('Batch No.'),
+              expiry: this.convertMMYYYYToISO(col('Exp. Date')),
+              hsn: col('Hsn') || col('HSN')
+            });
           }
 
-          if (type === 'F' && col1 === 'Bill Amount') {
-            bill.totalAmount = parseFloat(col2) || 0;
+          if (type === 'F') {
+            const label = col('Code');
+            if (label === 'Bill Amount') {
+              bill.totalAmount = parseFloat(col('Name')) || 0;
+            }
           }
         }
       }
 
-      // Merge into allBills by invoiceNo (avoid duplicates across sections)
-      for (const [, bill] of sectionBills) {
+      // Merge into allBills by invoiceNo
+      for (const bill of sectionBills) {
         if (!bill.invoiceNo) continue;
         if (!allBills.has(bill.invoiceNo)) {
           allBills.set(bill.invoiceNo, bill);
         } else {
-          // Same invoice in another section — merge items
           const existing = allBills.get(bill.invoiceNo)!;
           existing.items.push(...bill.items);
           if (bill.totalAmount > 0) existing.totalAmount = bill.totalAmount;
@@ -278,12 +323,12 @@ export class DataStoreService {
 
       for (const item of bill.items) {
         const product = await this.db.saveIfNotExists(
-          'products', { code: item.code, name: item.name, packing: item.packing }, 'code'
+          'products', { code: item.code, name: item.name, packing: item.packing, hsn: item.hsn }, 'code'
         );
 
         await this.db.add('productBatches', {
-          productId: product.id, batch: '', expiry: '',
-          qty: item.quantity, freeQty: item.free, rate: 0, mrp: 0, invoiceId
+          productId: product.id, batch: item.batch, expiry: item.expiry,
+          qty: item.quantity, freeQty: item.free, rate: item.rate, mrp: item.mrp, invoiceId
         });
       }
 

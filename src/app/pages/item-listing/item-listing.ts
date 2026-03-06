@@ -25,7 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class ItemListing implements AfterViewInit {
 
-  displayedColumns = ['name', 'batch', 'expiry', 'qty', 'rate', 'value'];
+  displayedColumns = ['name', 'batch', 'expiry', 'qty', 'mrp', 'value'];
   dataSource = new MatTableDataSource<any>([]);
   batches: any[] = [];
   searchTerm = '';

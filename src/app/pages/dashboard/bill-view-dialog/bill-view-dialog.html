@@ -73,7 +73,7 @@
                     <th class="px-2 py-1.5 text-center w-8">#</th>
                     <th class="px-2 py-1.5 text-left">Description</th>
                     <th class="px-2 py-1.5 text-left">Batch</th>
-                    <th class="px-2 py-1.5 text-right">Rate (₹)</th>
+                    <th class="px-2 py-1.5 text-right">MRP (₹)</th>
                     <th class="px-2 py-1.5 text-center">Qty</th>
                     <th class="px-2 py-1.5 text-left">Expiry</th>
                     <th class="px-2 py-1.5 text-right">Amount (₹)</th>
@@ -85,10 +85,10 @@
                     <td class="px-2 py-1.5 text-center text-gray-500">{{ $index + 1 }}</td>
                     <td class="px-2 py-1.5 text-gray-800">{{ item.name }}</td>
                     <td class="px-2 py-1.5 text-gray-600">{{ item.batch }}</td>
-                    <td class="px-2 py-1.5 text-right text-gray-700">{{ (item.rate || 0).toFixed(2) }}</td>
+                    <td class="px-2 py-1.5 text-right text-gray-700">{{ (item.mrp || 0).toFixed(2) }}</td>
                     <td class="px-2 py-1.5 text-center text-gray-700">{{ item.qty }}</td>
                     <td class="px-2 py-1.5 text-gray-600">{{ item.expiry }}</td>
-                    <td class="px-2 py-1.5 text-right font-medium text-gray-800">{{ (item.qty * item.rate).toFixed(2) }}
+                    <td class="px-2 py-1.5 text-right font-medium text-gray-800">{{ (item.qty * item.mrp).toFixed(2) }}
                     </td>
                 </tr>
                 }

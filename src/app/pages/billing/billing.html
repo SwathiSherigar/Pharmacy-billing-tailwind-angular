@@ -143,12 +143,12 @@
                         </td>
                     </ng-container>
 
-                    <!-- Rate -->
-                    <ng-container matColumnDef="rate">
-                        <th mat-header-cell *matHeaderCellDef>Rate</th>
+                    <!-- MRP -->
+                    <ng-container matColumnDef="mrp">
+                        <th mat-header-cell *matHeaderCellDef>MRP</th>
                         <td mat-cell *matCellDef="let i; let rowIndex = index" class="!px-1 !py-0">
                             <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                                <input matInput type="number" [(ngModel)]="i.rate" (input)="calculate(i)"
+                                <input matInput type="number" [(ngModel)]="i.mrp" (input)="calculate(i)"
                                     (keydown)="onItemKeydown($event, rowIndex)" required>
                             </mat-form-field>
                         </td>
@@ -168,11 +168,11 @@
                         </td>
                     </ng-container>
 
-                    <!-- MRP / Amount -->
-                    <ng-container matColumnDef="mrp">
+                    <!-- Amount -->
+                    <ng-container matColumnDef="amount">
                         <th mat-header-cell *matHeaderCellDef>Amount</th>
                         <td mat-cell *matCellDef="let i" class="!px-3 !py-0 !font-semibold !text-slate-700 !text-sm">
-                            ₹{{ i.mrp }}
+                            ₹{{ i.amount }}
                         </td>
                     </ng-container>
 

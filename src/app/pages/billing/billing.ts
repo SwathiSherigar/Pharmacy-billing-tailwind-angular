@@ -56,7 +56,7 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
 export class BillingComponent {
   patient: any = {};
   doctor: any = {};
-  items: any[] = [{ name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 }];
+  items: any[] = [{ name: '', batch: '', qty: 1, mrp: 0, expiry: '', amount: 0 }];
   patients: any[] = [];
   doctors: any[] = [];
   products: any[] = [];
@@ -66,7 +66,7 @@ export class BillingComponent {
   filteredItems: any[][] = [];
 
 
-  displayedColumns = ['name', 'batch', 'qty', 'rate', 'expiry', 'mrp', 'delete'];
+  displayedColumns = ['name', 'batch', 'qty', 'mrp', 'expiry', 'amount', 'delete'];
   isEditMode = false;
   editingBillId?: number;
   invoiceNo?: string;
@@ -104,7 +104,7 @@ export class BillingComponent {
 
     this.items = bill.items.map((i: any) => ({
       ...i,
-      mrp: i.qty * i.rate
+      amount: i.qty * i.mrp
     }));
   }
 
@@ -172,7 +172,7 @@ export class BillingComponent {
       if (batches.length > 0) {
         const batch = batches[0]; // First batch sorted by expiry (FIFO)
         this.items[index].batch = batch.batch;
-        this.items[index].rate = batch.rate;
+        this.items[index].mrp = batch.mrp;
         this.items[index].expiry = this.formatExpiryFromISO(batch.expiry);
         this.items[index].availableQty = batch.qty;
         this.items[index].batchId = batch.id;
@@ -223,7 +223,7 @@ export class BillingComponent {
           id: b.id,
           batch: b.batch,
           expiry: b.expiry,
-          rate: b.rate,
+          mrp: b.mrp,
           qty: b.qty,
         })),
       } as BatchAllocationData,
@@ -237,26 +237,26 @@ export class BillingComponent {
         productId: item.productId,
         batch: r.batch,
         qty: r.allocate,
-        rate: r.rate,
+        mrp: r.mrp,
         expiry: this.formatExpiryFromISO(r.expiry),
-        mrp: r.allocate * r.rate,
+        amount: r.allocate * r.mrp,
         availableQty: r.available,
         batchId: r.batchId,
       }));
 
       // Unfulfilled qty → separate row without batch
       if (result.unfulfilled > 0) {
-        const fallbackRate = newItems.length > 0
-          ? newItems[newItems.length - 1].rate
-          : item.rate;
+        const fallbackMrp = newItems.length > 0
+          ? newItems[newItems.length - 1].mrp
+          : item.mrp;
         newItems.push({
           name: item.name,
           productId: item.productId,
           batch: '',
           qty: result.unfulfilled,
-          rate: fallbackRate,
+          mrp: fallbackMrp,
           expiry: '',
-          mrp: result.unfulfilled * fallbackRate,
+          amount: result.unfulfilled * fallbackMrp,
         });
       }
 
@@ -278,13 +278,13 @@ export class BillingComponent {
   }
 
   calculate(item: any) {
-    const base = item.qty * item.rate;
-    item.mrp = base;
+    const base = item.qty * item.mrp;
+    item.amount = base;
   }
 
 
   get total() {
-    return this.items.reduce((sum, i) => sum + i.mrp, 0);
+    return this.items.reduce((sum, i) => sum + i.amount, 0);
   }
 
   async saveBill() {
@@ -392,7 +392,7 @@ export class BillingComponent {
     this.doctor = {};
 
     this.items = [
-      { name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 }
+      { name: '', batch: '', qty: 1, mrp: 0, expiry: '', amount: 0 }
     ];
 
     this.filteredPatients = [];
@@ -440,7 +440,7 @@ export class BillingComponent {
 
 
   addRow() {
-    const newItem = { name: '', batch: '', qty: 1, rate: 0, expiry: '', mrp: 0 };
+    const newItem = { name: '', batch: '', qty: 1, mrp: 0, expiry: '', amount: 0 };
 
     this.items = [...this.items, newItem];
     setTimeout(() => {
@@ -495,7 +495,7 @@ export class BillingComponent {
         }
 
         const total = data.items.reduce(
-          (sum: number, i: any) => sum + (i.qty * i.rate),
+          (sum: number, i: any) => sum + (i.qty * i.mrp),
           0
         );
 
@@ -505,7 +505,7 @@ export class BillingComponent {
           doctorId: savedDoctor.id,
           items: data.items.map((i: any) => ({
             ...i,
-            mrp: i.qty * i.rate
+            amount: i.qty * i.mrp
           })),
           total,
           date: data.date ? new Date(data.date) : new Date()
