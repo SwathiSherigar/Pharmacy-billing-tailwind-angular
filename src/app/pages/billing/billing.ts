@@ -82,6 +82,27 @@ export class BillingComponent {
     this.loadData();
   }
 
+  get billTimeString(): string {
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${pad(this.billDate.getHours())}:${pad(this.billDate.getMinutes())}`;
+  }
+
+  onDateChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const newDate = input.valueAsDate;
+    if (!newDate) return;
+    newDate.setHours(this.billDate.getHours(), this.billDate.getMinutes(), this.billDate.getSeconds());
+    this.billDate = newDate;
+  }
+
+  onTimeChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const [hours, minutes] = input.value.split(':').map(Number);
+    const updated = new Date(this.billDate);
+    updated.setHours(hours, minutes);
+    this.billDate = updated;
+  }
+
   allowOnlyNumbers(e: KeyboardEvent) {
     if (!/[0-9]/.test(e.key)) {
       e.preventDefault();

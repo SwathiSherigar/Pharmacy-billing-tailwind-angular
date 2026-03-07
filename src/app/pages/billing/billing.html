@@ -200,7 +200,12 @@
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Date</span>
-                <input type="date" [valueAsDate]="billDate" (change)="billDate = $any($event.target).valueAsDate || billDate"
+                <input type="date" [valueAsDate]="billDate" (change)="onDateChange($event)"
+                    class="h-8 px-2 rounded-lg border border-slate-300 text-sm text-slate-700 outline-none focus:border-[#1C2B70]">
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Time</span>
+                <input type="time" [value]="billTimeString" (change)="onTimeChange($event)"
                     class="h-8 px-2 rounded-lg border border-slate-300 text-sm text-slate-700 outline-none focus:border-[#1C2B70]">
             </div>
             <div class="flex items-center gap-2">
