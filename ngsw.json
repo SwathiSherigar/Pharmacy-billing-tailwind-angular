@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1772864764964,
+  "timestamp": 1772865303845,
   "index": "/Pharmacy-billing-tailwind-angular/index.html",
   "assetGroups": [
     {
@@ -11,13 +11,13 @@
         "ignoreVary": true
       },
       "urls": [
+        "/Pharmacy-billing-tailwind-angular/chunk-3LKFIEA4.js",
         "/Pharmacy-billing-tailwind-angular/chunk-3PIWSYWM.js",
-        "/Pharmacy-billing-tailwind-angular/chunk-3XI4ULQL.js",
-        "/Pharmacy-billing-tailwind-angular/chunk-4TEO6ZQB.js",
         "/Pharmacy-billing-tailwind-angular/chunk-5Q2BREI5.js",
         "/Pharmacy-billing-tailwind-angular/chunk-7G76UXZ4.js",
         "/Pharmacy-billing-tailwind-angular/chunk-7UIQ2LUM.js",
-        "/Pharmacy-billing-tailwind-angular/chunk-B6XBFUCN.js",
+        "/Pharmacy-billing-tailwind-angular/chunk-A3JNHREM.js",
+        "/Pharmacy-billing-tailwind-angular/chunk-AX7BNYKO.js",
         "/Pharmacy-billing-tailwind-angular/chunk-DL3DRFQO.js",
         "/Pharmacy-billing-tailwind-angular/chunk-FK6H3RFT.js",
         "/Pharmacy-billing-tailwind-angular/chunk-IJ6MGXGK.js",
@@ -31,7 +31,7 @@
         "/Pharmacy-billing-tailwind-angular/chunk-VG7E7Y6O.js",
         "/Pharmacy-billing-tailwind-angular/favicon.ico",
         "/Pharmacy-billing-tailwind-angular/index.html",
-        "/Pharmacy-billing-tailwind-angular/main-OAWUSMPX.js",
+        "/Pharmacy-billing-tailwind-angular/main-AZS257OD.js",
         "/Pharmacy-billing-tailwind-angular/manifest.webmanifest",
         "/Pharmacy-billing-tailwind-angular/styles-JGMU2ETA.css"
       ],
@@ -65,13 +65,13 @@
     "/Pharmacy-billing-tailwind-angular/assets/fonts/NotoSans-Bold.ttf": "bc7f5e39185c4912c013624fcf123fe213b14890",
     "/Pharmacy-billing-tailwind-angular/assets/fonts/NotoSans-Regular.ttf": "f04a504e2078d6c01b3bf453c0d18c4f77c2133b",
     "/Pharmacy-billing-tailwind-angular/assets/images/logo.png": "f89447d1c25500d07512035405c04bc0c5cb1a76",
+    "/Pharmacy-billing-tailwind-angular/chunk-3LKFIEA4.js": "ac1742212ef0711ffc7da1b6aaffad6bd8c6ba5c",
     "/Pharmacy-billing-tailwind-angular/chunk-3PIWSYWM.js": "a2ba38f29ec18bd7f4fe4e4082d18024cb1a877d",
-    "/Pharmacy-billing-tailwind-angular/chunk-3XI4ULQL.js": "6b83b3e13f2dd7559d0907fa89bfae4c6e38721e",
-    "/Pharmacy-billing-tailwind-angular/chunk-4TEO6ZQB.js": "68ebf3e865889999e798f3903e0022d7bf099b2f",
     "/Pharmacy-billing-tailwind-angular/chunk-5Q2BREI5.js": "1c073813da5773a7af0da4c6e8119fadac54114c",
     "/Pharmacy-billing-tailwind-angular/chunk-7G76UXZ4.js": "af99f8025047aa641f1c34454b6a45873cf53f8a",
     "/Pharmacy-billing-tailwind-angular/chunk-7UIQ2LUM.js": "4f0c1078aa80de1609b340f7acb5c81e3f668571",
-    "/Pharmacy-billing-tailwind-angular/chunk-B6XBFUCN.js": "528f02373a6004d3c8f48a8e54c668df8484d28c",
+    "/Pharmacy-billing-tailwind-angular/chunk-A3JNHREM.js": "07306a8e2abec79107b5d148d174273ebd6d9953",
+    "/Pharmacy-billing-tailwind-angular/chunk-AX7BNYKO.js": "35634b78449f8d8f6069b5cf8d9b8810fa659172",
     "/Pharmacy-billing-tailwind-angular/chunk-DL3DRFQO.js": "ad35d4d813b459a729e53b303b63433c252a06eb",
     "/Pharmacy-billing-tailwind-angular/chunk-FK6H3RFT.js": "3c538698719f1cf34410542b8c702bc484e025ee",
     "/Pharmacy-billing-tailwind-angular/chunk-IJ6MGXGK.js": "0b5a1c89f8b0a6058a632304892e15a48b84f212",
@@ -92,8 +92,8 @@
     "/Pharmacy-billing-tailwind-angular/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
     "/Pharmacy-billing-tailwind-angular/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
     "/Pharmacy-billing-tailwind-angular/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
-    "/Pharmacy-billing-tailwind-angular/index.html": "c565edf5df33c7a7461015cfc75aaf6cfc3643e5",
-    "/Pharmacy-billing-tailwind-angular/main-OAWUSMPX.js": "0cd688743d0784cb8f943f6534a57356f3126662",
+    "/Pharmacy-billing-tailwind-angular/index.html": "567a792e625807d75fdf8c0245e66a1190441792",
+    "/Pharmacy-billing-tailwind-angular/main-AZS257OD.js": "0e38afb73fd8324f17523fffc3454c6d7ca96ac9",
     "/Pharmacy-billing-tailwind-angular/manifest.webmanifest": "9bb27f26da11d7d008b0aff2b9825b80337a313c",
     "/Pharmacy-billing-tailwind-angular/styles-JGMU2ETA.css": "991fabc1d559dacde6841936ef466f4e91bfd9ae"
   },
