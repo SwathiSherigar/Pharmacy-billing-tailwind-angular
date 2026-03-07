@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { FONT } from '../constants/font';
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -17,16 +16,34 @@ export interface BillData { patient: Patient; doctor: Doctor; items: Item[]; inv
 @Injectable({ providedIn: 'root' })
 export class PdfService {
 
+  private fontBase64: string | null = null;
+
   constructor() { }
 
-  generateBill(data: BillData) {
+  private async loadFont(): Promise<string> {
+    if (this.fontBase64) return this.fontBase64;
+
+    const response = await fetch('assets/fonts/NotoSans-Regular.ttf');
+    const buffer = await response.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    this.fontBase64 = btoa(binary);
+    return this.fontBase64;
+  }
+
+  async generateBill(data: BillData) {
+    const font = await this.loadFont();
+
     const doc = new jsPDF({
       orientation: 'landscape',
       unit: 'mm',
       format: 'a5'
     });
 
-    (doc as any).addFileToVFS("NotoSans-Regular.ttf", FONT);
+    (doc as any).addFileToVFS("NotoSans-Regular.ttf", font);
     (doc as any).addFont("NotoSans-Regular.ttf", "NotoSans", "normal");
     (doc as any).addFont("NotoSans-Regular.ttf", "NotoSans", "bold");
 
@@ -170,9 +187,6 @@ export class PdfService {
       bodyStyles: {
         fillColor: [255, 255, 255]
       },
-      // alternateRowStyles: {
-      //   fillColor: [250, 250, 255]
-      // },
       columnStyles: {
         0: { halign: 'center', cellWidth: 8 },
         1: { cellWidth: 'auto' },

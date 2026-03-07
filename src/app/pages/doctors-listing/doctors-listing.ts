@@ -3,7 +3,8 @@ import {
   ViewChild,
   AfterViewInit,
   computed,
-  effect
+  effect,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -29,6 +30,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule
   ],
   templateUrl: './doctors-listing.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './doctors-listing.css',
 })
 export class DoctorsListing implements AfterViewInit {

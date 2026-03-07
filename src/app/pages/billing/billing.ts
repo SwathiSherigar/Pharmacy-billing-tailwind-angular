@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -50,6 +50,7 @@ const CUSTOM_DATE_FORMATS: MatDateFormats = {
     { provide: DateAdapter, useClass: CustomMonthYearAdapter },
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS }
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './billing.html',
   styleUrl: './billing.css',
 })

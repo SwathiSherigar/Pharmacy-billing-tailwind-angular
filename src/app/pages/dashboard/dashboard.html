@@ -9,7 +9,7 @@
         </div>
         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Bills</span>
       </div>
-      <span class="text-xl font-extrabold text-[#1C2B70]">{{ totalBills }}</span>
+      <span class="text-xl font-extrabold text-[#1C2B70]">{{ totalBills() }}</span>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
       <div class="flex items-center gap-2 mb-1">
@@ -18,7 +18,7 @@
         </div>
         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Revenue</span>
       </div>
-      <span class="text-xl font-extrabold text-emerald-600">₹{{ totalRevenue.toFixed(2) }}</span>
+      <span class="text-xl font-extrabold text-emerald-600">₹{{ totalRevenue().toFixed(2) }}</span>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
       <div class="flex items-center gap-2 mb-1">
@@ -27,7 +27,7 @@
         </div>
         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Patients</span>
       </div>
-      <span class="text-xl font-extrabold text-violet-600">{{ uniquePatients }}</span>
+      <span class="text-xl font-extrabold text-violet-600">{{ uniquePatients() }}</span>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 px-4 py-3">
       <div class="flex items-center gap-2 mb-1">
@@ -36,7 +36,7 @@
         </div>
         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Today's Bills</span>
       </div>
-      <span class="text-xl font-extrabold text-amber-600">{{ todayBills }}</span>
+      <span class="text-xl font-extrabold text-amber-600">{{ todayBills() }}</span>
     </div>
   </div>
 
@@ -133,7 +133,7 @@
 
     <div class="border-t border-slate-100 flex items-center justify-between px-4">
       <span class="text-xs text-slate-400">
-        Showing {{ dataSource.filteredData.length }} of {{ totalBills }} entries
+        Showing {{ dataSource.filteredData.length }} of {{ totalBills() }} entries
       </span>
       <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>

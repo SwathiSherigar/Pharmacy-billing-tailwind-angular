@@ -3,7 +3,8 @@ import {
   AfterViewInit,
   ViewChild,
   computed,
-  effect
+  effect,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -28,6 +29,7 @@ import { SettingsDialog } from './settings-dialog/settings-dialog';
     MatPaginatorModule,
     MatSortModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -41,6 +43,26 @@ export class Dashboard implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   bills = computed(() => this.store.enrichedBills());
+
+  totalBills = computed(() => this.bills().length);
+
+  totalRevenue = computed(() =>
+    this.bills().reduce((sum: number, b: any) => sum + (b.total || 0), 0)
+  );
+
+  uniquePatients = computed(() =>
+    new Set(this.bills().map((b: any) => b.patient?.name)).size
+  );
+
+  todayBills = computed(() => {
+    const today = new Date();
+    return this.bills().filter((b: any) => {
+      const d = new Date(b.date);
+      return d.getDate() === today.getDate() &&
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear();
+    }).length;
+  });
 
   constructor(
     private router: Router,
@@ -67,28 +89,6 @@ export class Dashboard implements AfterViewInit {
       const searchStr = `${data.invoiceNo} ${data.patient?.name} ${data.doctor?.name}`.toLowerCase();
       return searchStr.includes(filter);
     };
-  }
-
-  get totalBills(): number {
-    return this.bills().length;
-  }
-
-  get totalRevenue(): number {
-    return this.bills().reduce((sum: number, b: any) => sum + (b.total || 0), 0);
-  }
-
-  get uniquePatients(): number {
-    return new Set(this.bills().map((b: any) => b.patient?.name)).size;
-  }
-
-  get todayBills(): number {
-    const today = new Date();
-    return this.bills().filter((b: any) => {
-      const d = new Date(b.date);
-      return d.getDate() === today.getDate() &&
-        d.getMonth() === today.getMonth() &&
-        d.getFullYear() === today.getFullYear();
-    }).length;
   }
 
   applyFilter() {

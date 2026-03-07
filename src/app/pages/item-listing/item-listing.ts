@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator } from '@angular/material/paginator';
@@ -21,6 +21,7 @@ import { MatDialog } from '@angular/material/dialog';
     MatButtonModule
   ],
   templateUrl: './item-listing.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './item-listing.css',
 })
 export class ItemListing implements AfterViewInit {
