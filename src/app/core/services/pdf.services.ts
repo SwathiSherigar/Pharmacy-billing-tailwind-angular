@@ -44,7 +44,8 @@ export class PdfService {
     doc.setFont('NotoSans', 'normal');
     doc.setFontSize(7.5);
     doc.setTextColor(80, 80, 80);
-    doc.text('DL No: KA-BE2-274110', pageWidth / 2, 16, { align: 'center' });
+    doc.text('DL No: KA-BE2-274110  |  KA-BE2-27411', pageWidth / 2, 16, { align: 'center' });
+
     doc.text('1/326 Main Road, Hurulihal, Kudligi, Karnataka 583126', pageWidth / 2, 20, { align: 'center' });
     doc.text('Ph: +91 7411830930  |  Email: akashsm0555@gmail.com', pageWidth / 2, 24, { align: 'center' });
 
