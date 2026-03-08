@@ -1,7 +1,7 @@
 <div class="p-4 !pt-0 flex flex-col gap-3 h-full" style="height: calc(100vh - 60px);">
 
   <!-- Stats Cards -->
-  <div class="grid grid-cols-2 md:grid-cols-5 gap-3 pt-2">
+  <div class="grid grid-cols-2 md:grid-cols-6 gap-3 pt-2">
     <div class="bg-white rounded-xl shadow-sm border px-4 py-3 cursor-pointer transition-all"
       [class]="activeFilter === 'all' ? 'border-[#1C2B70] ring-2 ring-[#1C2B70]/10' : 'border-slate-200/80 hover:border-slate-300'"
       (click)="filterByExpiry('all')">
@@ -53,9 +53,20 @@
       </div>
       <span class="text-xl font-extrabold text-red-500">{{ expiredCount }}</span>
     </div>
+    <div class="bg-white rounded-xl shadow-sm border px-4 py-3 cursor-pointer transition-all"
+      [class]="activeFilter === 'returned' ? 'border-slate-500 ring-2 ring-slate-400/10' : 'border-slate-200/80 hover:border-slate-300'"
+      (click)="filterByExpiry('returned')">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
+          <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4 text-slate-500">assignment_return</mat-icon>
+        </div>
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Returned</span>
+      </div>
+      <span class="text-xl font-extrabold text-slate-500">{{ returnedCount }}</span>
+    </div>
   </div>
 
-  <!-- Toolbar: Search + Import -->
+  <!-- Toolbar: Search + Import + Mark Returned -->
   <div class="flex items-center justify-between gap-3">
     <div class="relative flex-1 max-w-md">
       <mat-icon class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] !w-[18px] !h-[18px] text-slate-400 pointer-events-none z-10">search</mat-icon>
@@ -74,6 +85,14 @@
       }
     </div>
     <div class="flex items-center gap-2">
+      @if (activeFilter === 'expired' && selection.selected.length > 0) {
+      <button mat-flat-button
+        class="!bg-red-600 !text-white !rounded-lg !font-semibold !h-9 !text-sm"
+        (click)="markAsReturned()">
+        <mat-icon class="material-symbols-outlined !text-[18px]">assignment_return</mat-icon>
+        Mark as Returned ({{ selection.selected.length }})
+      </button>
+      }
       <button mat-flat-button
         class="!bg-[#1C2B70] !text-white !rounded-lg !font-semibold !h-9 !text-sm"
         (click)="fileInput.click()">
@@ -88,6 +107,23 @@
   <div class="flex flex-col bg-white rounded-xl shadow-sm border border-slate-200/80 flex-1 overflow-hidden">
     <div class="overflow-auto flex-1">
       <table mat-table [dataSource]="dataSource" matSort class="w-full item-table">
+
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef class="!w-12 !px-2">
+            <mat-checkbox
+              [checked]="isAllSelected()"
+              [indeterminate]="isSomeSelected()"
+              (change)="toggleAllRows()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row" class="!w-12 !px-2">
+            <mat-checkbox
+              [checked]="selection.isSelected(row)"
+              (change)="selection.toggle(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
 
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Product Name </th>
@@ -121,19 +157,17 @@
           <td mat-cell *matCellDef="let b" class="!text-slate-700"> {{ b.mrp.toFixed(2) }} </td>
         </ng-container>
 
-        <!-- <ng-container matColumnDef="value">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Stock Value </th>
-          <td mat-cell *matCellDef="let b" class="!font-semibold !text-slate-700"> {{ (b.qty * b.mrp).toFixed(2) }} </td>
-        </ng-container> -->
-
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"
-          class="hover:!bg-slate-50/80 transition-colors"></tr>
+          class="hover:!bg-slate-50/80 transition-colors"
+          [class.!bg-red-50/40]="selection.isSelected(row)"></tr>
 
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell text-center !py-8 !text-slate-400 !text-sm" [attr.colspan]="displayedColumns.length">
             @if (searchTerm) {
               No items matching "{{ searchTerm }}"
+            } @else if (activeFilter === 'returned') {
+              No returned items yet
             } @else {
               No inventory data available
             }

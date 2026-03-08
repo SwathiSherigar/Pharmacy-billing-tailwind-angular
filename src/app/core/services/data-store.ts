@@ -99,6 +99,10 @@ export class DataStoreService {
     return await this.db.getAll('productBatches');
   }
 
+  async updateBatch(batch: any) {
+    await this.db.update('productBatches', batch);
+  }
+
   async deductInventory(items: any[]) {
     for (const item of items) {
       if (!item.batchId) continue;

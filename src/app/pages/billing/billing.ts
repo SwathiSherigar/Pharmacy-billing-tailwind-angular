@@ -219,8 +219,9 @@ export class BillingComponent {
   // --- Inventory helpers ---
 
   getBatchesForProduct(productId: number): any[] {
+    const now = new Date();
     return this.productBatches
-      .filter((b: any) => b.productId === productId && b.qty > 0)
+      .filter((b: any) => b.productId === productId && b.qty > 0 && !b.returned && new Date(b.expiry) > now)
       .sort((a: any, b: any) => new Date(a.expiry).getTime() - new Date(b.expiry).getTime());
   }
 

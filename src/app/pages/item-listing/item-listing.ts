@@ -1,10 +1,12 @@
-import { Component, ViewChild, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SelectionModel } from '@angular/cdk/collections';
 import { Router } from '@angular/router';
 import { DataStoreService } from '../../core/services/data-store';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,7 +20,8 @@ import { MatDialog } from '@angular/material/dialog';
     MatTableModule,
     MatPaginator,
     MatSortModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCheckboxModule
   ],
   templateUrl: './item-listing.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +33,7 @@ export class ItemListing implements AfterViewInit {
   dataSource = new MatTableDataSource<any>([]);
   batches: any[] = [];
   searchTerm = '';
+  selection = new SelectionModel<any>(true, []);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -37,7 +41,8 @@ export class ItemListing implements AfterViewInit {
   constructor(
     private router: Router,
     private store: DataStoreService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {
     this.loadBatches();
   }
@@ -47,49 +52,111 @@ export class ItemListing implements AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
+  get activeBatches(): any[] {
+    const now = new Date();
+    return this.batches.filter(b => !b.returned && new Date(b.expiry) > now);
+  }
+
   get totalBatches(): number {
-    return this.batches.length;
+    return this.activeBatches.length;
   }
 
   get uniqueProducts(): number {
-    return new Set(this.batches.map(b => b.name)).size;
+    return new Set(this.activeBatches.map(b => b.name)).size;
   }
 
   get totalQty(): number {
-    return this.batches.reduce((sum, b) => sum + (b.qty || 0), 0);
+    return this.activeBatches.reduce((sum, b) => sum + (b.qty || 0), 0);
   }
 
-  activeFilter: 'all' | 'expiring' | 'expired' = 'all';
+  activeFilter: 'all' | 'expiring' | 'expired' | 'returned' = 'all';
 
   get expiringSoonCount(): number {
     const now = new Date();
     const threeMonths = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate());
     return this.batches.filter(b => {
       const exp = new Date(b.expiry);
-      return exp > now && exp <= threeMonths;
+      return exp > now && exp <= threeMonths && !b.returned;
     }).length;
   }
 
   get expiredCount(): number {
     const now = new Date();
-    return this.batches.filter(b => new Date(b.expiry) <= now).length;
+    return this.batches.filter(b => new Date(b.expiry) <= now && !b.returned).length;
   }
 
-  filterByExpiry(type: 'all' | 'expiring' | 'expired') {
+  get returnedCount(): number {
+    return this.batches.filter(b => b.returned).length;
+  }
+
+  get showSelectionColumn(): boolean {
+    return this.activeFilter === 'expired';
+  }
+
+  private updateColumns() {
+    if (this.showSelectionColumn) {
+      this.displayedColumns = ['select', 'name', 'batch', 'expiry', 'qty', 'mrp'];
+    } else {
+      this.displayedColumns = ['name', 'batch', 'expiry', 'qty', 'mrp'];
+    }
+  }
+
+  filterByExpiry(type: 'all' | 'expiring' | 'expired' | 'returned') {
     this.activeFilter = type;
+    this.selection.clear();
     const now = new Date();
     const threeMonths = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate());
 
     if (type === 'expiring') {
       this.dataSource.data = this.batches.filter(b => {
         const exp = new Date(b.expiry);
-        return exp > now && exp <= threeMonths;
+        return exp > now && exp <= threeMonths && !b.returned;
       });
     } else if (type === 'expired') {
-      this.dataSource.data = this.batches.filter(b => new Date(b.expiry) <= now);
+      this.dataSource.data = this.batches.filter(b => new Date(b.expiry) <= now && !b.returned);
+    } else if (type === 'returned') {
+      this.dataSource.data = this.batches.filter(b => b.returned);
     } else {
-      this.dataSource.data = this.batches;
+      this.dataSource.data = this.batches.filter(b => !b.returned);
     }
+
+    this.updateColumns();
+    this.cdr.markForCheck();
+  }
+
+  isAllSelected(): boolean {
+    return this.selection.selected.length > 0 &&
+      this.selection.selected.length === this.dataSource.filteredData.length;
+  }
+
+  isSomeSelected(): boolean {
+    return this.selection.selected.length > 0 && !this.isAllSelected();
+  }
+
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.dataSource.filteredData.forEach(row => this.selection.select(row));
+    }
+  }
+
+  async markAsReturned() {
+    const selected = this.selection.selected;
+    if (selected.length === 0) return;
+
+    const confirmed = confirm(`Mark ${selected.length} item(s) as returned?`);
+    if (!confirmed) return;
+
+    for (const batch of selected) {
+      batch.returned = true;
+      batch.returnedDate = new Date().toISOString();
+      await this.store.updateBatch(batch);
+    }
+
+    this.selection.clear();
+    this.filterByExpiry(this.activeFilter);
+    this.cdr.markForCheck();
   }
 
   applyFilter() {
@@ -113,11 +180,12 @@ export class ItemListing implements AfterViewInit {
       };
     });
 
-    this.dataSource.data = this.batches;
+    this.dataSource.data = this.batches.filter(b => !b.returned);
     this.dataSource.filterPredicate = (data: any, filter: string) => {
       const searchStr = `${data.name} ${data.batch} ${data.expiry}`.toLowerCase();
       return searchStr.includes(filter);
     };
+    this.cdr.markForCheck();
   }
 
   async importFile(event: any) {
