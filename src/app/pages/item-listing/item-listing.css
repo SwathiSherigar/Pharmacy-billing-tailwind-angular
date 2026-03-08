@@ -36,3 +36,9 @@
 :host ::ng-deep .mat-sort-header-arrow {
   color: rgba(255, 255, 255, 0.7) !important;
 }
+
+@media (max-width: 768px) {
+  :host ::ng-deep .item-table {
+    min-width: 600px;
+  }
+}

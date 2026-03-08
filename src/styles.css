@@ -266,3 +266,29 @@
 .dark .mat-sort-header-arrow {
   color: rgba(255, 255, 255, 0.7) !important;
 }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — Global
+   ═══════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  /* Compact paginator on mobile */
+  .mat-mdc-paginator .mat-mdc-paginator-page-size {
+    display: none !important;
+  }
+
+  .mat-mdc-paginator-container {
+    justify-content: center !important;
+    padding: 4px 0 !important;
+  }
+
+  .mat-mdc-paginator-range-label {
+    margin: 0 8px !important;
+    font-size: 12px !important;
+  }
+
+  /* Prevent horizontal page overflow */
+  .mat-mdc-dialog-surface {
+    max-width: 95vw !important;
+  }
+}

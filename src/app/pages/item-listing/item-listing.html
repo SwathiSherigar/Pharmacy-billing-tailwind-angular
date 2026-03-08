@@ -67,7 +67,7 @@
   </div>
 
   <!-- Toolbar: Search + Import + Mark Returned -->
-  <div class="flex items-center justify-between gap-3">
+  <div class="flex flex-wrap items-center justify-between gap-3">
     <div class="relative flex-1 max-w-md">
       <mat-icon class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] !w-[18px] !h-[18px] text-slate-400 pointer-events-none z-10">search</mat-icon>
       <input type="text"
@@ -178,7 +178,7 @@
 
     <!-- Footer with paginator -->
     <div class="border-t border-slate-100 dark:border-slate-700 flex items-center justify-between px-4">
-      <span class="text-xs text-slate-400 dark:!text-slate-500">
+      <span class="text-xs text-slate-400 dark:!text-slate-500 hidden sm:inline">
         Showing {{ dataSource.filteredData.length }} of {{ batches.length }} entries
       </span>
       <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>

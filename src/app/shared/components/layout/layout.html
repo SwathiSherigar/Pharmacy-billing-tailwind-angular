@@ -3,6 +3,9 @@
   <!-- Topbar -->
   <topbar [isCollapsed]="collapsed" (toggle)="toggle()"></topbar>
 
+  <!-- Mobile backdrop -->
+  <div class="sidebar-backdrop" [class.hidden]="collapsed" (click)="toggle()"></div>
+
   <!-- Sidebar -->
   <aside class="sidebar-wrapper" [class.collapsed]="collapsed">
     <sidebar [collapsed]="collapsed"></sidebar>

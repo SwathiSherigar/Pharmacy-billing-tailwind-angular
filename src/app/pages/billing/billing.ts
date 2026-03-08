@@ -251,7 +251,8 @@ export class BillingComponent {
 
     // Open batch allocation dialog
     const dialogRef = this.dialog.open(BatchAllocationDialog, {
-      width: '700px',
+      width: '95vw',
+      maxWidth: '700px',
       disableClose: true,
       data: {
         productName: item.name,

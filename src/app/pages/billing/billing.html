@@ -12,7 +12,7 @@
                 </div>
                 <span class="text-xs font-bold text-[#1C2B70] dark:text-blue-400 uppercase tracking-widest">Patient</span>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-2">
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
                     <input matInput [matAutocomplete]="patientAuto" placeholder="Name" [(ngModel)]="patient.name"
                         (ngModelChange)="filterPatients()" required>
@@ -42,7 +42,7 @@
                 </div>
                 <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Doctor</span>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-2">
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
                     <input matInput [matAutocomplete]="doctorAuto" placeholder="Name" [(ngModel)]="doctor.name"
                         (ngModelChange)="filterDoctors()" required>
@@ -196,8 +196,8 @@
     }
 
     <!-- FOOTER -->
-    <div class="footer-bar mx-4 mb-3 mt-3 px-5 py-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-700 flex justify-between items-center">
-        <div class="flex items-center gap-4">
+    <div class="footer-bar mx-4 mb-3 mt-3 px-4 sm:px-5 py-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-700 flex flex-wrap justify-between items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4">
             <div class="flex items-center gap-2">
                 <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Date</span>
                 <input type="date" [valueAsDate]="billDate" (change)="onDateChange($event)"
@@ -210,17 +210,17 @@
             </div>
             <div class="flex items-center gap-2">
                 <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Grand Total</span>
-                <span class="text-2xl font-extrabold text-[#1C2B70] dark:text-blue-400 tracking-tight">₹{{ total }}</span>
+                <span class="text-xl sm:text-2xl font-extrabold text-[#1C2B70] dark:text-blue-400 tracking-tight">₹{{ total }}</span>
             </div>
         </div>
-        <div class="flex gap-3">
+        <div class="flex gap-2 sm:gap-3">
             <button mat-raised-button color="primary" (click)="saveBill()" class="action-btn">
                 <mat-icon class="material-symbols-outlined">save</mat-icon> Save
-                <span class="shortcut-hint">F9</span>
+                <span class="shortcut-hint hidden sm:inline-block">F9</span>
             </button>
             <button mat-raised-button color="accent" (click)="printBill()" class="action-btn">
                 <mat-icon class="material-symbols-outlined">print</mat-icon> Print
-                <span class="shortcut-hint">F10</span>
+                <span class="shortcut-hint hidden sm:inline-block">F10</span>
             </button>
         </div>
     </div>

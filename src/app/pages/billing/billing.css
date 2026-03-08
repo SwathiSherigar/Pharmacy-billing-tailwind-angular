@@ -247,3 +247,10 @@
 :host-context(.dark) ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  :host ::ng-deep .billing-table {
+    min-width: 700px;
+  }
+}

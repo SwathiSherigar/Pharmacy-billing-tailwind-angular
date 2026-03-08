@@ -8,6 +8,8 @@
 
 topbar {
   grid-column: 1 / 3;
+  z-index: 50;
+  position: relative;
 }
 
 .sidebar-wrapper {
@@ -23,10 +25,17 @@ topbar {
 .content-wrapper {
   background-color: #f1f5f9;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 :host-context(.dark) .content-wrapper {
   background-color: #0f172a;
+}
+
+/* Sidebar overlay backdrop for mobile */
+.sidebar-backdrop {
+  display: none;
 }
 
 /* ─── Responsive ─── */
@@ -35,20 +44,40 @@ topbar {
     grid-template-columns: 1fr;
   }
 
+  topbar {
+    grid-column: 1;
+  }
+
   .sidebar-wrapper {
     position: fixed;
     left: 0;
     top: 56px;
-    z-index: 40;
+    z-index: 100;
     height: calc(100vh - 56px);
     width: 240px;
+    overflow: visible;
   }
 
   .sidebar-wrapper.collapsed {
     width: 0;
+    overflow: hidden;
   }
 
   .content-wrapper {
     grid-column: 1;
+  }
+
+  /* Backdrop when sidebar is open on mobile */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    top: 56px;
+    z-index: 99;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .sidebar-backdrop.hidden {
+    display: none;
   }
 }

@@ -113,7 +113,8 @@ export class Dashboard implements AfterViewInit {
   viewBill(data: any) {
     const dialogRef = this.dialog.open(BillViewDialog, {
       data: { ...data, type: 'patient' },
-      width: '700px',
+      width: '95vw',
+      maxWidth: '700px',
       maxHeight: '85vh',
       autoFocus: false,
       panelClass: 'dialog-wrapper',
@@ -133,6 +134,6 @@ export class Dashboard implements AfterViewInit {
   }
 
   openSettings() {
-    this.dialog.open(SettingsDialog, { width: '400px' });
+    this.dialog.open(SettingsDialog, { width: '95vw', maxWidth: '400px' });
   }
 }
