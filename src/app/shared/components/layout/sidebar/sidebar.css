@@ -13,6 +13,11 @@
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+:host-context(.dark) .sidebar-nav {
+  background: #0f172a;
+  border-right-color: #1e293b;
+}
+
 .sidebar-nav.collapsed {
   width: 68px;
   padding: 12px 8px;
@@ -39,15 +44,29 @@
   position: relative;
 }
 
+:host-context(.dark) .menu-item {
+  color: #94a3b8;
+}
+
 .menu-item:hover {
   background: #f1f5f9;
   color: #334155;
+}
+
+:host-context(.dark) .menu-item:hover {
+  background: #1e293b;
+  color: #e2e8f0;
 }
 
 .menu-item.active {
   background: linear-gradient(135deg, #1C2B70 0%, #263680 100%);
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(28, 43, 112, 0.25);
+}
+
+:host-context(.dark) .menu-item.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .menu-item.active .icon-box mat-icon {
@@ -74,6 +93,10 @@
   background: #f1f5f9;
 }
 
+:host-context(.dark) .menu-item:not(.active) .icon-box {
+  background: #1e293b;
+}
+
 .menu-item.active .icon-box {
   background: rgba(255, 255, 255, 0.15);
 }
@@ -86,8 +109,16 @@
   transition: color 0.15s ease;
 }
 
+:host-context(.dark) .icon-box mat-icon {
+  color: #94a3b8 !important;
+}
+
 .menu-item:hover .icon-box mat-icon {
   color: #1C2B70 !important;
+}
+
+:host-context(.dark) .menu-item:hover .icon-box mat-icon {
+  color: #93c5fd !important;
 }
 
 .menu-item.active .icon-box mat-icon {
@@ -133,9 +164,18 @@
   transition: all 0.12s ease;
 }
 
+:host-context(.dark) .submenu-item {
+  color: #94a3b8;
+}
+
 .submenu-item:hover {
   background: #f1f5f9;
   color: #334155;
+}
+
+:host-context(.dark) .submenu-item:hover {
+  background: #1e293b;
+  color: #e2e8f0;
 }
 
 .submenu-item.active {
@@ -144,11 +184,20 @@
   font-weight: 600;
 }
 
+:host-context(.dark) .submenu-item.active {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+}
+
 /* ─── Footer ─── */
 .sidebar-footer {
   padding-top: 8px;
   border-top: 1px solid #f1f3f8;
   margin-top: auto;
+}
+
+:host-context(.dark) .sidebar-footer {
+  border-top-color: #1e293b;
 }
 
 .footer-item {
@@ -168,6 +217,10 @@
     z-index: 40;
     height: calc(100vh - 56px);
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+  }
+
+  :host-context(.dark) .sidebar-nav {
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
   }
 
   .sidebar-nav.collapsed {

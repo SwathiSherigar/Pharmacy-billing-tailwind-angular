@@ -1,75 +1,75 @@
-<div class="invoice-popup font-sans text-gray-800 overflow-auto">
+<div class="invoice-popup font-sans text-gray-800 dark:text-slate-200 overflow-auto">
 
     <!-- HEADER -->
     <div class="text-center pb-3">
-        <h1 class="text-xl font-bold text-[#1C2B70] m-0 tracking-wide">AKASH PHARMA</h1>
-        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">
+        <h1 class="text-xl font-bold text-[#1C2B70] dark:text-blue-400 m-0 tracking-wide">AKASH PHARMA</h1>
+        <p class="text-[11px] text-gray-500 dark:text-slate-400 mt-1 leading-relaxed">
             DL No: KA-BE2-274110 &nbsp;|&nbsp; KA-BE2-27411
         </p>
-        <p class="text-[11px] text-gray-500 leading-relaxed">
+        <p class="text-[11px] text-gray-500 dark:text-slate-400 leading-relaxed">
             1/326 Main Road, Hurulihal, Kudligi, Karnataka 583126
         </p>
-        <p class="text-[11px] text-gray-500 leading-relaxed">
+        <p class="text-[11px] text-gray-500 dark:text-slate-400 leading-relaxed">
             Ph: +91 7411830930 &nbsp;|&nbsp; Email: akashsm0555@gmail.com
         </p>
     </div>
 
     <!-- Double line separator -->
-    <div class="border-t-2 border-[#1C2B70]"></div>
-    <div class="border-t border-[#1C2B70] mt-[2px] mb-3"></div>
+    <div class="border-t-2 border-[#1C2B70] dark:border-blue-400"></div>
+    <div class="border-t border-[#1C2B70] dark:border-blue-400 mt-[2px] mb-3"></div>
 
     <!-- INVOICE ROW -->
     <div class="flex justify-between items-center mb-3 px-1">
-        <span class="font-bold text-sm text-[#1C2B70]">Invoice #: {{ data.invoiceNo || 'N/A' }}</span>
-        <span class="text-xs text-gray-500">{{ formatDate(data.date) }}</span>
+        <span class="font-bold text-sm text-[#1C2B70] dark:text-blue-400">Invoice #: {{ data.invoiceNo || 'N/A' }}</span>
+        <span class="text-xs text-gray-500 dark:text-slate-400">{{ formatDate(data.date) }}</span>
     </div>
 
     <!-- PATIENT & DOCTOR BOXES -->
     <div class="grid grid-cols-2 gap-3 mb-3">
         <!-- Patient box -->
-        <div class="border border-gray-300 rounded px-3 py-2">
-            <p class="text-[11px] font-bold text-[#1C2B70] uppercase tracking-wider mb-1.5">Patient</p>
+        <div class="border border-gray-300 dark:border-slate-600 rounded px-3 py-2">
+            <p class="text-[11px] font-bold text-[#1C2B70] dark:text-blue-400 uppercase tracking-wider mb-1.5">Patient</p>
             <div class="space-y-1 text-xs">
                 <div class="flex">
-                    <span class="text-gray-400 w-14 shrink-0">Name:</span>
-                    <span class="font-semibold text-gray-800">{{ data.patient?.name || 'N/A' }}</span>
+                    <span class="text-gray-400 dark:text-slate-500 w-14 shrink-0">Name:</span>
+                    <span class="font-semibold text-gray-800 dark:text-slate-200">{{ data.patient?.name || 'N/A' }}</span>
                 </div>
                 <div class="flex">
-                    <span class="text-gray-400 w-14 shrink-0">Phone:</span>
-                    <span class="text-gray-700">{{ data.patient?.phone || 'N/A' }}</span>
+                    <span class="text-gray-400 dark:text-slate-500 w-14 shrink-0">Phone:</span>
+                    <span class="text-gray-700 dark:text-slate-300">{{ data.patient?.phone || 'N/A' }}</span>
                 </div>
                 <div class="flex">
-                    <span class="text-gray-400 w-14 shrink-0">Address:</span>
-                    <span class="text-gray-700">{{ data.patient?.address || 'N/A' }}</span>
+                    <span class="text-gray-400 dark:text-slate-500 w-14 shrink-0">Address:</span>
+                    <span class="text-gray-700 dark:text-slate-300">{{ data.patient?.address || 'N/A' }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Doctor box -->
-        <div class="border border-gray-300 rounded px-3 py-2">
-            <p class="text-[11px] font-bold text-[#1C2B70] uppercase tracking-wider mb-1.5">Prescribing Physician</p>
+        <div class="border border-gray-300 dark:border-slate-600 rounded px-3 py-2">
+            <p class="text-[11px] font-bold text-[#1C2B70] dark:text-blue-400 uppercase tracking-wider mb-1.5">Prescribing Physician</p>
             <div class="space-y-1 text-xs">
                 <div class="flex">
-                    <span class="text-gray-400 w-14 shrink-0">Name:</span>
-                    <span class="font-semibold text-gray-800">Dr. {{ data.doctor?.name || 'N/A' }}</span>
+                    <span class="text-gray-400 dark:text-slate-500 w-14 shrink-0">Name:</span>
+                    <span class="font-semibold text-gray-800 dark:text-slate-200">Dr. {{ data.doctor?.name || 'N/A' }}</span>
                 </div>
                 <div class="flex">
-                    <span class="text-gray-400 w-14 shrink-0">Phone:</span>
-                    <span class="text-gray-700">{{ data.doctor?.phone || 'N/A' }}</span>
+                    <span class="text-gray-400 dark:text-slate-500 w-14 shrink-0">Phone:</span>
+                    <span class="text-gray-700 dark:text-slate-300">{{ data.doctor?.phone || 'N/A' }}</span>
                 </div>
                 <div class="flex">
-                    <span class="text-gray-400 w-14 shrink-0">Address:</span>
-                    <span class="text-gray-700">{{ data.doctor?.address || 'N/A' }}</span>
+                    <span class="text-gray-400 dark:text-slate-500 w-14 shrink-0">Address:</span>
+                    <span class="text-gray-700 dark:text-slate-300">{{ data.doctor?.address || 'N/A' }}</span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ITEMS TABLE -->
-    <div class="rounded overflow-hidden border border-gray-200 mb-3">
+    <div class="rounded overflow-hidden border border-gray-200 dark:border-slate-600 mb-3">
         <table class="w-full text-xs">
             <thead>
-                <tr class="bg-[#1C2B70] text-white text-[11px]">
+                <tr class="bg-[#1C2B70] dark:bg-slate-700 text-white text-[11px]">
                     <th class="px-2 py-1.5 text-center w-8">#</th>
                     <th class="px-2 py-1.5 text-left">Description</th>
                     <th class="px-2 py-1.5 text-left">Batch</th>
@@ -81,14 +81,14 @@
             </thead>
             <tbody>
                 @for(item of data.items; track $index) {
-                <tr class="border-b border-gray-100">
-                    <td class="px-2 py-1.5 text-center text-gray-500">{{ $index + 1 }}</td>
-                    <td class="px-2 py-1.5 text-gray-800">{{ item.name }}</td>
-                    <td class="px-2 py-1.5 text-gray-600">{{ item.batch }}</td>
-                    <td class="px-2 py-1.5 text-right text-gray-700">{{ (item.mrp || 0).toFixed(2) }}</td>
-                    <td class="px-2 py-1.5 text-center text-gray-700">{{ item.qty }}</td>
-                    <td class="px-2 py-1.5 text-gray-600">{{ item.expiry }}</td>
-                    <td class="px-2 py-1.5 text-right font-medium text-gray-800">{{ (item.qty * item.mrp).toFixed(2) }}
+                <tr class="border-b border-gray-100 dark:border-slate-700">
+                    <td class="px-2 py-1.5 text-center text-gray-500 dark:text-slate-400">{{ $index + 1 }}</td>
+                    <td class="px-2 py-1.5 text-gray-800 dark:text-slate-200">{{ item.name }}</td>
+                    <td class="px-2 py-1.5 text-gray-600 dark:text-slate-400">{{ item.batch }}</td>
+                    <td class="px-2 py-1.5 text-right text-gray-700 dark:text-slate-300">{{ (item.mrp || 0).toFixed(2) }}</td>
+                    <td class="px-2 py-1.5 text-center text-gray-700 dark:text-slate-300">{{ item.qty }}</td>
+                    <td class="px-2 py-1.5 text-gray-600 dark:text-slate-400">{{ item.expiry }}</td>
+                    <td class="px-2 py-1.5 text-right font-medium text-gray-800 dark:text-slate-200">{{ (item.qty * item.mrp).toFixed(2) }}
                     </td>
                 </tr>
                 }
@@ -97,11 +97,11 @@
     </div>
 
     <!-- FOOTER -->
-    <div class="border-t border-[#1C2B70] pt-3">
+    <div class="border-t border-[#1C2B70] dark:border-blue-400 pt-3">
         <div class="flex justify-between items-start">
             <!-- Terms -->
-            <div class="text-[10px] text-gray-500 leading-relaxed">
-                <p class="font-bold text-gray-600 mb-1">Terms & Conditions:</p>
+            <div class="text-[10px] text-gray-500 dark:text-slate-400 leading-relaxed">
+                <p class="font-bold text-gray-600 dark:text-slate-300 mb-1">Terms & Conditions:</p>
                 <p>&#8226; &nbsp;GST not applicable.</p>
                 <p>&#8226; &nbsp;Goods once sold will not be taken back.</p>
                 <p>&#8226; &nbsp;Subject to local jurisdiction.</p>
@@ -109,14 +109,14 @@
 
             <!-- Totals -->
             <div class="text-right min-w-[180px]">
-                <div class="flex justify-between text-xs text-gray-600 mb-1">
+                <div class="flex justify-between text-xs text-gray-600 dark:text-slate-400 mb-1">
                     <span>Subtotal:</span>
                     <span>₹{{ data.total.toFixed(2) }}</span>
                 </div>
-                <div class="border-t-2 border-[#1C2B70] pt-2 mt-1">
+                <div class="border-t-2 border-[#1C2B70] dark:border-blue-400 pt-2 mt-1">
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-sm text-[#1C2B70]">GRAND TOTAL:</span>
-                        <span class="font-bold text-base text-[#1C2B70]">₹{{ data.total.toFixed(2) }}</span>
+                        <span class="font-bold text-sm text-[#1C2B70] dark:text-blue-400">GRAND TOTAL:</span>
+                        <span class="font-bold text-base text-[#1C2B70] dark:text-blue-400">₹{{ data.total.toFixed(2) }}</span>
                     </div>
                 </div>
             </div>
@@ -124,8 +124,8 @@
     </div>
 
     <!-- BOTTOM BAR -->
-    <div class="border-t border-[#1C2B70] mt-4 pt-2">
-        <p class="text-center text-[10px] text-gray-400">
+    <div class="border-t border-[#1C2B70] dark:border-blue-400 mt-4 pt-2">
+        <p class="text-center text-[10px] text-gray-400 dark:text-slate-500">
             Thank you for choosing Akash Pharma &nbsp;
         </p>
     </div>
@@ -133,14 +133,14 @@
 
 
     <div class="dialog-actions flex !justify-between">
-       
-            <button mat-button mat-dialog-close (click)="close()" class="!text-slate-500">Close</button>
+
+            <button mat-button mat-dialog-close (click)="close()" class="!text-slate-500 dark:!text-slate-400">Close</button>
             <div >
                 <button mat-flat-button (click)="printBill()"
-                    class="!bg-[#1C2B70] !text-white !rounded-lg !font-semibold">Print</button>
+                    class="!bg-[#1C2B70] dark:!bg-blue-600 !text-white !rounded-lg !font-semibold">Print</button>
                 <button mat-flat-button (click)="editBill()"
                     class="!bg-amber-600 !text-white !rounded-lg !font-semibold ms-4">Edit</button>
-          
+
         </div>
     </div>
 </div>

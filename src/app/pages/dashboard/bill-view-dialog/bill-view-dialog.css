@@ -3,7 +3,15 @@
   background: #fff;
 }
 
+:host-context(.dark) .invoice-popup {
+  background: #1e293b;
+}
+
 /* Alternate row tint for the items table */
 .invoice-popup table tbody tr:nth-child(even) {
   background-color: #fafaff;
+}
+
+:host-context(.dark) .invoice-popup table tbody tr:nth-child(even) {
+  background-color: #1a2332;
 }

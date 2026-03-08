@@ -5,14 +5,14 @@
     <div class="relative flex-1 max-w-md">
       <mat-icon class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] !w-[18px] !h-[18px] text-slate-400 pointer-events-none z-10">search</mat-icon>
       <input type="text"
-        class="w-full h-9 pl-9 pr-8 rounded-lg border border-slate-300 bg-white text-sm text-slate-700
-               placeholder:text-slate-400 outline-none
-               focus:border-[#1C2B70] focus:ring-2 focus:ring-[#1C2B70]/10 transition-all"
+        class="w-full h-9 pl-9 pr-8 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200
+               placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none
+               focus:border-[#1C2B70] dark:focus:border-blue-400 focus:ring-2 focus:ring-[#1C2B70]/10 dark:focus:ring-blue-400/10 transition-all"
         placeholder="Search by name, phone, address..."
         [(ngModel)]="searchTerm"
         (ngModelChange)="applyFilter()">
       @if (searchTerm) {
-      <button class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+      <button class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
         (click)="clearSearch()">
         <mat-icon class="material-symbols-outlined !text-[16px] !w-4 !h-4">close</mat-icon>
       </button>
@@ -21,43 +21,43 @@
   </div>
 
   <!-- Table -->
-  <div class="flex flex-col bg-white rounded-xl shadow-sm border border-slate-200/80 flex-1 overflow-hidden">
+  <div class="flex flex-col bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-700 flex-1 overflow-hidden">
     <div class="overflow-auto flex-1">
       <table mat-table [dataSource]="dataSource" matSort class="w-full patient-table">
 
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-          <td mat-cell *matCellDef="let b" class="!font-semibold !text-slate-800"> {{ b.name }} </td>
+          <td mat-cell *matCellDef="let b" class="!font-semibold !text-slate-800 dark:!text-slate-200"> {{ b.name }} </td>
         </ng-container>
 
         <ng-container matColumnDef="phone">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Phone </th>
-          <td mat-cell *matCellDef="let b" class="!text-slate-600"> {{ b.phone || '-' }} </td>
+          <td mat-cell *matCellDef="let b" class="!text-slate-600 dark:!text-slate-400"> {{ b.phone || '-' }} </td>
         </ng-container>
 
         <ng-container matColumnDef="age">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Age </th>
           <td mat-cell *matCellDef="let b">
             @if (b.age) {
-            <span class="inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-[#1C2B70]">
+            <span class="inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-[#1C2B70] dark:text-blue-400">
               {{ b.age }}
             </span>
             } @else {
-            <span class="text-slate-400">-</span>
+            <span class="text-slate-400 dark:text-slate-500">-</span>
             }
           </td>
         </ng-container>
 
         <ng-container matColumnDef="address">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Address </th>
-          <td mat-cell *matCellDef="let b" class="!text-slate-600"> {{ b.address || '-' }} </td>
+          <td mat-cell *matCellDef="let b" class="!text-slate-600 dark:!text-slate-400"> {{ b.address || '-' }} </td>
         </ng-container>
 
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef class="!w-14"> </th>
           <td mat-cell *matCellDef="let b" class="!px-0">
             <button mat-icon-button [matMenuTriggerFor]="menu" class="!w-8 !h-8">
-              <mat-icon class="material-symbols-outlined !text-[18px] text-slate-500">more_vert</mat-icon>
+              <mat-icon class="material-symbols-outlined !text-[18px] text-slate-500 dark:text-slate-400">more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="editPatient(b)">
@@ -70,10 +70,10 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"
-          class="hover:!bg-slate-50/80 transition-colors"></tr>
+          class="hover:!bg-slate-50/80 dark:hover:!bg-slate-700/50 transition-colors"></tr>
 
         <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell text-center !py-8 !text-slate-400 !text-sm" [attr.colspan]="displayedColumns.length">
+          <td class="mat-cell text-center !py-8 !text-slate-400 dark:!text-slate-500 !text-sm" [attr.colspan]="displayedColumns.length">
             @if (searchTerm) {
               No patients matching "{{ searchTerm }}"
             } @else {
@@ -84,8 +84,8 @@
       </table>
     </div>
 
-    <div class="border-t border-slate-100 flex items-center justify-between px-4">
-      <span class="text-xs text-slate-400">
+    <div class="border-t border-slate-100 dark:border-slate-700 flex items-center justify-between px-4">
+      <span class="text-xs text-slate-400 dark:text-slate-500">
         Showing {{ dataSource.filteredData.length }} of {{ totalPatients }} entries
       </span>
       <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>

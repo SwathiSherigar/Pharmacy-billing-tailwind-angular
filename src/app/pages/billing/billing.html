@@ -1,16 +1,16 @@
-<div class="billing-compact flex flex-col bg-slate-100" style="height: calc(100vh - 64px);">
+<div class="billing-compact flex flex-col bg-slate-100 dark:bg-slate-900" style="height: calc(100vh - 64px);">
 
     <!-- PATIENT & DOCTOR -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 px-4 pt-3">
 
         <!-- Patient Card -->
-        <div class="card-section bg-white px-4 py-3 rounded-xl shadow-sm border border-slate-200/80">
+        <div class="card-section bg-white dark:bg-slate-800 px-4 py-3 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-700">
             <div class="d-flex items-center gap-2 mb-2">
-                <div class="icon-badge bg-blue-50 text-[#1C2B70]">
+                <div class="icon-badge bg-blue-50 dark:bg-blue-900/30 text-[#1C2B70] dark:text-blue-400">
                     <mat-icon class="material-symbols-outlined !text-[18px] !w-[18px] !h-[18px]"
                         (click)="toggleJsonBox()">person</mat-icon>
                 </div>
-                <span class="text-xs font-bold text-[#1C2B70] uppercase tracking-widest">Patient</span>
+                <span class="text-xs font-bold text-[#1C2B70] dark:text-blue-400 uppercase tracking-widest">Patient</span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2">
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
@@ -35,12 +35,12 @@
         </div>
 
         <!-- Doctor Card -->
-        <div class="card-section bg-white px-4 py-3 rounded-xl shadow-sm border border-slate-200/80">
+        <div class="card-section bg-white dark:bg-slate-800 px-4 py-3 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-700">
             <div class="d-flex items-center gap-2 mb-2">
-                <div class="icon-badge bg-emerald-50 text-emerald-700">
+                <div class="icon-badge bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
                     <mat-icon class="material-symbols-outlined !text-[18px] !w-[18px] !h-[18px]">medical_services</mat-icon>
                 </div>
-                <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest">Doctor</span>
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Doctor</span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2">
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
@@ -66,7 +66,7 @@
     </div>
 
     @if(showJsonBox) {
-    <div class="mx-4 mt-3 p-4 border border-slate-200 rounded-xl bg-white shadow-sm">
+    <div class="mx-4 mt-3 p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 shadow-sm">
         <mat-form-field appearance="outline" class="w-full">
             <mat-label>Paste JSON Here</mat-label>
             <textarea matInput rows="8" [(ngModel)]="jsonInput"></textarea>
@@ -80,14 +80,14 @@
     @else {
     <!-- ITEMS TABLE -->
     <div class="flex-1 flex flex-col overflow-hidden px-4 pt-3">
-        <div class="table-wrapper bg-white rounded-xl shadow-sm border border-slate-200/80 flex-1 flex flex-col overflow-hidden">
+        <div class="table-wrapper bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-700 flex-1 flex flex-col overflow-hidden">
 
-            <div class="flex items-center justify-between px-4 py-2 border-b border-slate-100">
+            <div class="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-slate-700">
                 <div class="d-flex items-center gap-2">
-                    <div class="icon-badge bg-slate-100 text-slate-600">
+                    <div class="icon-badge bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400">
                         <mat-icon class="material-symbols-outlined !text-[18px] !w-[18px] !h-[18px]">inventory_2</mat-icon>
                     </div>
-                    <span class="text-xs font-bold text-slate-600 uppercase tracking-widest">Items</span>
+                    <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Items</span>
                 </div>
                 <button mat-mini-fab color="primary" (click)="addRow()" matTooltip="Add Row (F4)">
                     <mat-icon class="material-symbols-outlined !text-white">add</mat-icon>
@@ -110,7 +110,7 @@
                                         <div class="flex justify-between items-center w-full">
                                             <span>{{ p.name }}</span>
                                             <span *ngIf="p.totalStock !== undefined"
-                                                class="text-[11px] text-gray-400 ml-2">
+                                                class="text-[11px] text-gray-400 dark:text-gray-500 ml-2">
                                                 Stock: {{ p.totalStock }}
                                             </span>
                                         </div>
@@ -171,7 +171,7 @@
                     <!-- Amount -->
                     <ng-container matColumnDef="amount">
                         <th mat-header-cell *matHeaderCellDef>Amount</th>
-                        <td mat-cell *matCellDef="let i" class="!px-3 !py-0 !font-semibold !text-slate-700 !text-sm">
+                        <td mat-cell *matCellDef="let i" class="!px-3 !py-0 !font-semibold !text-slate-700 dark:!text-slate-300 !text-sm">
                             ₹{{ i.amount }}
                         </td>
                     </ng-container>
@@ -196,21 +196,21 @@
     }
 
     <!-- FOOTER -->
-    <div class="footer-bar mx-4 mb-3 mt-3 px-5 py-3 bg-white rounded-xl shadow-sm border border-slate-200/80 flex justify-between items-center">
+    <div class="footer-bar mx-4 mb-3 mt-3 px-5 py-3 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-700 flex justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Date</span>
+                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Date</span>
                 <input type="date" [valueAsDate]="billDate" (change)="onDateChange($event)"
-                    class="h-8 px-2 rounded-lg border border-slate-300 text-sm text-slate-700 outline-none focus:border-[#1C2B70]">
+                    class="h-8 px-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-700 dark:text-slate-200 outline-none focus:border-[#1C2B70] dark:focus:border-blue-400">
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Time</span>
+                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Time</span>
                 <input type="time" [value]="billTimeString" (change)="onTimeChange($event)"
-                    class="h-8 px-2 rounded-lg border border-slate-300 text-sm text-slate-700 outline-none focus:border-[#1C2B70]">
+                    class="h-8 px-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-700 dark:text-slate-200 outline-none focus:border-[#1C2B70] dark:focus:border-blue-400">
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Grand Total</span>
-                <span class="text-2xl font-extrabold text-[#1C2B70] tracking-tight">₹{{ total }}</span>
+                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Grand Total</span>
+                <span class="text-2xl font-extrabold text-[#1C2B70] dark:text-blue-400 tracking-tight">₹{{ total }}</span>
             </div>
         </div>
         <div class="flex gap-3">

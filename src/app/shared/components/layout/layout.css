@@ -25,6 +25,10 @@ topbar {
   overflow-y: auto;
 }
 
+:host-context(.dark) .content-wrapper {
+  background-color: #0f172a;
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
   .layout-grid {

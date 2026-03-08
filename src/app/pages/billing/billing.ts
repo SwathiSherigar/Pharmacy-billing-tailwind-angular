@@ -238,7 +238,16 @@ export class BillingComponent {
     if (!item.availableQty || item.qty <= item.availableQty) return;
 
     const batches = this.getBatchesForProduct(item.productId);
-    if (batches.length <= 1) return;
+    if (batches.length === 0) return;
+
+    // Single batch — cap qty to available stock with a warning
+    if (batches.length === 1) {
+      const available = batches[0].qty;
+      alert(`Only ${available} unit(s) available in stock. Quantity has been adjusted.`);
+      item.qty = available;
+      this.calculate(item);
+      return;
+    }
 
     // Open batch allocation dialog
     const dialogRef = this.dialog.open(BatchAllocationDialog, {

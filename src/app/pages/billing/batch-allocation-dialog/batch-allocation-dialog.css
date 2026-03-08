@@ -13,6 +13,11 @@
   background: linear-gradient(to right, #f8f9ff, #ffffff);
 }
 
+:host-context(.dark) .dialog-header {
+  border-bottom-color: #3b82f6;
+  background: linear-gradient(to right, #1a2332, #1e293b);
+}
+
 .header-icon {
   width: 36px;
   height: 36px;
@@ -21,6 +26,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+:host-context(.dark) .header-icon {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
 }
 
 .qty-badge {
@@ -32,9 +41,19 @@
   border: 1px solid #e2e8f0;
 }
 
+:host-context(.dark) .qty-badge {
+  color: #94a3b8;
+  background: #334155;
+  border-color: #475569;
+}
+
 .qty-badge strong {
   color: #1C2B70;
   font-size: 14px;
+}
+
+:host-context(.dark) .qty-badge strong {
+  color: #93c5fd;
 }
 
 /* ─── Table ─── */
@@ -47,6 +66,10 @@
 :host ::ng-deep .batch-table .mat-mdc-header-row {
   height: 38px;
   background: #1C2B70 !important;
+}
+
+:host-context(.dark) ::ng-deep .batch-table .mat-mdc-header-row {
+  background: #1e3a5f !important;
 }
 
 :host ::ng-deep .batch-table .mat-mdc-header-cell {
@@ -69,14 +92,26 @@
   background-color: #f0f2ff !important;
 }
 
+:host-context(.dark) ::ng-deep .batch-table .mat-mdc-row:hover {
+  background-color: #263548 !important;
+}
+
 :host ::ng-deep .batch-table .mat-mdc-cell {
   font-size: 13px;
   padding: 0 14px !important;
   border-bottom: 1px solid #f1f3f8 !important;
 }
 
+:host-context(.dark) ::ng-deep .batch-table .mat-mdc-cell {
+  border-bottom: 1px solid #334155 !important;
+}
+
 .row-allocated {
   background-color: #f8faf8 !important;
+}
+
+:host-context(.dark) .row-allocated {
+  background-color: #1a2e1a !important;
 }
 
 /* ─── Stock pill ─── */
@@ -93,9 +128,19 @@
   color: #047857;
 }
 
+:host-context(.dark) .stock-ok {
+  background: rgba(4, 120, 87, 0.15);
+  color: #34d399;
+}
+
 .stock-low {
   background: #fef3c7;
   color: #b45309;
+}
+
+:host-context(.dark) .stock-low {
+  background: rgba(180, 83, 9, 0.15);
+  color: #fbbf24;
 }
 
 /* ─── Allocate input ─── */
@@ -110,7 +155,14 @@
   text-align: center;
   color: #1C2B70;
   outline: none;
+  background: transparent;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+:host-context(.dark) .allocate-input {
+  border-color: #475569;
+  color: #93c5fd;
+  background: #334155;
 }
 
 .allocate-input:focus {
@@ -118,10 +170,20 @@
   box-shadow: 0 0 0 3px rgba(28, 43, 112, 0.1);
 }
 
+:host-context(.dark) .allocate-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
 .allocate-input.input-error {
   border-color: #ef4444;
   background: #fef2f2;
   color: #dc2626;
+}
+
+:host-context(.dark) .allocate-input.input-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
 }
 
 /* Hide number spinner */
@@ -136,6 +198,11 @@
   padding: 14px 20px;
   background: #f8f9fc;
   border-top: 1px solid #e5e7eb;
+}
+
+:host-context(.dark) .dialog-summary {
+  background: #1a2332;
+  border-top-color: #334155;
 }
 
 .summary-row {
@@ -155,6 +222,10 @@
   border-top: 1px solid #e5e7eb;
 }
 
+:host-context(.dark) .dialog-actions {
+  border-top-color: #334155;
+}
+
 :host ::ng-deep .confirm-btn.mat-mdc-unelevated-button {
   background: linear-gradient(135deg, #1C2B70 0%, #263680 100%) !important;
   color: #fff !important;
@@ -165,9 +236,17 @@
   padding: 0 20px !important;
 }
 
+:host-context(.dark) ::ng-deep .confirm-btn.mat-mdc-unelevated-button {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+}
+
 :host ::ng-deep .confirm-btn.mat-mdc-unelevated-button:disabled {
   background: #94a3b8 !important;
   color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:host-context(.dark) ::ng-deep .confirm-btn.mat-mdc-unelevated-button:disabled {
+  background: #475569 !important;
 }
 
 .cancel-btn {

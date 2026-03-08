@@ -38,6 +38,11 @@
   border-color: rgba(28, 43, 112, 0.2);
 }
 
+:host-context(.dark) .card-section:focus-within {
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
 /* ─── Table wrapper ─── */
 .table-wrapper {
   transition: box-shadow 0.2s ease;
@@ -61,6 +66,14 @@
   z-index: 10 !important;
 }
 
+:host-context(.dark) ::ng-deep .billing-compact .mat-mdc-header-row {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%) !important;
+}
+
+:host-context(.dark) ::ng-deep .billing-compact .mat-mdc-header-cell {
+  background: #1e3a5f !important;
+}
+
 /* ─── Table rows ─── */
 :host ::ng-deep .billing-compact .mat-mdc-row {
   height: 48px;
@@ -71,13 +84,25 @@
   background-color: #f8f9fc;
 }
 
+:host-context(.dark) ::ng-deep .billing-compact .mat-mdc-row:nth-child(even) {
+  background-color: #1a2332;
+}
+
 :host ::ng-deep .billing-compact .mat-mdc-row:hover {
   background-color: #eef1ff !important;
+}
+
+:host-context(.dark) ::ng-deep .billing-compact .mat-mdc-row:hover {
+  background-color: #263548 !important;
 }
 
 /* ─── Cell borders ─── */
 :host ::ng-deep .billing-compact .mat-mdc-cell {
   border-bottom: 1px solid #eef0f4 !important;
+}
+
+:host-context(.dark) ::ng-deep .billing-compact .mat-mdc-cell {
+  border-bottom: 1px solid #334155 !important;
 }
 
 /* ─── Form field outlines inside table ─── */
@@ -88,6 +113,12 @@
   transition: border-color 0.15s ease;
 }
 
+:host-context(.dark) ::ng-deep .billing-compact .mat-sm-input .mdc-notched-outline__leading,
+:host-context(.dark) ::ng-deep .billing-compact .mat-sm-input .mdc-notched-outline__trailing,
+:host-context(.dark) ::ng-deep .billing-compact .mat-sm-input .mdc-notched-outline__notch {
+  border-color: #475569 !important;
+}
+
 :host ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__leading,
 :host ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__trailing,
 :host ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__notch {
@@ -95,11 +126,22 @@
   border-width: 2px !important;
 }
 
+:host-context(.dark) ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__leading,
+:host-context(.dark) ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__trailing,
+:host-context(.dark) ::ng-deep .billing-compact .mat-sm-input.mat-focused .mdc-notched-outline__notch {
+  border-color: #3b82f6 !important;
+}
+
 /* ─── Add-row FAB ─── */
 :host ::ng-deep .billing-compact .mat-mdc-mini-fab.mat-primary {
   background: linear-gradient(135deg, #1C2B70 0%, #263680 100%) !important;
   box-shadow: 0 2px 8px rgba(28, 43, 112, 0.3) !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+:host-context(.dark) ::ng-deep .billing-compact .mat-mdc-mini-fab.mat-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
 }
 
 :host ::ng-deep .billing-compact .mat-mdc-mini-fab.mat-primary:hover {
@@ -118,6 +160,12 @@
   color:#c8ccda !important;
   box-shadow: 0 2px 8px rgba(28, 43, 112, 0.25) !important;
   transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+:host-context(.dark) ::ng-deep .billing-compact .mat-mdc-raised-button.mat-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+  color: #e2e8f0 !important;
 }
 
 :host ::ng-deep .billing-compact .mat-mdc-raised-button.mat-primary:hover {
@@ -170,6 +218,10 @@
   background: linear-gradient(to right, #ffffff, #fafbff) !important;
 }
 
+:host-context(.dark) .footer-bar {
+  background: linear-gradient(to right, #1e293b, #1e2d3d) !important;
+}
+
 /* ─── Scrollbar ─── */
 :host ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar {
   width: 5px;
@@ -184,6 +236,14 @@
   border-radius: 4px;
 }
 
+:host-context(.dark) ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
 :host ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar-thumb:hover {
   background: #9ba0b4;
+}
+
+:host-context(.dark) ::ng-deep .billing-compact .overflow-auto::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
