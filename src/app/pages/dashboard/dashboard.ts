@@ -46,9 +46,17 @@ export class Dashboard implements AfterViewInit {
 
   totalBills = computed(() => this.bills().length);
 
-  totalRevenue = computed(() =>
-    this.bills().reduce((sum: number, b: any) => sum + (b.total || 0), 0)
-  );
+  totalRevenue = computed(() => {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    return this.bills()
+      .filter((b: any) => {
+        const d = new Date(b.date);
+        return d.getMonth() === month && d.getFullYear() === year;
+      })
+      .reduce((sum: number, b: any) => sum + (b.total || 0), 0);
+  });
 
   uniquePatients = computed(() =>
     new Set(this.bills().map((b: any) => b.patient?.name)).size

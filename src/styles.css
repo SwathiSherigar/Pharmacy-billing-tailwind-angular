@@ -60,6 +60,23 @@
   color: #cbd5e1 !important;
 }
 
+.dark .mat-mdc-paginator .mat-mdc-paginator-page-size {
+  color: #94a3b8 !important;
+}
+
+.dark .mat-mdc-paginator .mat-mdc-paginator-page-size .mat-mdc-select {
+  color: #cbd5e1 !important;
+}
+
+.dark .mat-mdc-paginator .mdc-line-ripple::before,
+.dark .mat-mdc-paginator .mdc-line-ripple::after {
+  border-bottom-color: #475569 !important;
+}
+
+.dark .mat-mdc-paginator .mat-mdc-select-trigger .mat-mdc-select-arrow {
+  color: #94a3b8 !important;
+}
+
 .mat-mdc-cell.sticky-actions {
   border-left: 1px solid #d1d5db !important;
   position: sticky !important;
@@ -258,8 +275,40 @@
   color: #cbd5e1 !important;
 }
 
+.dark .mat-mdc-paginator .mat-mdc-select-arrow {
+  color: #94a3b8 !important;
+}
+
 .dark .mat-mdc-paginator .mat-mdc-icon-button {
   color: #94a3b8 !important;
+}
+
+.dark .mat-mdc-paginator .mat-mdc-icon-button:disabled {
+  color: #475569 !important;
+}
+
+.dark .mat-mdc-paginator .mat-mdc-icon-button svg {
+  fill: white !important;
+}
+
+.dark .mat-mdc-paginator .mat-mdc-icon-button:disabled svg {
+  fill: white !important;
+}
+
+.dark .mat-mdc-select-panel {
+  background-color: #1e293b !important;
+}
+
+.dark .mat-mdc-select-panel .mat-mdc-option {
+  color: #e2e8f0 !important;
+}
+
+.dark .mat-mdc-select-panel .mat-mdc-option:hover {
+  background-color: #334155 !important;
+}
+
+.dark .mat-mdc-select-panel .mat-mdc-option.mdc-list-item--selected {
+  background-color: #334155 !important;
 }
 
 /* Sort header arrow */
