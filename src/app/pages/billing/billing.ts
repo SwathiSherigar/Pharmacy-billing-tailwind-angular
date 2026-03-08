@@ -315,7 +315,26 @@ export class BillingComponent {
     return this.items.reduce((sum, i) => sum + i.amount, 0);
   }
 
+  validateBill(): boolean {
+    if (!this.patient.name?.trim()) {
+      alert('Patient name is required');
+      return false;
+    }
+    if (!this.doctor.name?.trim()) {
+      alert('Doctor name is required');
+      return false;
+    }
+    const validItems = this.items.filter(i => i.name?.trim() && i.qty > 0);
+    if (validItems.length === 0) {
+      alert('At least one item with a name and quantity is required');
+      return false;
+    }
+    return true;
+  }
+
   async saveBill() {
+    if (!this.validateBill()) return;
+
     const toPlainObject = (obj: any) => JSON.parse(JSON.stringify(obj));
     const invoiceNo = this.isEditMode
       ? this.invoiceNo!
@@ -361,10 +380,7 @@ export class BillingComponent {
 
 
   async printBill() {
-    if (!this.patient.name || !this.doctor.name) {
-      alert('Patient and Doctor required');
-      return;
-    }
+    if (!this.validateBill()) return;
     const invoiceNo = this.isEditMode
       ? this.invoiceNo!
       : await this.getNextInvoiceNumber();
