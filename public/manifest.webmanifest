@@ -1,6 +1,9 @@
 {
-  "name": "pharmacy-tailwind-application",
-  "short_name": "pharmacy-tailwind-application",
+  "name": "Akash Pharma",
+  "short_name": "Akash Pharma",
+  "description": "Pharmacy billing & inventory management",
+  "theme_color": "#1C2B70",
+  "background_color": "#ffffff",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
