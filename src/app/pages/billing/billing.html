@@ -45,14 +45,14 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-2">
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
                     <input matInput [matAutocomplete]="doctorAuto" placeholder="Name" [(ngModel)]="doctor.name"
-                        (ngModelChange)="filterDoctors()" required>
+                        (ngModelChange)="filterDoctors()">
                     <mat-autocomplete #doctorAuto="matAutocomplete"
                         (optionSelected)="selectDoctor($event.option.value)">
                         <mat-option *ngFor="let d of filteredDoctors" [value]="d.name">{{ d.name }}</mat-option>
                     </mat-autocomplete>
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                    <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo" required>
+                    <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo">
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
                     <input matInput placeholder="Phone" [(ngModel)]="doctor.phone" maxlength="10" minlength="10"

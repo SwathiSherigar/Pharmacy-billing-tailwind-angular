@@ -145,7 +145,7 @@ export class PdfService {
 
     doc.setFont('NotoSans', 'bold');
     doc.setTextColor(30, 30, 30);
-    doc.text(data.doctor.name, docX + labelX, y + 8);
+    doc.text(data.doctor.name || 'N/A', docX + labelX, y + 8);
     doc.setFont('NotoSans', 'normal');
     doc.text(data.doctor.phone || 'N/A', docX + labelX, y + 13);
     const docAddr = doc.splitTextToSize(data.doctor.address || 'N/A', halfWidth - labelX - boxPad);

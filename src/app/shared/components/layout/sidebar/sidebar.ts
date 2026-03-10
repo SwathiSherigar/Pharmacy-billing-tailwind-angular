@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { SettingsDialog } from '../../../../pages/dashboard/settings-dialog/settings-dialog';
 
 @Component({
   selector: 'sidebar',
@@ -12,6 +14,12 @@ import { RouterModule } from '@angular/router';
 })
 export class SidebarComponent {
   @Input() collapsed = false;
+
+  constructor(private dialog: MatDialog) {}
+
+  openSettings() {
+    this.dialog.open(SettingsDialog, { width: '95vw', maxWidth: '400px' });
+  }
 
   featureList: Array<{
     featureCode: string;

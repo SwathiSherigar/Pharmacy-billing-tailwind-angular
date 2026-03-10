@@ -1,35 +1,67 @@
-<h2 mat-dialog-title class="my-0 p-2 px-3">PDF Font Settings</h2>
+<div class="settings-dialog font-sans">
 
-<form [formGroup]="form">
+  <!-- Header -->
+  <div class="flex items-center gap-3 px-5 pt-2 pb-3">
+    <div class="w-9 h-9 rounded-lg bg-[#1C2B70] dark:bg-blue-600 flex items-center justify-center">
+      <mat-icon class="material-symbols-outlined !text-white !text-xl">settings</mat-icon>
+    </div>
+    <div>
+      <h2 class="text-base font-bold text-[#1C2B70] dark:text-blue-400 m-0">Settings</h2>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 m-0">Manage your application data</p>
+    </div>
+  </div>
 
-  <div mat-dialog-content class="flex flex-col gap-2">
+  <!-- Content -->
+  <div class="px-5 pb-2">
 
-    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-      <mat-label>Heading Size</mat-label>
-      <input matInput type="number" formControlName="headingSize"   min="6" max="50" />
-    </mat-form-field>
+    <!-- PDF Font Settings (commented out for now)
+    <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-3 mb-3">
+      <p class="text-[11px] font-bold text-[#1C2B70] dark:text-blue-400 uppercase tracking-wider mb-2 m-0">PDF Font Settings</p>
+      ...
+    </div>
+    -->
 
-    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-      <mat-label>Sub Heading Size</mat-label>
-      <input matInput type="number" formControlName="subHeadingSize"  min="6" max="50"  />
-    </mat-form-field>
+    <!-- Export Section -->
+    <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4 mb-3">
+      <div class="flex items-center gap-2 mb-3">
+        <mat-icon class="material-symbols-outlined !text-[18px] text-[#1C2B70] dark:text-blue-400">download</mat-icon>
+        <p class="text-[11px] font-bold text-[#1C2B70] dark:text-blue-400 uppercase tracking-wider m-0">Export Data</p>
+      </div>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-3 m-0">Download a backup of all your data</p>
+      <div class="flex gap-2">
+        <button mat-flat-button type="button" (click)="exportAsJson()"
+          class="!bg-[#1C2B70] dark:!bg-blue-600 !text-white !rounded-lg !text-xs !font-semibold !min-w-[100px]">
+          <mat-icon class="material-symbols-outlined !text-[15px] !w-4 !h-4 !mr-1">data_object</mat-icon>
+          JSON
+        </button>
+        <button mat-flat-button type="button" (click)="exportAsExcel()"
+          class="!bg-emerald-600 !text-white !rounded-lg !text-xs !font-semibold !min-w-[100px]">
+          <mat-icon class="material-symbols-outlined !text-[15px] !w-4 !h-4 !mr-1">table_view</mat-icon>
+          Excel
+        </button>
+      </div>
+    </div>
 
-    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-      <mat-label>Table Font Size</mat-label>
-      <input matInput type="number" formControlName="tableSize"   min="6" max="50" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-full mat-sm-input">
-      <mat-label>Normal Text Size</mat-label>
-      <input matInput type="number" formControlName="normalTextSize"  min="6" max="50"  />
-    </mat-form-field>
+    <!-- Import Section -->
+    <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <mat-icon class="material-symbols-outlined !text-[18px] text-amber-600">upload</mat-icon>
+        <p class="text-[11px] font-bold text-amber-600 uppercase tracking-wider m-0">Import Data</p>
+      </div>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-3 m-0">Restore from a previously exported JSON backup</p>
+      <button mat-flat-button type="button" (click)="fileInput.click()"
+        class="!bg-amber-600 !text-white !rounded-lg !text-xs !font-semibold !min-w-[140px]">
+        <mat-icon class="material-symbols-outlined !text-[15px] !w-4 !h-4 !mr-1">folder_open</mat-icon>
+        Choose Backup File
+      </button>
+      <input #fileInput type="file" accept=".json" hidden (change)="importData($event)">
+    </div>
 
   </div>
 
-  <mat-dialog-actions align="end">
-    <button matButton="outlined" color="primary" (click)="save()">
-      Save
-    </button>
-  </mat-dialog-actions>
+  <!-- Actions -->
+  <div class="flex justify-end px-5 py-3">
+    <button mat-button mat-dialog-close class="!text-slate-500 dark:!text-slate-400 !font-semibold">Close</button>
+  </div>
 
-</form>
+</div>

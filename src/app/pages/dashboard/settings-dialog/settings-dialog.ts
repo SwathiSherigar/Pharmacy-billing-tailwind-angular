@@ -1,50 +1,78 @@
 import { Component } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from "@angular/material/dialog";
-import { MatFormField } from "@angular/material/select";
-import { MatInputModule } from "@angular/material/input";
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { PdfSettingsService } from '../../../core/services/pdf-settings/pdf-settings';
-import { MatAnchor } from "@angular/material/button";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from '@angular/material/icon';
+import { IndexedDbService } from '../../../core/services/indexed-db';
+import { DataStoreService } from '../../../core/services/data-store';
 
 @Component({
   selector: 'app-settings-dialog',
-  imports: [MatDialogModule, MatFormField, MatInputModule, CommonModule, FormsModule, ReactiveFormsModule, MatAnchor],
+  imports: [MatDialogModule, CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './settings-dialog.html',
   styleUrl: './settings-dialog.css',
 })
 export class SettingsDialog {
- form: FormGroup;
 
   constructor(
-    private fb: FormBuilder,
     private dialogRef: MatDialogRef<SettingsDialog>,
-    private settingsService: PdfSettingsService
-  ) {
-    const settings = this.settingsService.getSettings();
+    private db: IndexedDbService,
+    private store: DataStoreService
+  ) {}
 
-   this.form = this.fb.group({
-  headingSize: [
-    settings.headingSize,
-    [Validators.required, Validators.min(6), Validators.max(50)]
-  ],
-  subHeadingSize: [
-    settings.subHeadingSize,
-    [Validators.required, Validators.min(6), Validators.max(40)]
-  ],
-  tableSize: [
-    settings.tableSize,
-    [Validators.required, Validators.min(5), Validators.max(30)]
-  ],
-  normalTextSize: [
-    settings.normalTextSize,
-    [Validators.required, Validators.min(5), Validators.max(30)]
-  ]
-});
+  async exportAsJson() {
+    const json = await this.db.exportAll();
+    this.downloadFile(json, 'application/json', `pharmacy-backup-${this.dateStamp()}.json`);
   }
 
-  save() {
-    this.settingsService.setSettings(this.form.value);
-    this.dialogRef.close();
+  async exportAsExcel() {
+    const XLSX = await import('xlsx');
+    const rawData = await this.db.exportAllRaw();
+    const wb = XLSX.utils.book_new();
+
+    for (const [storeName, rows] of Object.entries(rawData) as [string, any[]][]) {
+      if (!rows.length) continue;
+      const ws = XLSX.utils.json_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, storeName.slice(0, 31));
+    }
+
+    const buffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pharmacy-backup-${this.dateStamp()}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async importData(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const text = await file.text();
+    try {
+      await this.db.importAll(text);
+      await this.store.loadAll();
+      alert('Data imported successfully');
+    } catch {
+      alert('Invalid backup file');
+    }
+    input.value = '';
+  }
+
+  private downloadFile(content: string, type: string, filename: string) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private dateStamp(): string {
+    return new Date().toISOString().slice(0, 10);
   }
 }

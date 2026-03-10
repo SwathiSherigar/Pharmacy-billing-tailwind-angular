@@ -60,12 +60,12 @@ export class DataStoreService {
         const patient = patientMap.get(b.patientId);
         const doctor = doctorMap.get(b.doctorId);
 
-        if (!patient || !doctor) return null;
+        if (!patient) return null;
 
         return {
           ...b,
           patient,
-          doctor
+          doctor: doctor || { name: 'N/A', phone: '', address: '' }
         };
       })
       .filter(Boolean)

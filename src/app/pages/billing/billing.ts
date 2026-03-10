@@ -331,8 +331,7 @@ export class BillingComponent {
       return false;
     }
     if (!this.doctor.name?.trim()) {
-      alert('Doctor name is required');
-      return false;
+      this.doctor.name = 'N/A';
     }
     const validItems = this.items.filter(i => i.name?.trim() && i.qty > 0);
     if (validItems.length === 0) {

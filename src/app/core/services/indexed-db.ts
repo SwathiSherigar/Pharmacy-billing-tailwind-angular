@@ -115,4 +115,34 @@ private dbPromise = openDB('pharmacy-db', 3, {
     }
   }
 
+  async exportAllRaw(): Promise<Record<string, any[]>> {
+    const storeNames = ['patients', 'doctors', 'products', 'bills', 'productBatches', 'purchaseInvoices'];
+    const data: Record<string, any[]> = {};
+    for (const name of storeNames) {
+      data[name] = await this.getAll(name);
+    }
+    return data;
+  }
+
+  async exportAll(): Promise<string> {
+    return JSON.stringify(await this.exportAllRaw(), null, 2);
+  }
+
+  async importAll(jsonString: string): Promise<void> {
+    const data = JSON.parse(jsonString);
+    const db = await this.dbPromise;
+    const storeNames = ['patients', 'doctors', 'products', 'bills', 'productBatches', 'purchaseInvoices'];
+
+    for (const name of storeNames) {
+      if (!data[name] || !Array.isArray(data[name])) continue;
+      const tx = db.transaction(name, 'readwrite');
+      const store = tx.objectStore(name);
+      await store.clear();
+      for (const item of data[name]) {
+        await store.put(item);
+      }
+      await tx.done;
+    }
+  }
+
 }
