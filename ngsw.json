@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1773161145016,
+  "timestamp": 1773161341895,
   "index": "/Pharmacy-billing-tailwind-angular/index.html",
   "assetGroups": [
     {
@@ -96,9 +96,9 @@
     "/Pharmacy-billing-tailwind-angular/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
     "/Pharmacy-billing-tailwind-angular/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
     "/Pharmacy-billing-tailwind-angular/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
-    "/Pharmacy-billing-tailwind-angular/index.html": "e2cac308e235c00022535cf523048c38c8b5e505",
+    "/Pharmacy-billing-tailwind-angular/index.html": "b9123d8219c2b1e3ef77b0defc3aee20a3064a18",
     "/Pharmacy-billing-tailwind-angular/main-P7NK4DPN.js": "29d701fd1f5600a922cecfaeb330ac179bd0036a",
-    "/Pharmacy-billing-tailwind-angular/manifest.webmanifest": "9bb27f26da11d7d008b0aff2b9825b80337a313c",
+    "/Pharmacy-billing-tailwind-angular/manifest.webmanifest": "54a4d2bd18d80956b65eb87c5780c9adbcc13a4f",
     "/Pharmacy-billing-tailwind-angular/styles-AYTTZ2PF.css": "e1394e998fe2e0a24b71d3bc0987d7a698ac6769"
   },
   "navigationUrls": [
