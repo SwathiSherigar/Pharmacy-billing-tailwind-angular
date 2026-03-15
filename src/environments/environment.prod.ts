@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://your-backend.onrender.com', // Replace with your Render URL
+  apiUrl: 'https://pharmacy-backend-es4a.onrender.com',
 };
