@@ -30,6 +30,16 @@
 
   <!-- Bottom section -->
   <div class="sidebar-footer">
+    <a class="menu-item footer-item" [class.collapsed-item]="collapsed" routerLink="/profile"
+      routerLinkActive="active" [matTooltip]="collapsed ? 'Profile' : ''" matTooltipPosition="right">
+      <span class="icon-box">
+        <mat-icon class="material-symbols-outlined">person</mat-icon>
+      </span>
+      @if (!collapsed) {
+      <span class="item-label">Profile</span>
+      }
+    </a>
+
     <div class="menu-item footer-item" [class.collapsed-item]="collapsed" (click)="openSettings()"
       [matTooltip]="collapsed ? 'Settings' : ''" matTooltipPosition="right" style="cursor: pointer;">
       <span class="icon-box">
@@ -37,6 +47,16 @@
       </span>
       @if (!collapsed) {
       <span class="item-label">Settings</span>
+      }
+    </div>
+
+    <div class="menu-item footer-item" [class.collapsed-item]="collapsed" (click)="logout()"
+      [matTooltip]="collapsed ? 'Logout' : ''" matTooltipPosition="right" style="cursor: pointer;">
+      <span class="icon-box">
+        <mat-icon class="material-symbols-outlined !text-red-500">logout</mat-icon>
+      </span>
+      @if (!collapsed) {
+      <span class="item-label !text-red-500">Logout</span>
       }
     </div>
   </div>

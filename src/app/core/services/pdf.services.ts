@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { AuthService } from './auth.service';
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -18,7 +19,7 @@ export class PdfService {
 
   private fontBase64: string | null = null;
 
-  constructor() { }
+  constructor(private auth: AuthService) { }
 
   private async loadFont(): Promise<string> {
     if (this.fontBase64) return this.fontBase64;
@@ -53,18 +54,33 @@ export class PdfService {
     const contentWidth = pageWidth - 2 * margin;
 
     // ─── HEADER ───
+    const client = this.auth.currentClient();
+    const shopName = client?.shopName || 'Pharmacy';
+    const dlNo = (client?.dlNo || '').split(',').map((s: string) => s.trim()).filter(Boolean).join('  |  ');
+    const shopAddress = client?.address || '';
+    const shopPhone = client?.phone || '';
+    const shopEmail = client?.email || '';
+
     doc.setFont('NotoSans', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(28, 43, 112);
-    doc.text('AKASH PHARMA', pageWidth / 2, 11, { align: 'center' });
+    doc.text(shopName.toUpperCase(), pageWidth / 2, 11, { align: 'center' });
 
     doc.setFont('NotoSans', 'normal');
     doc.setFontSize(7.5);
     doc.setTextColor(80, 80, 80);
-    doc.text('DL No: KA-BE2-274110  |  KA-BE2-27411', pageWidth / 2, 16, { align: 'center' });
-
-    doc.text('1/326 Main Road, Hurulihal, Kudligi, Karnataka 583126', pageWidth / 2, 20, { align: 'center' });
-    doc.text('Ph: +91 7411830930  |  Email: akashsm0555@gmail.com', pageWidth / 2, 24, { align: 'center' });
+    if (dlNo) {
+      doc.text(`DL No: ${dlNo}`, pageWidth / 2, 16, { align: 'center' });
+    }
+    if (shopAddress) {
+      doc.text(shopAddress, pageWidth / 2, 20, { align: 'center' });
+    }
+    const contactParts: string[] = [];
+    if (shopPhone) contactParts.push(`Ph: ${shopPhone}`);
+    if (shopEmail) contactParts.push(`Email: ${shopEmail}`);
+    if (contactParts.length) {
+      doc.text(contactParts.join('  |  '), pageWidth / 2, 24, { align: 'center' });
+    }
 
     // Double line separator
     doc.setDrawColor(28, 43, 112);
@@ -256,7 +272,7 @@ export class PdfService {
     doc.setFont('NotoSans', 'normal');
     doc.setFontSize(6);
     doc.setTextColor(140, 140, 140);
-    doc.text('Thank you for choosing Akash Pharma  |  This is a computer-generated invoice', pageWidth / 2, pageHeight - 2, { align: 'center' });
+    doc.text(`Thank you for choosing ${shopName}  |  This is a computer-generated invoice`, pageWidth / 2, pageHeight - 2, { align: 'center' });
 
     // Reset
     doc.setTextColor(0, 0, 0);

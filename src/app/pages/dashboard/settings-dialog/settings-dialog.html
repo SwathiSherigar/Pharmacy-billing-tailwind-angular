@@ -43,7 +43,7 @@
     </div>
 
     <!-- Import Section -->
-    <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+    <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4 mb-3">
       <div class="flex items-center gap-2 mb-3">
         <mat-icon class="material-symbols-outlined !text-[18px] text-amber-600">upload</mat-icon>
         <p class="text-[11px] font-bold text-amber-600 uppercase tracking-wider m-0">Import Data</p>
@@ -55,6 +55,56 @@
         Choose Backup File
       </button>
       <input #fileInput type="file" accept=".json" hidden (change)="importData($event)">
+    </div>
+
+    <!-- Cloud Sync Section -->
+    @if (auth.isLoggedIn()) {
+    <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <mat-icon class="material-symbols-outlined !text-[18px] text-purple-600">cloud_sync</mat-icon>
+        <p class="text-[11px] font-bold text-purple-600 uppercase tracking-wider m-0">Cloud Sync</p>
+      </div>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-3 m-0">Sync your data with the cloud server</p>
+      <div class="flex gap-2">
+        <button mat-flat-button type="button" (click)="syncToCloud()" [disabled]="syncing()"
+          class="!bg-purple-600 !text-white !rounded-lg !text-xs !font-semibold !min-w-[120px]">
+          @if (syncing()) {
+            <mat-spinner diameter="16" class="inline-block !mr-1"></mat-spinner>
+          } @else {
+            <mat-icon class="material-symbols-outlined !text-[15px] !w-4 !h-4 !mr-1">cloud_upload</mat-icon>
+          }
+          Push to Cloud
+        </button>
+        <button mat-flat-button type="button" (click)="restoreFromCloud()" [disabled]="syncing()"
+          class="!bg-indigo-600 !text-white !rounded-lg !text-xs !font-semibold !min-w-[120px]">
+          @if (syncing()) {
+            <mat-spinner diameter="16" class="inline-block !mr-1"></mat-spinner>
+          } @else {
+            <mat-icon class="material-symbols-outlined !text-[15px] !w-4 !h-4 !mr-1">cloud_download</mat-icon>
+          }
+          Pull from Cloud
+        </button>
+      </div>
+      @if (syncMessage()) {
+      <p class="text-[11px] mt-2 m-0" [class]="syncMessage().includes('failed') ? 'text-red-500' : 'text-green-600 dark:text-green-400'">
+        {{ syncMessage() }}
+      </p>
+      }
+    </div>
+    }
+
+    <!-- Danger Zone -->
+    <div class="border border-red-300 dark:border-red-800 rounded-lg p-4 mt-3">
+      <div class="flex items-center gap-2 mb-3">
+        <mat-icon class="material-symbols-outlined !text-[18px] text-red-500">delete_forever</mat-icon>
+        <p class="text-[11px] font-bold text-red-500 uppercase tracking-wider m-0">Danger Zone</p>
+      </div>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-3 m-0">Permanently delete all local data (patients, doctors, bills, products, batches, invoices)</p>
+      <button mat-flat-button type="button" (click)="clearAllData()"
+        class="!bg-red-600 !text-white !rounded-lg !text-xs !font-semibold !min-w-[140px]">
+        <mat-icon class="material-symbols-outlined !text-[15px] !w-4 !h-4 !mr-1">delete_forever</mat-icon>
+        Delete All Data
+      </button>
     </div>
 
   </div>

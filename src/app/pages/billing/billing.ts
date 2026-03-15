@@ -15,7 +15,6 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats, MatNati
 import { Topbar } from "../../shared/components/layout/topbar/topbar";
 import { CustomMonthYearAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
 import { DataStoreService } from '../../core/services/data-store';
-import { IndexedDbService } from '../../core/services/indexed-db';
 import { MatDialog } from '@angular/material/dialog';
 import { BatchAllocationDialog, BatchAllocationData, BatchAllocationResult } from './batch-allocation-dialog/batch-allocation-dialog';
 const CUSTOM_DATE_FORMATS: MatDateFormats = {
@@ -74,7 +73,6 @@ export class BillingComponent {
   invoiceNo?: string;
 
   constructor(
-    private db: IndexedDbService,
     private pdf: PdfService,
     private store: DataStoreService,
     private dialog: MatDialog,
@@ -309,9 +307,9 @@ export class BillingComponent {
   // --- Data loading ---
 
   async loadData() {
-    this.patients = await this.db.getAll('patients');
-    this.doctors = await this.db.getAll('doctors');
-    this.products = await this.db.getAll('products');
+    this.patients = this.store.patients();
+    this.doctors = this.store.doctors();
+    this.products = await this.store.getAllProducts();
     this.productBatches = await this.store.getAllBatches();
   }
 
@@ -357,11 +355,7 @@ export class BillingComponent {
     );
 
     for (const item of this.items) {
-      await this.db.saveIfNotExists(
-        'products',
-        toPlainObject(item),
-        'name'
-      );
+      await this.store.saveOrGetProduct(toPlainObject(item));
     }
 
     const bill: any = {
@@ -403,11 +397,7 @@ export class BillingComponent {
       JSON.parse(JSON.stringify(this.doctor))
     );
     for (const item of this.items) {
-      await this.db.saveIfNotExists(
-        'products',
-        JSON.parse(JSON.stringify(item)),
-        'name'
-      );
+      await this.store.saveOrGetProduct(JSON.parse(JSON.stringify(item)));
     }
     const bill: any = {
       invoiceNo,
@@ -479,7 +469,7 @@ export class BillingComponent {
   }
 
   async getNextInvoiceNumber(): Promise<string> {
-    const bills = await this.db.getAll('bills');
+    const bills = this.store.bills();
 
     const numbers = bills
       .map(b => Number(b?.invoiceNo))
@@ -542,11 +532,7 @@ export class BillingComponent {
         );
 
         for (const item of data.items) {
-          await this.db.saveIfNotExists(
-            'products',
-            toPlainObject(item),
-            'name'
-          );
+          await this.store.saveOrGetProduct(toPlainObject(item));
         }
 
         const total = data.items.reduce(

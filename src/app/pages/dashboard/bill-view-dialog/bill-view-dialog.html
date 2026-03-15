@@ -2,16 +2,24 @@
 
     <!-- HEADER -->
     <div class="text-center pb-3">
-        <h1 class="text-xl font-bold text-[#1C2B70] dark:text-blue-400 m-0 tracking-wide">AKASH PHARMA</h1>
+        <h1 class="text-xl font-bold text-[#1C2B70] dark:text-blue-400 m-0 tracking-wide">{{ shopName | uppercase }}</h1>
+        @if (dlNo) {
         <p class="text-[11px] text-gray-500 dark:text-slate-400 mt-1 leading-relaxed">
-            DL No: KA-BE2-274110 &nbsp;|&nbsp; KA-BE2-27411
+            DL No: {{ dlNo }}
         </p>
+        }
+        @if (shopAddress) {
         <p class="text-[11px] text-gray-500 dark:text-slate-400 leading-relaxed">
-            1/326 Main Road, Hurulihal, Kudligi, Karnataka 583126
+            {{ shopAddress }}
         </p>
+        }
+        @if (shopPhone || shopEmail) {
         <p class="text-[11px] text-gray-500 dark:text-slate-400 leading-relaxed">
-            Ph: +91 7411830930 &nbsp;|&nbsp; Email: akashsm0555@gmail.com
+            @if (shopPhone) { Ph: {{ shopPhone }} }
+            @if (shopPhone && shopEmail) { &nbsp;|&nbsp; }
+            @if (shopEmail) { Email: {{ shopEmail }} }
         </p>
+        }
     </div>
 
     <!-- Double line separator -->
@@ -126,7 +134,7 @@
     <!-- BOTTOM BAR -->
     <div class="border-t border-[#1C2B70] dark:border-blue-400 mt-4 pt-2">
         <p class="text-center text-[10px] text-gray-400 dark:text-slate-500">
-            Thank you for choosing Akash Pharma &nbsp;
+            Thank you for choosing {{ shopName }} &nbsp;
         </p>
     </div>
 

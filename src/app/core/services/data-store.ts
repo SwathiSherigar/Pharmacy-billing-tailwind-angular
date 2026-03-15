@@ -1,5 +1,7 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { IndexedDbService } from './indexed-db';
+import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class DataStoreService {
@@ -7,44 +9,79 @@ export class DataStoreService {
   doctors = signal<any[]>([]);
   bills = signal<any[]>([]);
 
-  constructor(private db: IndexedDbService) {
+  constructor(
+    private db: IndexedDbService,
+    private api: ApiService,
+    private auth: AuthService
+  ) {
     this.loadAll();
   }
 
+  private syncTimer: any = null;
+
+  private get isOnline(): boolean {
+    return this.auth.isLoggedIn();
+  }
+
+  private scheduleSync() {
+    if (!this.isOnline) return;
+    if (this.syncTimer) clearTimeout(this.syncTimer);
+    this.syncTimer = setTimeout(() => this.pushToCloud(), 2000);
+  }
+
+  private async pushToCloud() {
+    try {
+      const data = await this.db.exportAllRaw();
+      await this.api.syncPush(data);
+    } catch {}
+  }
+
   async loadAll() {
+    // Always read from IndexedDB (source of truth for offline-first PWA)
     this.patients.set(await this.db.getAll('patients'));
     this.doctors.set(await this.db.getAll('doctors'));
     this.bills.set(await this.db.getAll('bills'));
   }
 
   async updatePatient(patient: any) {
-    await this.db.update('patients', patient);
+    if (patient.id) {
+      await this.db.update('patients', patient);
+    }
     this.patients.update(p =>
-      p.map(x => x.id === patient.id ? patient : x)
+      p.map(x => (x.id === patient.id || x._id === patient._id) ? patient : x)
     );
+    this.scheduleSync();
   }
 
   async updateDoctor(doctor: any) {
-    await this.db.update('doctors', doctor);
+    if (doctor.id) {
+      await this.db.update('doctors', doctor);
+    }
     this.doctors.update(d =>
-      d.map(x => x.id === doctor.id ? doctor : x)
+      d.map(x => (x.id === doctor.id || x._id === doctor._id) ? doctor : x)
     );
+    this.scheduleSync();
   }
 
   async addBill(bill: any) {
     const id = await this.db.add('bills', bill);
     this.bills.update(b => [...b, { ...bill, id }]);
+    this.scheduleSync();
   }
+
   async updateBill(bill: any) {
-    if (!bill.id) {
+    if (!bill.id && !bill._id) {
       throw new Error('Bill ID is required for update');
     }
 
-    await this.db.update('bills', bill);
+    if (bill.id) {
+      await this.db.update('bills', bill);
+    }
 
     this.bills.update(b =>
-      b.map(x => x.id === bill.id ? bill : x)
+      b.map(x => (x.id === bill.id || x._id === bill._id) ? bill : x)
     );
+    this.scheduleSync();
   }
 
   enrichedBills = computed(() => {
@@ -81,6 +118,7 @@ export class DataStoreService {
     this.patients.update(p =>
       p.some(x => x.id === saved.id) ? p : [...p, saved]
     );
+    this.scheduleSync();
 
     return saved;
   }
@@ -91,7 +129,14 @@ export class DataStoreService {
     this.doctors.update(d =>
       d.some(x => x.id === saved.id) ? d : [...d, saved]
     );
+    this.scheduleSync();
 
+    return saved;
+  }
+
+  async saveOrGetProduct(product: any) {
+    const saved = await this.db.saveIfNotExists('products', product, 'name');
+    this.scheduleSync();
     return saved;
   }
 
@@ -101,6 +146,7 @@ export class DataStoreService {
 
   async updateBatch(batch: any) {
     await this.db.update('productBatches', batch);
+    this.scheduleSync();
   }
 
   async deductInventory(items: any[]) {
@@ -111,18 +157,20 @@ export class DataStoreService {
       batch.qty = Math.max(0, batch.qty - item.qty);
       await this.db.update('productBatches', batch);
     }
+    this.scheduleSync();
   }
 
   async getAllProducts() {
     return await this.db.getAll('products');
   }
-  
+
   async importPurchaseCsv(text: string) {
     const isTabSeparated = text.includes('\t');
-    if (isTabSeparated) {
-      return this.importMultiBillTsv(text);
-    }
-    return this.importSingleBillCsv(text);
+    const result = isTabSeparated
+      ? await this.importMultiBillTsv(text)
+      : await this.importSingleBillCsv(text);
+    this.scheduleSync();
+    return result;
   }
 
   private async importSingleBillCsv(text: string) {
@@ -176,10 +224,6 @@ export class DataStoreService {
     return true;
   }
 
-  /**
-   * Detect bill column offsets by finding all "Type" headers in the first row.
-   * Returns the starting column index for each bill.
-   */
   private detectBillOffsets(headerCols: string[]): number[] {
     const offsets: number[] = [];
     for (let i = 0; i < headerCols.length; i++) {
@@ -188,10 +232,6 @@ export class DataStoreService {
     return offsets;
   }
 
-  /**
-   * Build a column name map for a bill given its offset and the next bill's offset.
-   * Maps header names like "Selling Rate", "MRP", "Batch No.", "Exp. Date", "Hsn" to their column index.
-   */
   private buildColumnMap(headerCols: string[], startOffset: number, endOffset: number): Map<string, number> {
     const map = new Map<string, number>();
     for (let i = startOffset; i < endOffset; i++) {
@@ -204,7 +244,6 @@ export class DataStoreService {
   private async importMultiBillTsv(text: string) {
     const allLines = text.split('\n');
 
-    // Split into sections separated by empty lines
     const sections: string[][] = [];
     let currentSection: string[] = [];
 
@@ -220,7 +259,6 @@ export class DataStoreService {
     }
     if (currentSection.length > 0) sections.push(currentSection);
 
-    // Collect all bills across all sections
     const allBills = new Map<string, {
       supplier: string; invoiceNo: string; invoiceDate: string;
       totalAmount: number;
@@ -229,7 +267,6 @@ export class DataStoreService {
     }>();
 
     for (const section of sections) {
-      // Find header row (first row containing "Type")
       const headerLine = section.find(l => l.split('\t').some(c => c.trim() === 'Type'));
       if (!headerLine) continue;
 
@@ -237,14 +274,12 @@ export class DataStoreService {
       const offsets = this.detectBillOffsets(headerCols);
       if (offsets.length === 0) continue;
 
-      // Build column maps for each bill
       const billMaps: { offset: number; colMap: Map<string, number> }[] = [];
       for (let i = 0; i < offsets.length; i++) {
         const end = i + 1 < offsets.length ? offsets[i + 1] : headerCols.length;
         billMaps.push({ offset: offsets[i], colMap: this.buildColumnMap(headerCols, offsets[i], end) });
       }
 
-      // Init section bills
       const sectionBills = billMaps.map(() => ({
         supplier: '', invoiceNo: '', invoiceDate: '', totalAmount: 0,
         items: [] as { code: string; name: string; packing: string; quantity: number; free: number;
@@ -260,7 +295,6 @@ export class DataStoreService {
           if (!type || type === 'Type') continue;
 
           const bill = sectionBills[b];
-          // Helper to get column value by header name
           const col = (name: string) => {
             const idx = colMap.get(name);
             return idx !== undefined ? cols[idx]?.trim() || '' : '';
@@ -302,7 +336,6 @@ export class DataStoreService {
         }
       }
 
-      // Merge into allBills by invoiceNo
       for (const bill of sectionBills) {
         if (!bill.invoiceNo) continue;
         if (!allBills.has(bill.invoiceNo)) {
@@ -315,7 +348,6 @@ export class DataStoreService {
       }
     }
 
-    // Save all collected bills
     let imported = 0;
     let skipped = 0;
 

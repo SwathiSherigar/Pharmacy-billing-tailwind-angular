@@ -4,6 +4,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { SettingsDialog } from '../../../../pages/dashboard/settings-dialog/settings-dialog';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'sidebar',
@@ -15,7 +16,11 @@ import { SettingsDialog } from '../../../../pages/dashboard/settings-dialog/sett
 export class SidebarComponent {
   @Input() collapsed = false;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, public auth: AuthService) {}
+
+  logout() {
+    this.auth.logout();
+  }
 
   openSettings() {
     this.dialog.open(SettingsDialog, { width: '95vw', maxWidth: '400px' });

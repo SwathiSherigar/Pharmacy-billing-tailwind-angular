@@ -5,7 +5,7 @@
     <img src="assets/images/logo.png" width="34" height="34" alt="logo" class="rounded-lg" />
     } @else {
     <span class="font-bold text-lg select-none text-[#1C2B70] dark:text-blue-300 tracking-tight">
-      Akash Pharma
+      {{ auth.shopName() || 'Pharmacy' }}
     </span>
     }
 

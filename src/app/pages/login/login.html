@@ -1,0 +1,59 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-900 dark:to-slate-800 px-4">
+  <div class="w-full max-w-md">
+
+    <!-- Logo & Title -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#1C2B70] mb-4">
+        <mat-icon class="material-symbols-outlined !text-white !text-3xl">local_pharmacy</mat-icon>
+      </div>
+      <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Welcome Back</h1>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Sign in to your pharmacy account</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 border border-slate-200 dark:border-slate-700">
+
+      @if (error()) {
+      <div class="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm">
+        {{ error() }}
+      </div>
+      }
+
+      <form (ngSubmit)="submit()" class="space-y-5">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" [(ngModel)]="email" name="email" placeholder="you@example.com" required>
+          <mat-icon matPrefix class="material-symbols-outlined !mr-2">mail</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="password" name="password" required>
+          <mat-icon matPrefix class="material-symbols-outlined !mr-2">lock</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon class="material-symbols-outlined">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-flat-button type="submit" [disabled]="loading()"
+          class="!w-full !h-12 !bg-[#1C2B70] !text-white !rounded-xl !text-base !font-semibold">
+          @if (loading()) {
+            <mat-spinner diameter="22" class="inline-block"></mat-spinner>
+          } @else {
+            Sign In
+          }
+        </button>
+      </form>
+
+      <p class="text-center mt-6 text-sm text-slate-500 dark:text-slate-400">
+        <a (click)="showForgotMsg = true" class="text-[#1C2B70] dark:text-blue-400 font-semibold hover:underline cursor-pointer">Forgot Password?</a>
+      </p>
+      @if (showForgotMsg) {
+      <p class="text-center mt-3 text-sm text-amber-600 dark:text-amber-400">
+        Please contact your admin to reset your password.
+      </p>
+      }
+    </div>
+
+  </div>
+</div>

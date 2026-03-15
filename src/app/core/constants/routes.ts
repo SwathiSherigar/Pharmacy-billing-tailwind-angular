@@ -3,7 +3,8 @@ export const routes = {
     BILLING_PAGE: 'billing',
     PATIENTS_LISTING: 'patient-listing',
     DOCTOR_LISTING: 'doctor-listing',
-    ITEM_LISTING:'items'
+    ITEM_LISTING:'items',
+    PROFILE: 'profile'
 }
 
 export const routesName = {
@@ -11,5 +12,6 @@ export const routesName = {
     BILLING_PAGE: 'billing',
     PATIENTS_LISTING: 'patient-listing',
     DOCTOR_LISTING: 'doctor-listing',
-    ITEM_LISTING:'items'
+    ITEM_LISTING:'items',
+    PROFILE: 'profile'
 }       

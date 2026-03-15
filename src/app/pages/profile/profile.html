@@ -1,0 +1,78 @@
+<div class="max-w-xl mx-auto px-4 py-8 h-100">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-6">
+    <div class="w-12 h-12 rounded-xl bg-[#1C2B70] dark:bg-blue-600 flex items-center justify-center">
+      <mat-icon class="material-symbols-outlined !text-white !text-2xl">person</mat-icon>
+    </div>
+    <div>
+      <h1 class="text-xl font-bold text-[#1C2B70] dark:text-blue-400 m-0">Profile</h1>
+      <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5 m-0">Manage your shop details</p>
+    </div>
+  </div>
+
+  <!-- Message -->
+  @if (message()) {
+  <div class="mb-4 p-3 rounded-lg text-sm"
+    [class]="messageType() === 'error' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'">
+    {{ message() }}
+  </div>
+  }
+
+  <!-- Form -->
+  <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 space-y-4">
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Shop Name *</mat-label>
+      <input matInput [(ngModel)]="shopName" name="shopName" required>
+      <mat-icon matPrefix class="material-symbols-outlined !mr-2">storefront</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Owner Name *</mat-label>
+      <input matInput [(ngModel)]="ownerName" name="ownerName" required>
+      <mat-icon matPrefix class="material-symbols-outlined !mr-2">person</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Email</mat-label>
+      <input matInput [(ngModel)]="email" name="email" disabled>
+      <mat-icon matPrefix class="material-symbols-outlined !mr-2">mail</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Phone</mat-label>
+      <input matInput [(ngModel)]="phone" name="phone">
+      <mat-icon matPrefix class="material-symbols-outlined !mr-2">call</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Address</mat-label>
+      <input matInput [(ngModel)]="address" name="address">
+      <mat-icon matPrefix class="material-symbols-outlined !mr-2">location_on</mat-icon>
+    </mat-form-field>
+
+    <div class="grid grid-cols-2 gap-3">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>DL No. 1</mat-label>
+        <input matInput [(ngModel)]="dlNo1" name="dlNo1">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>DL No. 2</mat-label>
+        <input matInput [(ngModel)]="dlNo2" name="dlNo2">
+      </mat-form-field>
+    </div>
+
+    <button mat-flat-button (click)="save()" [disabled]="saving()"
+      class="!bg-[#1C2B70] dark:!bg-blue-600 !text-white !rounded-xl !text-sm !font-semibold !h-11 !min-w-[140px]">
+      @if (saving()) {
+        <mat-spinner diameter="20" class="inline-block !mr-1"></mat-spinner>
+      } @else {
+        <mat-icon class="material-symbols-outlined !text-[18px] !w-5 !h-5 !mr-1">save</mat-icon>
+      }
+      Save Changes
+    </button>
+
+  </div>
+</div>

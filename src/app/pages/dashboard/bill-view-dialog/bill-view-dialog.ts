@@ -1,16 +1,31 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { UpperCasePipe } from '@angular/common';
 import { PdfService } from '../../../core/services/pdf.services';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-bill-view-dialog',
-  imports: [MatButtonModule, MatDialogModule],
+  imports: [MatButtonModule, MatDialogModule, UpperCasePipe],
   templateUrl: './bill-view-dialog.html',
   styleUrl: './bill-view-dialog.css',
 })
 export class BillViewDialog {
-constructor(@Inject(MAT_DIALOG_DATA) public data: any, private pdf: PdfService,  private dialogRef: MatDialogRef<BillViewDialog>) {}
+  shopName: string;
+  dlNo: string;
+  shopPhone: string;
+  shopAddress: string;
+  shopEmail: string;
+
+constructor(@Inject(MAT_DIALOG_DATA) public data: any, private pdf: PdfService, private dialogRef: MatDialogRef<BillViewDialog>, private auth: AuthService) {
+  const client = this.auth.currentClient();
+  this.shopName = client?.shopName || 'Pharmacy';
+  this.dlNo = (client?.dlNo || '').split(',').map((s: string) => s.trim()).filter(Boolean).join('  |  ');
+  this.shopPhone = client?.phone || '';
+  this.shopAddress = client?.address || '';
+  this.shopEmail = client?.email || '';
+}
 
 formatDate(date: string | Date): string {
   if (!date) return '';

@@ -172,11 +172,11 @@ export class ItemListing implements AfterViewInit {
     const allBatches = await this.store.getAllBatches();
     const products = await this.store.getAllProducts();
 
-    this.batches = allBatches.map((batch: { productId: any }) => {
-      const product = products.find((p: { id: any }) => p.id === batch.productId);
+    this.batches = allBatches.map((batch: any) => {
+      const product = products.find((p: any) => p.id === batch.productId);
       return {
         ...batch,
-        name: product?.name || ''
+        name: product?.name || batch._productName || ''
       };
     });
 

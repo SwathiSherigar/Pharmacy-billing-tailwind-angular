@@ -1,0 +1,111 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-900 to-indigo-950">
+
+  <!-- Admin Top Bar -->
+  <div class="bg-slate-800 border-b border-slate-700 px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <mat-icon class="material-symbols-outlined !text-indigo-400">admin_panel_settings</mat-icon>
+      <span class="text-white font-semibold">Admin Panel</span>
+    </div>
+    <button mat-button class="!text-red-400" (click)="logout()">
+      <mat-icon class="material-symbols-outlined !mr-1">logout</mat-icon>
+      Logout
+    </button>
+  </div>
+
+  <!-- Register Form -->
+  <div class="p-6 max-w-2xl mx-auto mt-8">
+    <div class="mb-6 text-center">
+      <h1 class="text-2xl font-bold text-white flex items-center justify-center gap-2">
+        <mat-icon class="material-symbols-outlined !text-indigo-400">person_add</mat-icon>
+        Register New Client
+      </h1>
+      <p class="text-slate-400 mt-1">Create a new pharmacy account</p>
+    </div>
+
+    <div class="bg-slate-800 rounded-2xl shadow-xl p-8 border border-slate-700">
+
+      @if (error()) {
+      <div class="mb-4 p-3 rounded-lg bg-red-900/30 text-red-400 text-sm">
+        {{ error() }}
+      </div>
+      }
+
+      @if (success()) {
+      <div class="mb-4 p-3 rounded-lg bg-green-900/30 text-green-400 text-sm flex items-center gap-2">
+        <mat-icon class="material-symbols-outlined !text-lg">check_circle</mat-icon>
+        {{ success() }}
+      </div>
+      }
+
+      <form (ngSubmit)="submit()" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Shop Name *</mat-label>
+            <input matInput [(ngModel)]="shopName" name="shopName" placeholder="Pharmacy Name" required>
+            <mat-icon matPrefix class="material-symbols-outlined !mr-2">storefront</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Owner Name *</mat-label>
+            <input matInput [(ngModel)]="ownerName" name="ownerName" placeholder="Owner name" required>
+            <mat-icon matPrefix class="material-symbols-outlined !mr-2">person</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Email *</mat-label>
+            <input matInput type="email" [(ngModel)]="email" name="email" placeholder="user@example.com" required>
+            <mat-icon matPrefix class="material-symbols-outlined !mr-2">mail</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Password *</mat-label>
+            <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="password" name="password" required>
+            <mat-icon matPrefix class="material-symbols-outlined !mr-2">lock</mat-icon>
+            <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+              <mat-icon class="material-symbols-outlined">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Phone</mat-label>
+            <input matInput [(ngModel)]="phone" name="phone" placeholder="9876543210">
+            <mat-icon matPrefix class="material-symbols-outlined !mr-2">call</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Address</mat-label>
+            <input matInput [(ngModel)]="address" name="address" placeholder="Shop address">
+            <mat-icon matPrefix class="material-symbols-outlined !mr-2">location_on</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>DL No. 1</mat-label>
+            <input matInput [(ngModel)]="dlNo1" name="dlNo1" placeholder="KA-BE2-274110">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>DL No. 2</mat-label>
+            <input matInput [(ngModel)]="dlNo2" name="dlNo2" placeholder="KA-BE2-274111">
+          </mat-form-field>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button mat-flat-button type="submit" [disabled]="loading()"
+            class="!h-12 !px-8 !bg-indigo-600 !text-white !rounded-xl !text-base !font-semibold">
+            @if (loading()) {
+              <mat-spinner diameter="22" class="inline-block"></mat-spinner>
+            } @else {
+              Register Client
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

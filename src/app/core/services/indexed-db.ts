@@ -128,6 +128,16 @@ private dbPromise = openDB('pharmacy-db', 3, {
     return JSON.stringify(await this.exportAllRaw(), null, 2);
   }
 
+  async clearAll(): Promise<void> {
+    const db = await this.dbPromise;
+    const storeNames = ['patients', 'doctors', 'products', 'bills', 'productBatches', 'purchaseInvoices'];
+    for (const name of storeNames) {
+      const tx = db.transaction(name, 'readwrite');
+      await tx.objectStore(name).clear();
+      await tx.done;
+    }
+  }
+
   async importAll(jsonString: string): Promise<void> {
     const data = JSON.parse(jsonString);
     const db = await this.dbPromise;
