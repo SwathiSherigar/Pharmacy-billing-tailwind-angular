@@ -16,7 +16,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/pharmacy-tailwind-application/browser",
+            "outputPath": "dist/pharmacy-tailwind-application",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -33,7 +33,7 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/Pharmacy-billing-tailwind-angular/",
+              "baseHref": "/",
               "budgets": [
                 {
                   "type": "initial",
