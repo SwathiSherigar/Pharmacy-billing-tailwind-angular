@@ -11,7 +11,7 @@ declare module 'jspdf' {
 export interface Patient { name: string; phone?: string; address?: string; }
 export interface Doctor { name: string; phone?: string; address?: string; }
 export interface Item { name: string; batch?: string; qty?: number; mrp?: number; expiry?: string; amount?: number; }
-export interface BillData { patient: Patient; doctor: Doctor; items: Item[]; invoiceNo?: string; dueDate?: string; total: number; taxRate?: number; date?: any; }
+export interface BillData { patient: Patient; doctor: Doctor; items: Item[]; invoiceNo?: string; dueDate?: string; total: number; discount?: number; taxRate?: number; date?: any; }
 
 @Injectable({ providedIn: 'root' })
 export class PdfService {
@@ -200,7 +200,10 @@ export class PdfService {
     });
 
     // ─── FOOTER — always at the bottom ───
-    const grandTotal = data.total + (data.total * ((data.taxRate || 0) / 100));
+    const discountPct = data.discount || 0;
+    const discountAmt = data.total * (discountPct / 100);
+    const afterDiscount = Math.max(0, data.total - discountAmt);
+    const grandTotal = afterDiscount + (afterDiscount * ((data.taxRate || 0) / 100));
     const footerTopY = pageHeight - footerReserve + 2;
 
     // Separator line above footer
@@ -230,9 +233,16 @@ export class PdfService {
     doc.text(`\u20B9${data.total.toFixed(2)}`, valX, footerTopY + 3, { align: 'right' });
 
     let totalOffsetY = 7;
+
+    if (discountPct > 0) {
+      doc.text(`Discount (${discountPct}%):`, totalColX, footerTopY + totalOffsetY);
+      doc.text(`-\u20B9${discountAmt.toFixed(2)}`, valX, footerTopY + totalOffsetY, { align: 'right' });
+      totalOffsetY += 4;
+    }
+
     if (data.taxRate && data.taxRate > 0) {
       doc.text(`Tax (${data.taxRate}%):`, totalColX, footerTopY + totalOffsetY);
-      doc.text(`\u20B9${(data.total * (data.taxRate / 100)).toFixed(2)}`, valX, footerTopY + totalOffsetY, { align: 'right' });
+      doc.text(`\u20B9${(afterDiscount * (data.taxRate / 100)).toFixed(2)}`, valX, footerTopY + totalOffsetY, { align: 'right' });
       totalOffsetY += 4;
     }
 

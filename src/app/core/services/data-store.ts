@@ -48,17 +48,24 @@ export class DataStoreService {
   }
 
   enrichedBills = computed(() => {
-    const patientMap = new Map(
-      this.patients().map(p => [p.id, p])
-    );
-    const doctorMap = new Map(
-      this.doctors().map(d => [d.id, d])
-    );
-
     return this.bills()
       .map(b => {
-        const patient = patientMap.get(b.patientId);
-        const doctor = doctorMap.get(b.doctorId);
+        // Bills now store patient/doctor inline
+        const patient = b.patient;
+        const doctor = b.doctor;
+
+        // Support legacy bills that used patientId/doctorId
+        if (!patient && b.patientId) {
+          const patientMap = new Map(this.patients().map((p: any) => [p.id, p]));
+          const doctorMap = new Map(this.doctors().map((d: any) => [d.id, d]));
+          const legacyPatient = patientMap.get(b.patientId);
+          if (!legacyPatient) return null;
+          return {
+            ...b,
+            patient: legacyPatient,
+            doctor: doctorMap.get(b.doctorId) || { name: 'N/A', phone: '', address: '' }
+          };
+        }
 
         if (!patient) return null;
 

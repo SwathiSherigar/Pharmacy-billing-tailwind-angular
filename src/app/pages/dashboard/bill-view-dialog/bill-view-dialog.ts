@@ -49,7 +49,8 @@ formatDate(date: string | Date): string {
       doctor: this.data.doctor,
       items: this.data.items,
       total: this.data.total,
-       date: this.data.date
+      discount: this.data.discount || 0,
+      date: this.data.date
     });
   }
 

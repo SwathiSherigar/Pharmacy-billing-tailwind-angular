@@ -44,18 +44,19 @@ export class SidebarComponent {
       featureIcon: 'receipt_long',
       featureRoute: '/billing',
     },
-    {
-      featureCode: 'PATIENT_LISTING',
-      featureName: 'Patients',
-      featureIcon: 'group',
-      featureRoute: '/patient-listing',
-    },
-    {
-      featureCode: 'DOCTOR_LISTING',
-      featureName: 'Doctors',
-      featureIcon: 'medical_services',
-      featureRoute: '/doctor-listing',
-    },
+    // Patient listing disabled — patient data stored inline in bills
+    // {
+    //   featureCode: 'PATIENT_LISTING',
+    //   featureName: 'Patients',
+    //   featureIcon: 'group',
+    //   featureRoute: '/patient-listing',
+    // },
+    // {
+    //   featureCode: 'DOCTOR_LISTING',
+    //   featureName: 'Doctors',
+    //   featureIcon: 'medical_services',
+    //   featureRoute: '/doctor-listing',
+    // },
     {
       featureCode: 'PRODUCT_LISTING',
       featureName: 'Inventory',

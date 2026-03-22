@@ -59,12 +59,9 @@ export class BillingComponent {
   doctor: any = {};
   billDate: Date = new Date();
   items: any[] = [{ name: '', batch: '', qty: 1, mrp: 0, expiry: '', amount: 0 }];
-  patients: any[] = [];
-  doctors: any[] = [];
+  discount: number = 0;
   products: any[] = [];
   productBatches: any[] = [];
-  filteredPatients: any[] = [];
-  filteredDoctors: any[] = [];
   filteredItems: any[][] = [];
 
 
@@ -130,6 +127,7 @@ export class BillingComponent {
       ...i,
       amount: i.qty * i.mrp
     }));
+    this.discount = bill.discount || 0;
   }
 
 
@@ -139,18 +137,9 @@ export class BillingComponent {
     return new Date(+year, +month - 1, 1);
   }
 
-  filterPatients() {
-    const name = this.patient.name?.toLowerCase() || '';
-    this.filteredPatients = this.patients?.filter(p =>
-      p.name.toLowerCase().includes(name)
-    );
-  }
-  filterDoctors() {
-    const name = this.doctor.name?.toLowerCase() || '';
-    this.filteredDoctors = this.doctors?.filter(d =>
-      d.name.toLowerCase().includes(name)
-    );
-  }
+  // Patient/doctor autocomplete removed — data stored inline in bill
+  // filterPatients() { ... }
+  // filterDoctors() { ... }
 
   filterItems(index: number) {
     const name = this.items[index].name?.toLowerCase() || '';
@@ -172,14 +161,7 @@ export class BillingComponent {
       });
   }
 
-  selectPatient(name: string) {
-    const p = this.patients.find(x => x.name === name);
-    if (p) this.patient = { ...p };
-  }
-  selectDoctor(name: string) {
-    const d = this.doctors.find(x => x.name === name);
-    if (d) this.doctor = { ...d };
-  }
+  // selectPatient/selectDoctor removed — no autocomplete needed
 
   selectItem(name: string, index: number) {
     // Prefer inventory product (has code field) over billing-saved product
@@ -309,8 +291,6 @@ export class BillingComponent {
   // --- Data loading ---
 
   async loadData() {
-    this.patients = await this.db.getAll('patients');
-    this.doctors = await this.db.getAll('doctors');
     this.products = await this.db.getAll('products');
     this.productBatches = await this.store.getAllBatches();
   }
@@ -323,6 +303,14 @@ export class BillingComponent {
 
   get total() {
     return this.items.reduce((sum, i) => sum + i.amount, 0);
+  }
+
+  get discountAmount() {
+    return this.total * ((this.discount || 0) / 100);
+  }
+
+  get grandTotal() {
+    return Math.max(0, this.total - this.discountAmount);
   }
 
   validateBill(): boolean {
@@ -348,28 +336,15 @@ export class BillingComponent {
     const invoiceNo = this.isEditMode
       ? this.invoiceNo!
       : await this.getNextInvoiceNumber();
-    const savedPatient = await this.store.saveOrGetPatient(
-      toPlainObject(this.patient)
-    );
-
-    const savedDoctor = await this.store.saveOrGetDoctor(
-      toPlainObject(this.doctor)
-    );
-
-    for (const item of this.items) {
-      await this.db.saveIfNotExists(
-        'products',
-        toPlainObject(item),
-        'name'
-      );
-    }
 
     const bill: any = {
       invoiceNo,
-      patientId: savedPatient.id,
-      doctorId: savedDoctor.id,
+      patient: toPlainObject(this.patient),
+      doctor: toPlainObject(this.doctor),
       items: this.items.map(i => toPlainObject(i)),
       total: this.total,
+      discount: this.discount || 0,
+      grandTotal: this.grandTotal,
       date: this.billDate,
     };
     if (this.isEditMode) {
@@ -395,34 +370,23 @@ export class BillingComponent {
       : await this.getNextInvoiceNumber();
 
 
-    const savedPatient = await this.store.saveOrGetPatient(
-      JSON.parse(JSON.stringify(this.patient))
-    );
+    const toPlain = (obj: any) => JSON.parse(JSON.stringify(obj));
 
-    const savedDoctor = await this.store.saveOrGetDoctor(
-      JSON.parse(JSON.stringify(this.doctor))
-    );
-    for (const item of this.items) {
-      await this.db.saveIfNotExists(
-        'products',
-        JSON.parse(JSON.stringify(item)),
-        'name'
-      );
-    }
     const bill: any = {
       invoiceNo,
-      patientId: savedPatient.id,
-      doctorId: savedDoctor.id,
-      items: this.items.map(i => JSON.parse(JSON.stringify(i))),
+      patient: toPlain(this.patient),
+      doctor: toPlain(this.doctor),
+      items: this.items.map(i => toPlain(i)),
       total: this.total,
+      discount: this.discount || 0,
+      grandTotal: this.grandTotal,
       date: this.billDate
     };
 
     if (this.isEditMode) {
       bill.id = this.editingBillId;
       await this.store.updateBill(bill);
-    }
-    else {
+    } else {
       await this.store.addBill(bill);
     }
 
@@ -431,10 +395,11 @@ export class BillingComponent {
 
     this.pdf.generateBill({
       invoiceNo,
-      patient: savedPatient,
-      doctor: savedDoctor,
+      patient: this.patient,
+      doctor: this.doctor,
       items: this.items,
       total: this.total,
+      discount: this.discount || 0,
       date: this.billDate
     });
 
@@ -449,9 +414,8 @@ export class BillingComponent {
     this.items = [
       { name: '', batch: '', qty: 1, mrp: 0, expiry: '', amount: 0 }
     ];
+    this.discount = 0;
 
-    this.filteredPatients = [];
-    this.filteredDoctors = [];
     this.filteredItems = [];
 
     setTimeout(() => {

@@ -113,10 +113,16 @@
                     <span>Subtotal:</span>
                     <span>₹{{ data.total.toFixed(2) }}</span>
                 </div>
+                @if (data.discount > 0) {
+                <div class="flex justify-between text-xs text-gray-600 dark:text-slate-400 mb-1">
+                    <span>Discount ({{ data.discount }}%):</span>
+                    <span>-₹{{ (data.total * data.discount / 100).toFixed(2) }}</span>
+                </div>
+                }
                 <div class="border-t-2 border-[#1C2B70] dark:border-blue-400 pt-2 mt-1">
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-sm text-[#1C2B70] dark:text-blue-400">GRAND TOTAL:</span>
-                        <span class="font-bold text-base text-[#1C2B70] dark:text-blue-400">₹{{ data.total.toFixed(2) }}</span>
+                        <span class="font-bold text-base text-[#1C2B70] dark:text-blue-400">₹{{ (data.grandTotal ?? data.total).toFixed(2) }}</span>
                     </div>
                 </div>
             </div>

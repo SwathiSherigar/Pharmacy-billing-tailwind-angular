@@ -20,10 +20,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/billing/billing').then(m => m.BillingComponent),
       },
-      {
-        path: PATIENTS_LISTING,
-        loadComponent:() => import('./pages/patient-listing/patient-listing').then(m=>m.PatientListing),
-      },
+      // Patient listing disabled — patient data stored inline in bills
+      // {
+      //   path: PATIENTS_LISTING,
+      //   loadComponent:() => import('./pages/patient-listing/patient-listing').then(m=>m.PatientListing),
+      // },
        {
         path: DOCTOR_LISTING,
         loadComponent:() => import('./pages/doctors-listing/doctors-listing').then(m=>m.DoctorsListing),

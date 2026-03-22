@@ -14,12 +14,7 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-2">
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                    <input matInput [matAutocomplete]="patientAuto" placeholder="Name" [(ngModel)]="patient.name"
-                        (ngModelChange)="filterPatients()" required>
-                    <mat-autocomplete #patientAuto="matAutocomplete"
-                        (optionSelected)="selectPatient($event.option.value)">
-                        <mat-option *ngFor="let p of filteredPatients" [value]="p.name">{{ p.name }}</mat-option>
-                    </mat-autocomplete>
+                    <input matInput placeholder="Name" [(ngModel)]="patient.name" required>
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
                     <input matInput type="number" placeholder="Age" [(ngModel)]="patient.age" required>
@@ -44,12 +39,7 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-2">
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                    <input matInput [matAutocomplete]="doctorAuto" placeholder="Name" [(ngModel)]="doctor.name"
-                        (ngModelChange)="filterDoctors()">
-                    <mat-autocomplete #doctorAuto="matAutocomplete"
-                        (optionSelected)="selectDoctor($event.option.value)">
-                        <mat-option *ngFor="let d of filteredDoctors" [value]="d.name">{{ d.name }}</mat-option>
-                    </mat-autocomplete>
+                    <input matInput placeholder="Name" [(ngModel)]="doctor.name">
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
                     <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo">
@@ -209,8 +199,13 @@
                     class="h-8 px-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-700 dark:text-slate-200 outline-none focus:border-[#1C2B70] dark:focus:border-blue-400">
             </div>
             <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Disc %</span>
+                <input type="number" [(ngModel)]="discount" min="0" max="100" placeholder="0"
+                    class="h-8 w-16 px-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-700 dark:text-slate-200 outline-none focus:border-[#1C2B70] dark:focus:border-blue-400 text-center">
+            </div>
+            <div class="flex items-center gap-2">
                 <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Grand Total</span>
-                <span class="text-xl sm:text-2xl font-extrabold text-[#1C2B70] dark:text-blue-400 tracking-tight">₹{{ total }}</span>
+                <span class="text-xl sm:text-2xl font-extrabold text-[#1C2B70] dark:text-blue-400 tracking-tight">₹{{ grandTotal }}</span>
             </div>
         </div>
         <div class="flex gap-2 sm:gap-3">
