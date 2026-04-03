@@ -1,5 +1,19 @@
 <div class="layout-grid">
 
+  <!-- Sync Status Banner -->
+  @if (syncCheck.syncing() || syncCheck.syncMessage()) {
+  <div class="fixed top-0 left-0 right-0 z-[9999]">
+    @if (syncCheck.syncing()) {
+    <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+    }
+    @if (syncCheck.syncMessage()) {
+    <div class="bg-blue-600 text-white text-xs text-center py-1.5 px-4 font-medium">
+      {{ syncCheck.syncMessage() }}
+    </div>
+    }
+  </div>
+  }
+
   <!-- Topbar -->
   <topbar [isCollapsed]="collapsed" (toggle)="toggle()"></topbar>
 

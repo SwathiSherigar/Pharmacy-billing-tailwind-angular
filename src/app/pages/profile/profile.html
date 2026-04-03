@@ -64,6 +64,35 @@
       </mat-form-field>
     </div>
 
+    <!-- GST Settings -->
+    <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <mat-icon class="material-symbols-outlined !text-[#1C2B70] dark:!text-blue-400 !text-xl">receipt_long</mat-icon>
+          <span class="text-sm font-semibold text-[#1C2B70] dark:text-blue-400">GST Settings</span>
+        </div>
+        <mat-slide-toggle [(ngModel)]="gstEnabled" name="gstEnabled" color="primary">
+        </mat-slide-toggle>
+      </div>
+      <p class="text-[11px] text-slate-400 dark:text-slate-500 mb-3 m-0">Enable to add GST to your bills</p>
+
+      @if (gstEnabled) {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>GST Number</mat-label>
+          <input matInput [(ngModel)]="gstNo" name="gstNo" placeholder="22AAAAA0000A1Z5">
+          <mat-icon matPrefix class="material-symbols-outlined !mr-2">tag</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>GST Rate (%)</mat-label>
+          <input matInput type="number" [(ngModel)]="gstRate" name="gstRate" placeholder="18">
+          <mat-icon matPrefix class="material-symbols-outlined !mr-2">percent</mat-icon>
+        </mat-form-field>
+      </div>
+      }
+    </div>
+
     <button mat-flat-button (click)="save()" [disabled]="saving()"
       class="!bg-[#1C2B70] dark:!bg-blue-600 !text-white !rounded-xl !text-sm !font-semibold !h-11 !min-w-[140px]">
       @if (saving()) {

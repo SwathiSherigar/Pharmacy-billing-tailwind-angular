@@ -5,6 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -17,6 +18,7 @@ import { AuthService } from '../../core/services/auth.service';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './register.html',
 })
@@ -29,6 +31,9 @@ export class RegisterComponent {
   address = '';
   dlNo1 = '';
   dlNo2 = '';
+  gstEnabled = false;
+  gstNo = '';
+  gstRate = 18;
   hidePassword = true;
   loading = signal(false);
   error = signal('');
@@ -58,6 +63,9 @@ export class RegisterComponent {
       phone: this.phone || undefined,
       address: this.address || undefined,
       dlNo: [this.dlNo1, this.dlNo2].filter(Boolean).join(',') || undefined,
+      gstEnabled: this.gstEnabled,
+      gstNo: this.gstEnabled ? this.gstNo : undefined,
+      gstRate: this.gstEnabled ? this.gstRate : 0,
     }).subscribe({
       next: () => {
         this.loading.set(false);
@@ -70,6 +78,9 @@ export class RegisterComponent {
         this.address = '';
         this.dlNo1 = '';
         this.dlNo2 = '';
+        this.gstEnabled = false;
+        this.gstNo = '';
+        this.gstRate = 18;
       },
       error: (err) => {
         this.error.set(err.error?.message || 'Registration failed');

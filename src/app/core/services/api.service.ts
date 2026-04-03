@@ -132,4 +132,11 @@ export class ApiService {
   syncPurge() {
     return firstValueFrom(this.http.delete<any>(`${this.API}/sync/purge`));
   }
+
+  syncStatus() {
+    return firstValueFrom(this.http.get<{
+      counts: Record<string, number>;
+      lastSyncedAt: string | null;
+    }>(`${this.API}/sync/status`));
+  }
 }

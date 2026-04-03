@@ -57,6 +57,7 @@ export class PdfService {
     const client = this.auth.currentClient();
     const shopName = client?.shopName || 'Pharmacy';
     const dlNo = (client?.dlNo || '').split(',').map((s: string) => s.trim()).filter(Boolean).join('  |  ');
+    const gstNo = (client as any)?.gstNo || '';
     const shopAddress = client?.address || '';
     const shopPhone = client?.phone || '';
     const shopEmail = client?.email || '';
@@ -71,6 +72,10 @@ export class PdfService {
     doc.setTextColor(80, 80, 80);
     if (dlNo) {
       doc.text(`DL No: ${dlNo}`, pageWidth / 2, 16, { align: 'center' });
+    }
+    if (gstNo) {
+      const gstY = dlNo ? 20 : 16;
+      doc.text(`GSTIN: ${gstNo}`, pageWidth / 2, gstY, { align: 'center' });
     }
     if (shopAddress) {
       doc.text(shopAddress, pageWidth / 2, 20, { align: 'center' });
@@ -231,7 +236,11 @@ export class PdfService {
     doc.text('Terms & Conditions:', margin, footerTopY + 3);
     doc.setFont('NotoSans', 'normal');
     doc.setFontSize(6.5);
-    doc.text('\u2022  GST not applicable.', margin, footerTopY + 7);
+    if (data.taxRate && data.taxRate > 0) {
+      doc.text(`\u2022  GST @ ${data.taxRate}% included.${gstNo ? ' GSTIN: ' + gstNo : ''}`, margin, footerTopY + 7);
+    } else {
+      doc.text('\u2022  GST not applicable.', margin, footerTopY + 7);
+    }
     doc.text('\u2022  Goods once sold will not be taken back.', margin, footerTopY + 11);
     doc.text('\u2022  Subject to local jurisdiction.', margin, footerTopY + 15);
 

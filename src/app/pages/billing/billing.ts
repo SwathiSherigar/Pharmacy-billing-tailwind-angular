@@ -15,6 +15,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatDateFormats, MatNati
 import { Topbar } from "../../shared/components/layout/topbar/topbar";
 import { CustomMonthYearAdapter } from '../../adapters/CustomNgxDatetimeAdapter';
 import { DataStoreService } from '../../core/services/data-store';
+import { AuthService } from '../../core/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BatchAllocationDialog, BatchAllocationData, BatchAllocationResult } from './batch-allocation-dialog/batch-allocation-dialog';
 const CUSTOM_DATE_FORMATS: MatDateFormats = {
@@ -76,7 +77,8 @@ export class BillingComponent {
     private pdf: PdfService,
     private store: DataStoreService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public auth: AuthService
   ) {
     this.loadData();
   }
@@ -318,9 +320,17 @@ export class BillingComponent {
     item.amount = base;
   }
 
+  get subtotal() {
+    return this.items.reduce((sum, i) => sum + i.amount, 0);
+  }
+
+  get gstAmount() {
+    if (!this.auth.gstEnabled()) return 0;
+    return (this.subtotal * this.auth.gstRate()) / 100;
+  }
 
   get total() {
-    return this.items.reduce((sum, i) => sum + i.amount, 0);
+    return this.subtotal + this.gstAmount;
   }
 
   validateBill(): boolean {
@@ -363,7 +373,11 @@ export class BillingComponent {
       patientId: savedPatient.id,
       doctorId: savedDoctor.id,
       items: this.items.map(i => toPlainObject(i)),
-      total: this.total,
+      total: this.subtotal,
+      gstEnabled: this.auth.gstEnabled(),
+      gstRate: this.auth.gstRate(),
+      gstAmount: this.gstAmount,
+      grandTotal: this.total,
       date: this.billDate,
     };
     if (this.isEditMode) {
@@ -404,7 +418,11 @@ export class BillingComponent {
       patientId: savedPatient.id,
       doctorId: savedDoctor.id,
       items: this.items.map(i => JSON.parse(JSON.stringify(i))),
-      total: this.total,
+      total: this.subtotal,
+      gstEnabled: this.auth.gstEnabled(),
+      gstRate: this.auth.gstRate(),
+      gstAmount: this.gstAmount,
+      grandTotal: this.total,
       date: this.billDate
     };
 
@@ -424,7 +442,8 @@ export class BillingComponent {
       patient: savedPatient,
       doctor: savedDoctor,
       items: this.items,
-      total: this.total,
+      total: this.subtotal,
+      taxRate: this.auth.gstEnabled() ? this.auth.gstRate() : 0,
       date: this.billDate
     });
 
