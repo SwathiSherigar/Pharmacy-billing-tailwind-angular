@@ -102,6 +102,41 @@ export class DataStoreService {
     return saved;
   }
 
+  /**
+   * Save doctor with uniqueness by phone or regNo.
+   * - If phone or regNo matches an existing doctor, update that record.
+   * - Otherwise create a new doctor (even if name is the same).
+   */
+  async saveDoctorUnique(doctor: any): Promise<any> {
+    if (!doctor.name?.trim() || doctor.name === 'N/A') return doctor;
+
+    const allDoctors = await this.db.getAll('doctors');
+
+    // Find existing by phone (non-empty) or regNo (non-empty)
+    let existing: any = null;
+    if (doctor.phone?.trim()) {
+      existing = allDoctors.find((d: any) => d.phone === doctor.phone);
+    }
+    if (!existing && doctor.regNo?.trim()) {
+      existing = allDoctors.find((d: any) => d.regNo === doctor.regNo);
+    }
+
+    if (existing) {
+      // Update existing doctor with new details
+      const updated = { ...existing, name: doctor.name, regNo: doctor.regNo, phone: doctor.phone, address: doctor.address };
+      await this.db.update('doctors', updated);
+      this.doctors.update(d => d.map(x => x.id === updated.id ? updated : x));
+      return updated;
+    } else {
+      // New doctor — strip id so IndexedDB auto-generates one
+      const { id, ...data } = doctor;
+      const newId = await this.db.add('doctors', data);
+      const saved = { ...data, id: newId };
+      this.doctors.update(d => [...d, saved]);
+      return saved;
+    }
+  }
+
   async getAllBatches() {
     return await this.db.getAll('productBatches');
   }

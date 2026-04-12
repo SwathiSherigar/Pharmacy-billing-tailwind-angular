@@ -51,12 +51,12 @@ export class SidebarComponent {
     //   featureIcon: 'group',
     //   featureRoute: '/patient-listing',
     // },
-    // {
-    //   featureCode: 'DOCTOR_LISTING',
-    //   featureName: 'Doctors',
-    //   featureIcon: 'medical_services',
-    //   featureRoute: '/doctor-listing',
-    // },
+    {
+      featureCode: 'DOCTOR_LISTING',
+      featureName: 'Doctors',
+      featureIcon: 'medical_services',
+      featureRoute: '/doctor-listing',
+    },
     {
       featureCode: 'PRODUCT_LISTING',
       featureName: 'Inventory',

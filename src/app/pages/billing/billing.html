@@ -39,7 +39,20 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-2">
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
-                    <input matInput placeholder="Name" [(ngModel)]="doctor.name">
+                    <input matInput placeholder="Name" [(ngModel)]="doctorNameInput"
+                        [matAutocomplete]="doctorAuto" (ngModelChange)="filterDoctors()">
+                    <mat-autocomplete #doctorAuto="matAutocomplete"
+                        [displayWith]="displayDoctorName"
+                        (optionSelected)="selectDoctor($event.option.value)">
+                        <mat-option *ngFor="let d of filteredDoctors" [value]="d">
+                            <div class="flex justify-between items-center w-full">
+                                <span>{{ d.name }}</span>
+                                <span class="text-[11px] text-gray-400 dark:text-gray-500 ml-2">
+                                    {{ d.phone || d.regNo || '' }}
+                                </span>
+                            </div>
+                        </mat-option>
+                    </mat-autocomplete>
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="w-full mat-sm-input">
                     <input matInput placeholder="Reg No" [(ngModel)]="doctor.regNo">

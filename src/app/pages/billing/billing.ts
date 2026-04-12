@@ -63,6 +63,9 @@ export class BillingComponent {
   products: any[] = [];
   productBatches: any[] = [];
   filteredItems: any[][] = [];
+  allDoctors: any[] = [];
+  filteredDoctors: any[] = [];
+  doctorNameInput: any = '';
 
 
   displayedColumns = ['name', 'batch', 'qty', 'mrp', 'expiry', 'amount', 'delete'];
@@ -121,6 +124,7 @@ export class BillingComponent {
 
     this.patient = { ...bill.patient };
     this.doctor = { ...bill.doctor };
+    this.doctorNameInput = bill.doctor?.name || '';
     this.billDate = bill.date ? new Date(bill.date) : new Date();
 
     this.items = bill.items.map((i: any) => ({
@@ -137,9 +141,30 @@ export class BillingComponent {
     return new Date(+year, +month - 1, 1);
   }
 
-  // Patient/doctor autocomplete removed — data stored inline in bill
-  // filterPatients() { ... }
-  // filterDoctors() { ... }
+  displayDoctorName = (val: any): string => {
+    return typeof val === 'string' ? val : val?.name || '';
+  }
+
+  filterDoctors() {
+    const name = typeof this.doctorNameInput === 'string'
+      ? this.doctorNameInput
+      : this.doctorNameInput?.name || '';
+    this.doctor.name = name;
+    const lower = name.toLowerCase();
+    if (!lower) {
+      this.filteredDoctors = this.allDoctors;
+      return;
+    }
+    this.filteredDoctors = this.allDoctors.filter((d: any) =>
+      d.name?.toLowerCase().includes(lower)
+    );
+  }
+
+  selectDoctor(doc: any) {
+    this.doctor = { name: doc.name, regNo: doc.regNo, phone: doc.phone, address: doc.address };
+    this.doctorNameInput = doc.name;
+    this.filteredDoctors = [];
+  }
 
   filterItems(index: number) {
     const name = this.items[index].name?.toLowerCase() || '';
@@ -293,6 +318,7 @@ export class BillingComponent {
   async loadData() {
     this.products = await this.db.getAll('products');
     this.productBatches = await this.store.getAllBatches();
+    this.allDoctors = await this.db.getAll('doctors');
   }
 
   calculate(item: any) {
@@ -337,6 +363,10 @@ export class BillingComponent {
       ? this.invoiceNo!
       : await this.getNextInvoiceNumber();
 
+    // Save doctor to IndexedDB (unique by phone/regNo)
+    await this.store.saveDoctorUnique(toPlainObject(this.doctor));
+    this.allDoctors = await this.db.getAll('doctors');
+
     const bill: any = {
       invoiceNo,
       patient: toPlainObject(this.patient),
@@ -371,6 +401,10 @@ export class BillingComponent {
 
 
     const toPlain = (obj: any) => JSON.parse(JSON.stringify(obj));
+
+    // Save doctor to IndexedDB (unique by phone/regNo)
+    await this.store.saveDoctorUnique(toPlain(this.doctor));
+    this.allDoctors = await this.db.getAll('doctors');
 
     const bill: any = {
       invoiceNo,
@@ -409,6 +443,7 @@ export class BillingComponent {
   resetForm() {
     this.patient = {};
     this.doctor = {};
+    this.doctorNameInput = '';
     this.billDate = new Date();
 
     this.items = [
